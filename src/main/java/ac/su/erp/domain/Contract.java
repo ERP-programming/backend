@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.Date;
 
+// 계약(연봉) 엔티티
 @Entity
 @Table(name = "CONTRACT")
 @Getter
