@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 // 비품 요청 엔티티
 @Entity
@@ -38,8 +38,8 @@ public class EquipmentRequest {
     @Column(name = "EQUIP_WHY") // 비품 요청 사유
     private String equipWhy;
 
-    @Column(name = "REQ_DATE", nullable = false)    // 요청일
-    private LocalDate reqDate = LocalDate.now();   // 기본값은 현재 날짜
+    @Column(name = "REQ_DATE", nullable = false)    // 요청 일자
+    private LocalDateTime reqDate = LocalDateTime.now();   // 기본값은 현재 일자
 
     @Column(name = "KINDS", nullable = false)   // 신청 종류
     private String kinds = "비품";    // 기본값은 "비품"

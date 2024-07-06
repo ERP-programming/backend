@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 // 계약(연봉) 엔티티
 @Entity
@@ -22,10 +22,10 @@ public class Contract {
     private Long conIncome;
 
     @Column(name = "CON_STARTDAY", nullable = false)    // 계약 시작일
-    private Date conStartday;
+    private LocalDate conStartday;
 
     @Column(name = "CON_ENDDAY", nullable = false)  // 계약 종료일
-    private Date conEndday;
+    private LocalDate conEndday;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "DEL", nullable = false)   // 삭제여부

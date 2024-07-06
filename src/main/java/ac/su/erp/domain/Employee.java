@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 // 사원정보 엔티티
@@ -63,13 +63,13 @@ public class Employee {
     private String empEmail;
 
     @Column(name = "START_DAY", nullable = false)   // 입사일
-    private Date startDay;
+    private LocalDate startDay;
 
     @Column(name = "END_DAY")   // 퇴사일
-    private Date endDay;
+    private LocalDate endDay;
 
     @Column(name = "EMP_INFO_CHANGE")   // 사원정보 변경일
-    private LocalDate empInfoChange = LocalDate.now();  // 기본값은 현재 날짜
+    private LocalDateTime empInfoChange = LocalDateTime.now();  // 기본값은 현재 날짜
 
     @Column(name = "EMP_DELINFO")   // 퇴사정보(사유)
     private String empDelInfo;

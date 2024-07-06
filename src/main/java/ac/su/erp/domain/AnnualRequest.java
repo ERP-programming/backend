@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 // 연차신청 엔티티
 @Entity
@@ -19,15 +20,15 @@ public class AnnualRequest {
     @Column(name = "ID")    // 연차신청 ID
     private Long id;
 
-    @Column(name = "EXPECTED_DATE")   // 휴가예정일
-    private String expectedDate;
+    @Column(name = "EXPECTED_DATE")   // 연차 예정일
+    private LocalDate expectedDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "APPROVAL", nullable = false)    // 승인여부
     private ApprovarStatus approval = ApprovarStatus.PENDING;   // 기본값은 PENDING
 
     @Column(name = "REQ_DATE", nullable = false)    // 신청일
-    private LocalDate reqDate = LocalDate.now();   // 기본값은 현재 날짜
+    private LocalDateTime reqDate = LocalDateTime.now();   // 기본값은 현재 날짜
 
     @Column(name = "KINDS", nullable = false)   // 신청 종류
     private String kinds = "연차";    // 기본값은 "연차"
