@@ -121,4 +121,16 @@ public class EmployeeService {
     public boolean validateAccessToken(String token) {
         return tokenProvider.validateToken(token);
     }
+
+    //비밀번호 변경
+    public void changePassword(Long empNum, String newPassword) {
+        Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
+        if (employeeOptional.isPresent()) {
+            Employee employee = employeeOptional.get();
+            employee.setEmpPw(passwordEncoder.encode(newPassword));
+            employeeRepository.save(employee);
+        } else {
+            throw new UsernameNotFoundException("User not found with empNum: " + empNum);
+        }
+    }
 }
