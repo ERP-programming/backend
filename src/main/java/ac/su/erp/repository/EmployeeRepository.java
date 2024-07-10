@@ -1,4 +1,16 @@
 package ac.su.erp.repository;
 
-public class EmployeeRepository {
+import ac.su.erp.domain.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    List<Employee> findByEmpName(String empName);
+    Optional<Employee> findByEmpNum(Long empNum);
+    boolean existsByEmpNum(Long empNum);
+
 }
