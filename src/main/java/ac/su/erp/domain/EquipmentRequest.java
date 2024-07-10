@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 // 비품 요청 엔티티
@@ -50,7 +49,7 @@ public class EquipmentRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "APPROVAR", nullable = false)    // 승인상태
-    private ApprovarStatus approvar = ApprovarStatus.PENDING;   // 기본값은 PENDING
+    private ApprovarStatus approvarStatus = ApprovarStatus.PENDING;   // 기본값은 PENDING
 
     // N:1 매핑
     @ManyToOne
