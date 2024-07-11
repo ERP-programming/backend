@@ -1,4 +1,10 @@
 package ac.su.erp.repository;
 
-public class EmployeeRepository {
+import ac.su.erp.domain.Company;
+import ac.su.erp.domain.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
 }

@@ -50,7 +50,7 @@ public class EquipmentRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "APPROVAR", nullable = false)    // 승인상태
-    private ApprovarStatus approvar = ApprovarStatus.PENDING;   // 기본값은 PENDING
+    private ApprovarStatus approvarStatus = ApprovarStatus.PENDING;   // 기본값은 PENDING
 
     // N:1 매핑
     @ManyToOne
