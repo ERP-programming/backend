@@ -25,15 +25,6 @@ public class TokenProvider {
         return makeToken(now, expiredAt, employee);
     }
 
-    // 리프레시 토큰 생성
-    public String generateRefreshToken(Employee employee, Duration duration) {
-        return Jwts.builder()
-                .setSubject(employee.getEmpNum().toString())
-                .setExpiration(new Date(System.currentTimeMillis() + duration.toMillis()))
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
-                .compact();
-    }
-
     // JWT 토큰 생성
     private String makeToken(Date now, Date expiredAt, Employee employee) {
         return Jwts.builder()

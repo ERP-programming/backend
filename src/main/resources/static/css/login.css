@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 550px; /* increased max-width */
+    height: 700px; /* added height */
+    margin: 0 auto;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 60px 40px; /* increased padding for more space */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    height: 100%; /* makes the box take the full height of the container */
+    box-sizing: border-box; /* ensures padding is included in the height calculation */
+}
+
+.login-box h1 {
+    color: #007bff;
+}
+
+.login-box h2 {
+    margin: 10px 0;
+}
+
+.login-box p {
+    color: #666;
+}
+
+.input-group {
+    position: relative;
+    margin: 50px 0;
+}
+
+.input-group i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #007bff;
+}
+
+.input-group input {
+    width: calc(100% - 20px); /* adjusted width */
+    padding: 15px 10px 15px 40px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    height: 25px;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    text-align: left;
+    margin: 5px 0; /* adjusted margin */
+    display: none; /* hide by default */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px; /* increased padding for more space */
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 30px; /* increased margin for spacing */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+a {
+    display: block;
+    margin-top: 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.popup p {
+    margin: 0 0 20px 0;
+}
+
+.popup button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup button:hover {
+    background-color: #0056b3;
+}

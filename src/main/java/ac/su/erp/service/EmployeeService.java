@@ -27,7 +27,6 @@ public class EmployeeService {
     private final BankRepository bankRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     public void createEmployee(EmployeeCreateForm employeeCreateForm) {
         Employee newEmployee = new Employee();
@@ -79,13 +78,8 @@ public class EmployeeService {
     public LoginResponseDTO getAccessToken(Employee employee, String rawPassword) {
         if (isPasswordValid(rawPassword, employee.getEmpPw())) {
             String accessToken = tokenProvider.generateAccessToken(employee, Duration.ofMinutes(60));
-            String refreshToken = tokenProvider.generateRefreshToken(employee, Duration.ofDays(7));
 
-
-            redisTemplate.opsForValue().set("TOKEN:" + employee.getEmpNum(), accessToken, Duration.ofMinutes(60));
-            redisTemplate.opsForValue().set("REFRESH_TOKEN:" + employee.getEmpNum(), refreshToken, Duration.ofDays(7));
-
-            return new LoginResponseDTO(employee.getEmpNum(), employee.getEmpPw(), accessToken, refreshToken);
+            return new LoginResponseDTO(employee.getEmpNum(), employee.getEmpPw(), accessToken);
         }
         return null;
     }
@@ -93,28 +87,10 @@ public class EmployeeService {
     public void logout(Long empNum) {
         Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
         if (employeeOptional.isPresent()) {
-            redisTemplate.delete("TOKEN:" + empNum);
-            redisTemplate.delete("REFRESH_TOKEN:" + empNum);
+
         } else {
             throw new UsernameNotFoundException("User not found with empNum: " + empNum);
         }
-    }
-
-    public LoginResponseDTO refreshAccessToken(Long empNum, String refreshToken) {
-        String storedRefreshToken = (String) redisTemplate.opsForValue().get("REFRESH_TOKEN:" + empNum);
-        if (storedRefreshToken != null && storedRefreshToken.equals(refreshToken)) {
-            Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
-            if (employeeOptional.isPresent()) {
-                Employee employee = employeeOptional.get();
-                String newAccessToken = tokenProvider.generateAccessToken(employee, Duration.ofMinutes(60));
-
-                redisTemplate.opsForValue().set("TOKEN:" + empNum, newAccessToken, Duration.ofMinutes(60));
-                redisTemplate.opsForValue().set("REFRESH_TOKEN:" + empNum, refreshToken, Duration.ofDays(7));
-
-                return new LoginResponseDTO(employee.getEmpNum(), employee.getEmpPw(), newAccessToken, refreshToken);
-            }
-        }
-        return null;
     }
 
     public boolean validateAccessToken(String token) {

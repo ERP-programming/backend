@@ -12,5 +12,4 @@ public class LoginResponseDTO {
     private Long empNum;
     private String password;
     private String accessToken;
-    private String refreshToken;
 }

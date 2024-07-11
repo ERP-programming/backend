@@ -95,20 +95,6 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
-        Long empNum = Long.valueOf(request.get("empNum"));
-        String refreshToken = request.get("refreshToken");
-        try {
-            LoginResponseDTO loginResponse = employeeService.refreshAccessToken(empNum, refreshToken);
-            if (loginResponse == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 Refresh Token입니다.");
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("토큰 갱신에 실패했습니다. 오류: " + e.getMessage());
-        }
-    }
 
     @GetMapping("/protected-resource")
     public ResponseEntity<?> getProtectedResource(@RequestHeader(value = "Authorization", required = false) String authorization, HttpServletRequest request, HttpServletResponse response) {
