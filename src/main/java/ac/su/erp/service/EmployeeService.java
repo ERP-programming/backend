@@ -11,7 +11,6 @@ import ac.su.erp.repository.DepartmentRepository;
 import ac.su.erp.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class EmployeeService {
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public EmployeeCreateForm createEmployee(EmployeeCreateForm employeeCreateForm) {
+    public void createEmployee(EmployeeCreateForm employeeCreateForm) {
         Employee newEmployee = new Employee();
         newEmployee.setEmpNum(employeeCreateForm.getEmpNum());
         newEmployee.setEmpPw(passwordEncoder.encode("1234")); // 기본값 "1234"를 암호화하여 저장
@@ -57,7 +56,6 @@ public class EmployeeService {
 
         validateDuplicateEmployee(newEmployee);
         employeeRepository.save(newEmployee);
-        return employeeCreateForm;
     }
 
     public boolean existsByEmpNum(Long empNum) {
@@ -83,8 +81,18 @@ public class EmployeeService {
             String accessToken = tokenProvider.generateAccessToken(employee, Duration.ofMinutes(60));
             String refreshToken = tokenProvider.generateRefreshToken(employee, Duration.ofDays(7));
 
-            redisTemplate.opsForValue().set("TOKEN:" + employee.getEmpNum(), accessToken, Duration.ofMinutes(60));
-            redisTemplate.opsForValue().set("REFRESH_TOKEN:" + employee.getEmpNum(), refreshToken, Duration.ofDays(7));
+            try {
+                redisTemplate.opsForValue().set("TOKEN:" + employee.getEmpNum(), accessToken, Duration.ofMinutes(60));
+                redisTemplate.opsForValue().set("REFRESH_TOKEN:" + employee.getEmpNum(), refreshToken, Duration.ofDays(7));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 여기서 로그를 추가하여 Redis에 데이터를 저장할 때 발생하는 예외를 확인할 수 있습니다.
+                System.out.println("Redis에 데이터를 저장하는 중에 오류가 발생했습니다: " + e.getMessage());
+                throw new RuntimeException("Redis에 데이터를 저장하는 중에 오류가 발생했습니다.", e);
+            }
+
+//            redisTemplate.opsForValue().set("TOKEN:" + employee.getEmpNum(), accessToken, Duration.ofMinutes(60));
+//            redisTemplate.opsForValue().set("REFRESH_TOKEN:" + employee.getEmpNum(), refreshToken, Duration.ofDays(7));
 
             return new LoginResponseDTO(employee.getEmpNum(), employee.getEmpPw(), accessToken, refreshToken);
         }

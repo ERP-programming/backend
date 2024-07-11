@@ -123,17 +123,29 @@ public class EmployeeController {
     }
 
     //비밀번호 변경
-    @PutMapping("/changePassword")
+    @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> request) {
         Long empNum = Long.valueOf(request.get("empNum"));
         String newPassword = request.get("newPassword");
+
         try {
             employeeService.changePassword(empNum, newPassword);
-            return ResponseEntity.status(HttpStatus.OK).body("비밀번호 변경에 성공했습니다.");
+            return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 성공적으로 변경되었습니다.");
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID입니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("유효하지 않은 사용자 ID입니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경에 실패했습니다. 오류: " + e.getMessage());
         }
+    }
+
+
+    // 사원 정보 조회
+    @GetMapping("/{empNum}")
+    public ResponseEntity<?> getEmployee(@PathVariable Long empNum) {
+        Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
+        if (employeeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사원 정보를 찾을 수 없습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(employeeOptional.get());
     }
 }

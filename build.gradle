@@ -46,6 +46,18 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT implementation
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT with Jackson support
     implementation 'org.springframework.boot:spring-boot-starter-validation' // validation
+
+    // ThymeLeaf
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.2.5'
+    // https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0'
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity6
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    // Spring Session JDBC
+    implementation 'org.springframework.session:spring-session-jdbc'
 }
 
 tasks.named('test') {
