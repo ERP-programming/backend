@@ -123,16 +123,13 @@ public class EmployeeController {
     }
 
     //비밀번호 변경
-    @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> request) {
-        Long empNum = Long.valueOf(request.get("empNum"));
-        String newPassword = request.get("newPassword");
-
+    @PostMapping("/changePassword/{empNum}")
+    public ResponseEntity<?> changePassword(@PathVariable Long empNum, @RequestBody String newPassword) {
         try {
             employeeService.changePassword(empNum, newPassword);
-            return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 성공적으로 변경되었습니다.");
+            return ResponseEntity.status(HttpStatus.OK).body("비밀번호 변경에 성공했습니다.");
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("유효하지 않은 사용자 ID입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID입니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경에 실패했습니다. 오류: " + e.getMessage());
         }

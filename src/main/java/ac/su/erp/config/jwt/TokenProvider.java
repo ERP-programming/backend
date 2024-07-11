@@ -41,9 +41,8 @@ public class TokenProvider {
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
                 .setExpiration(expiredAt)
-                .setSubject(employee.getEmpNum().toString())
-                .claim("empName", employee.getEmpName())
-                .claim("empPos", employee.getEmpPos())
+                .setSubject(employee.getEmpName())
+                .claim("empNum", employee.getEmpNum())
                 // 암호키를 사용해서 시그니처를 작성
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
@@ -66,7 +65,7 @@ public class TokenProvider {
     public Authentication getAuthentication(String accessToken) {
         // 토큰 정보를 통해 유저 인증 정보 확인
         Claims claims = getClaims(accessToken);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_" + claims.get("empPos")));
+        Set<SimpleGrantedAuthority> authorities = Collections.emptySet();
         return new UsernamePasswordAuthenticationToken(
                 claims.getSubject(),
                 accessToken,
