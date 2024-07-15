@@ -80,27 +80,40 @@ public class Employee {
     // N:1 매핑
     @ManyToOne
     @JoinColumn(name = "bank_code") // 은행코드
-    private Bank bankCode;
+    private Bank bank;
 
     @ManyToOne
     @JoinColumn(name = "dept_no")   // 부서번호
-    private Department deptNo;
+    private Department department;
 
     // 1:N 매핑
-    @OneToMany(mappedBy = "equipId")  // 비품 요청 번호
-    private List<EquipmentRequest> equipmentRequests;
 
-    @OneToMany(mappedBy = "workTimeId")  // 출퇴근시간 ID
+    @OneToMany(mappedBy = "employee")  // 출퇴근시간 참조
     private List<WorkTime> workTimes;
 
-    @OneToMany(mappedBy = "monthSalaryId")   // 월급 ID
+    @OneToMany(mappedBy = "employee")   // 월급 참조
     private List<MonthSalary> monthSalaries;
 
-    @OneToMany(mappedBy = "noticeId")  // 공지사항 ID
+    @OneToMany(mappedBy = "employee")  // 공지사항 참조
     private List<Notice> notices;
 
-    @OneToMany(mappedBy = "btId")   // 휴직정보 ID
+    @OneToMany(mappedBy = "employee")   // 휴직정보 참조
     private List<BreakTime> breakTimes;
+
+    @OneToMany(mappedBy = "employee")   // 할일 참조
+    private List<Task> tasks;
+
+    @OneToMany(mappedBy = "sender")  // AnnualRequest의 sender 필드 참조
+    private List<AnnualRequest> sentAnnualRequests;
+
+    @OneToMany(mappedBy = "approver")  // AnnualRequest의 approver 필드 참조
+    private List<AnnualRequest> approvedAnnualRequests;
+
+    @OneToMany(mappedBy = "sender")  // AnnualRequest의 sender 필드 참조
+    private List<EquipmentRequest> sentEquipmentRequestRequests;
+
+    @OneToMany(mappedBy = "approver")  // AnnualRequest의 approver 필드 참조
+    private List<EquipmentRequest> approvedEquipmentRequestRequests;
 
     // 1:1 매핑
     @OneToOne(mappedBy = "employee")
