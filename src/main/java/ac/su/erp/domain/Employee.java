@@ -23,7 +23,7 @@ public class Employee {
     private Long empNum;
 
     @Column(name = "EMP_AGE", nullable = false)  // 나이
-    private Long empBirth;
+    private Long empAge;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "EMP_DEL", nullable = false) // 퇴사여부
@@ -46,6 +46,9 @@ public class Employee {
     @Column(name = "EMP_BIRTHNUM", nullable = false)    // 주민번호
     private String empBirthNum;
 
+    @Column(name = "EMP_BIRTH", nullable = false)       //생년월일
+    private Long empBirth;
+
     @Column(name = "EMP_PNUM", nullable = false)    // 연락처
     private String empPnum;
 
@@ -66,7 +69,7 @@ public class Employee {
     private Date startDay;
 
     @Column(name = "END_DAY")   // 퇴사일
-    private Date endDay;
+    private LocalDate endDay = LocalDate.now();  // 기본값은 현재 날짜;
 
     @Column(name = "EMP_INFO_CHANGE")   // 사원정보 변경일
     private LocalDate empInfoChange = LocalDate.now();  // 기본값은 현재 날짜

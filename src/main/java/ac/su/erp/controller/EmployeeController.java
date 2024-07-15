@@ -1,134 +1,121 @@
 package ac.su.erp.controller;
 
 import ac.su.erp.domain.Employee;
-import ac.su.erp.dto.EmployeeCreateForm;
-import ac.su.erp.dto.LoginDTO;
-import ac.su.erp.dto.LoginResponseDTO;
+import ac.su.erp.dto.LoginForm;
+import ac.su.erp.repository.BankRepository;
+import ac.su.erp.repository.DepartmentRepository;
 import ac.su.erp.service.EmployeeService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final PasswordEncoder passwordEncoder;
+    private final BankRepository bankRepository;
+    private final DepartmentRepository departmentRepository;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> createUser(
-            @Validated @RequestBody EmployeeCreateForm employeeCreateForm,
-            BindingResult bindingResult
-    ) {
-        // 1. Form 데이터 검증
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("입력값에 오류가 있습니다.");
-        }
-
-        // 2. 백엔드 validation
-        try {
-            employeeService.createEmployee(employeeCreateForm);
-        } catch (IllegalStateException e) {
-            bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 등록된 사용자입니다.");
-        } catch (Exception e) {
-            bindingResult.reject("signupFailed", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-        // 3. 회원 가입 성공
-        return ResponseEntity.status(HttpStatus.OK).body("회원 가입이 성공적으로 완료되었습니다.");
+    @GetMapping()
+    public ModelAndView getAllEmployees() {
+        ModelAndView modelAndView = new ModelAndView("employees");
+        modelAndView.addObject("employees", employeeService.findAllEmployees());
+        return modelAndView;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
-            @Validated @RequestBody LoginDTO loginDTO,
-            BindingResult bindingResult
-    ) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 자격 증명입니다.");
-        }
+    @GetMapping("/login")
+    public ModelAndView showLoginForm() {
+        ModelAndView modelAndView = new ModelAndView("login");
+        modelAndView.addObject("loginForm", new LoginForm());
+        return modelAndView;
+    }
 
-        Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(loginDTO.getEmpNum());
-        if (employeeOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID입니다.");
-        }
+    @GetMapping("/createEmployee")
+    public String showCreateEmployeeForm(Model model) {
+        return "NewEmployForm"; // 템플릿 이름
+    }
 
-        Employee employee = employeeOptional.get();
-        if (!employeeService.isPasswordValid(loginDTO.getPassword(), employee.getEmpPw())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 비밀번호입니다.");
-        }
+    @PostMapping()
+    public String saveEmployee(@ModelAttribute Employee employee) {
+        employeeService.createEmployee(employee);
+        return "redirect:/employees";
+    }
 
+    //사원 퇴사(삭제) 처리
+    @PostMapping("/resign/{empNum}")
+    public ModelAndView resignEmployee(@PathVariable Long empNum) {
+        ModelAndView modelAndView = new ModelAndView("resignEmployee");
         try {
-            LoginResponseDTO loginResponse = employeeService.getAccessToken(employee, loginDTO.getPassword());
-            if (loginResponse == null) {
-                throw new Exception("토큰 생성 실패");
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+            employeeService.resignEmployee(empNum);
+            modelAndView.setStatus(HttpStatus.OK);
+            modelAndView.addObject("message", "사원 퇴사 처리에 성공했습니다.");
+            modelAndView.setViewName("resignEmployeeSuccess");
+            return modelAndView;
+        } catch (UsernameNotFoundException e) {
+            modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
+            modelAndView.addObject("message", "유효하지 않은 사용자 ID입니다.");
+            return modelAndView;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("토큰 생성에 실패했습니다. 오류: " + e.getMessage());
+            modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            modelAndView.addObject("message", "사원 퇴사 처리에 실패했습니다. 오류: " + e.getMessage());
+            return modelAndView;
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody Map<String, String> request) {
+    public ModelAndView logout(@RequestBody Map<String, String> request) {
+        ModelAndView modelAndView = new ModelAndView("logout");
         Long empNum = Long.valueOf(request.get("empNum"));
-        try {
             employeeService.logout(empNum);
-            return ResponseEntity.status(HttpStatus.OK).body("로그아웃에 성공했습니다.");
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID입니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그아웃에 실패했습니다. 오류: " + e.getMessage());
-        }
+            modelAndView.setStatus(HttpStatus.OK);
+            modelAndView.addObject("message", "로그아웃에 성공했습니다.");
+            modelAndView.setViewName("logoutSuccess");
+            return modelAndView;
+
     }
 
-
-    @GetMapping("/protected-resource")
-    public ResponseEntity<?> getProtectedResource(@RequestHeader(value = "Authorization", required = false) String authorization, HttpServletRequest request, HttpServletResponse response) {
-        String token = Optional.ofNullable(authorization).map(auth -> auth.replace("Bearer ", "")).orElse("");
-        boolean isTokenValid = employeeService.validateAccessToken(token);
-
-        if (isTokenValid) {
-            return ResponseEntity.status(HttpStatus.OK).body("Protected resource accessed successfully!");
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("유효하지 않은 토큰입니다.");
-        }
-    }
-
-    //비밀번호 변경
     @PostMapping("/changePassword/{empNum}")
-    public ResponseEntity<?> changePassword(@PathVariable Long empNum, @RequestBody String newPassword) {
+    public ModelAndView changePassword(@PathVariable Long empNum, @RequestBody String newPassword) {
+        ModelAndView modelAndView = new ModelAndView("changePassword");
         try {
             employeeService.changePassword(empNum, newPassword);
-            return ResponseEntity.status(HttpStatus.OK).body("비밀번호 변경에 성공했습니다.");
+            modelAndView.setStatus(HttpStatus.OK);
+            modelAndView.addObject("message", "비밀번호 변경에 성공했습니다.");
+            modelAndView.setViewName("changePasswordSuccess");
+            return modelAndView;
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 ID입니다.");
+            modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
+            modelAndView.addObject("message", "유효하지 않은 사용자 ID입니다.");
+            return modelAndView;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경에 실패했습니다. 오류: " + e.getMessage());
+            modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            modelAndView.addObject("message", "비밀번호 변경에 실패했습니다. 오류: " + e.getMessage());
+            return modelAndView;
         }
     }
 
-
-    // 사원 정보 조회
     @GetMapping("/{empNum}")
-    public ResponseEntity<?> getEmployee(@PathVariable Long empNum) {
+    public ModelAndView getEmployee(@PathVariable Long empNum) {
+        ModelAndView modelAndView = new ModelAndView("employeeDetail");
         Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
         if (employeeOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사원 정보를 찾을 수 없습니다.");
+            modelAndView.setStatus(HttpStatus.NOT_FOUND);
+            modelAndView.addObject("message", "사원 정보를 찾을 수 없습니다.");
+            modelAndView.setViewName("employeeNotFound");
+            return modelAndView;
         }
-        return ResponseEntity.status(HttpStatus.OK).body(employeeOptional.get());
+        modelAndView.setStatus(HttpStatus.OK);
+        modelAndView.addObject("employee", employeeOptional.get());
+        return modelAndView;
     }
 }
