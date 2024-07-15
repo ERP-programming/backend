@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Employee {
     private Long empNum;
 
     @Column(name = "EMP_AGE", nullable = false)  // 나이
-    private Long empAge;
+    private Long empBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "EMP_DEL", nullable = false) // 퇴사여부
@@ -46,9 +47,6 @@ public class Employee {
     @Column(name = "EMP_BIRTHNUM", nullable = false)    // 주민번호
     private String empBirthNum;
 
-    @Column(name = "EMP_BIRTH", nullable = false)       //생년월일
-    private Long empBirth;
-
     @Column(name = "EMP_PNUM", nullable = false)    // 연락처
     private String empPnum;
 
@@ -66,13 +64,13 @@ public class Employee {
     private String empEmail;
 
     @Column(name = "START_DAY", nullable = false)   // 입사일
-    private Date startDay;
+    private LocalDate startDay;
 
     @Column(name = "END_DAY")   // 퇴사일
-    private LocalDate endDay = LocalDate.now();  // 기본값은 현재 날짜;
+    private LocalDate endDay;
 
     @Column(name = "EMP_INFO_CHANGE")   // 사원정보 변경일
-    private LocalDate empInfoChange = LocalDate.now();  // 기본값은 현재 날짜
+    private LocalDateTime empInfoChange = LocalDateTime.now();  // 기본값은 현재 날짜
 
     @Column(name = "EMP_DELINFO")   // 퇴사정보(사유)
     private String empDelInfo;
@@ -83,27 +81,37 @@ public class Employee {
     // N:1 매핑
     @ManyToOne
     @JoinColumn(name = "bank_code") // 은행코드
-    private Bank bankCode;
+    private Bank bank;
 
     @ManyToOne
     @JoinColumn(name = "dept_no")   // 부서번호
-    private Department deptNo;
+    private Department department;
 
     // 1:N 매핑
-    @OneToMany(mappedBy = "equipId")  // 비품 요청 번호
-    private List<EquipmentRequest> equipmentRequests;
 
-    @OneToMany(mappedBy = "workTimeId")  // 출퇴근시간 ID
+    @OneToMany(mappedBy = "employee")  // 출퇴근시간 참조
     private List<WorkTime> workTimes;
 
-    @OneToMany(mappedBy = "monthSalaryId")   // 월급 ID
+    @OneToMany(mappedBy = "employee")   // 월급 참조
     private List<MonthSalary> monthSalaries;
 
-    @OneToMany(mappedBy = "noticeId")  // 공지사항 ID
+    @OneToMany(mappedBy = "employee")  // 공지사항 참조
     private List<Notice> notices;
 
-    @OneToMany(mappedBy = "btId")   // 휴직정보 ID
+    @OneToMany(mappedBy = "employee")   // 휴직정보 참조
     private List<BreakTime> breakTimes;
+
+    @OneToMany(mappedBy = "sender")  // AnnualRequest의 sender 필드 참조
+    private List<AnnualRequest> sentAnnualRequests;
+
+    @OneToMany(mappedBy = "approver")  // AnnualRequest의 approver 필드 참조
+    private List<AnnualRequest> approvedAnnualRequests;
+
+    @OneToMany(mappedBy = "sender")  // AnnualRequest의 sender 필드 참조
+    private List<EquipmentRequest> sentEquipmentRequestRequests;
+
+    @OneToMany(mappedBy = "approver")  // AnnualRequest의 approver 필드 참조
+    private List<EquipmentRequest> approvedEquipmentRequestRequests;
 
     // 1:1 매핑
     @OneToOne(mappedBy = "employee")

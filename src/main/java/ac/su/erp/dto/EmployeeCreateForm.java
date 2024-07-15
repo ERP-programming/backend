@@ -11,8 +11,9 @@ public class EmployeeCreateForm {
     private String email;
     private String address;
     private Long bankCode;
-    private Long deptNo; // 부서번호 추가
+    private Long deptNo;
     private String salary;
     private String contractStart;
     private String contractEnd;
+    private String accountNum;  // 계좌번호 추가
 }

@@ -1,5 +1,8 @@
 package ac.su.erp.service;
 
+import ac.su.erp.constant.DepartmentPosition;
+import ac.su.erp.constant.EmployeePosition;
+import ac.su.erp.constant.EmploymentStatus;
 import ac.su.erp.constant.GenderEnum;
 import ac.su.erp.domain.Bank;
 import ac.su.erp.domain.Contract;
@@ -25,6 +28,7 @@ import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -65,21 +69,27 @@ public class EmployeeService implements UserDetailsService {
         employee.setEmpAddr(form.getAddress());
         employee.setEmpBanknum(form.getBankCode().toString());
         employee.setEmpPw(passwordEncoder.encode(parsePassword(form.getId())));
+        employee.setEmpDel(EmploymentStatus.EMPLOYED);
+        employee.setEmpHead(DepartmentPosition.DepartmentMember);  // 기본값 설정
+        employee.setEmpPos(EmployeePosition.STAFF);   // 기본값 설정
 
         // 주민등록번호로 생년월일, 성별, 나이 자동 입력
         String birthNum = form.getId();
         employee.setEmpBirthNum(birthNum);
         employee.setEmpBirth(getBirthNumAsInt(birthNum));
         employee.setEmpGender(parseGender(birthNum));
-        employee.setEmpAge(LocalDate.now().getYear() - employee.getEmpBirth());
+        employee.setEmpBirth(LocalDate.now().getYear() - employee.getEmpBirth());
 
         // 나머지 기본값 자동 설정
-        employee.setEmpInfoChange(LocalDate.now());
-        employee.setStartDay(new Date());
+        employee.setEmpInfoChange(LocalDateTime.now());
+        employee.setStartDay(LocalDate.parse(form.getContractStart()));
+        employee.setEndDay(null);
+        employee.setEmpIntroduce(null);
+        employee.setEmpDelInfo(null);
 
         // 부서 및 은행 설정
-        departmentRepository.findById(form.getDeptNo()).ifPresent(employee::setDeptNo);
-        bankRepository.findById(form.getBankCode()).ifPresent(employee::setBankCode);
+        departmentRepository.findById(form.getDeptNo()).ifPresent(employee::setDepartment);
+        bankRepository.findById(form.getBankCode()).ifPresent(employee::setBank);
 
         // 계약 정보 설정
         Contract contract = new Contract();
@@ -91,7 +101,6 @@ public class EmployeeService implements UserDetailsService {
         // Employee와 Contract 저장
         employeeRepository.save(employee);
         contractRepository.save(contract);
-
     }
 
     private String parsePassword(String birthNum) {
