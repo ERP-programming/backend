@@ -88,17 +88,20 @@ public class Employee {
 
     // 1:N 매핑
 
-    @OneToMany(mappedBy = "employee")  // 출퇴근시간 ID
+    @OneToMany(mappedBy = "employee")  // 출퇴근시간 참조
     private List<WorkTime> workTimes;
 
-    @OneToMany(mappedBy = "employee")   // 월급 ID
+    @OneToMany(mappedBy = "employee")   // 월급 참조
     private List<MonthSalary> monthSalaries;
 
-    @OneToMany(mappedBy = "employee")  // 공지사항 ID
+    @OneToMany(mappedBy = "employee")  // 공지사항 참조
     private List<Notice> notices;
 
-    @OneToMany(mappedBy = "employee")   // 휴직정보 ID
+    @OneToMany(mappedBy = "employee")   // 휴직정보 참조
     private List<BreakTime> breakTimes;
+
+    @OneToMany(mappedBy = "employee")   // 할일 참조
+    private List<Task> tasks;
 
     @OneToMany(mappedBy = "sender")  // AnnualRequest의 sender 필드 참조
     private List<AnnualRequest> sentAnnualRequests;
