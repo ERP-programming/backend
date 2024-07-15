@@ -13,8 +13,17 @@ import java.util.Date;
 @Getter
 @Setter
 public class Contract {
+//    @Id
+//    @OneToOne
+//    @JoinColumn(name = "EMP_NUM")   // 사원번호
+//    private Employee employee;
+
     @Id
+    @Column(name = "EMP_NUM")   // 사원번호
+    private Long empNum;
+
     @OneToOne
+    @MapsId
     @JoinColumn(name = "EMP_NUM")   // 사원번호
     private Employee employee;
 

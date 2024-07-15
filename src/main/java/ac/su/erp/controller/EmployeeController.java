@@ -1,6 +1,7 @@
 package ac.su.erp.controller;
 
 import ac.su.erp.domain.Employee;
+import ac.su.erp.dto.EmployeeCreateForm;
 import ac.su.erp.dto.LoginForm;
 import ac.su.erp.repository.BankRepository;
 import ac.su.erp.repository.DepartmentRepository;
@@ -40,16 +41,28 @@ public class EmployeeController {
         return modelAndView;
     }
 
-    @GetMapping("/createEmployee")
+    @GetMapping("/create")
     public String showCreateEmployeeForm(Model model) {
-        return "NewEmployForm"; // 템플릿 이름
+        model.addAttribute("employeeCreateForm", new EmployeeCreateForm());
+        return "employee-create";
     }
 
-    @PostMapping()
-    public String saveEmployee(@ModelAttribute Employee employee) {
-        employeeService.createEmployee(employee);
-        return "redirect:/employees";
+    @PostMapping("/create")
+    public String createEmployee(@ModelAttribute EmployeeCreateForm form, Model model) {
+        try {
+            employeeService.createEmployee(form);
+            model.addAttribute("successMessage", "Employee created successfully");
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error creating employee: " + e.getMessage());
+        }
+        return "employee-create";
     }
+
+//    @PostMapping()
+//    public String saveEmployee(@ModelAttribute Employee employee) {
+//        employeeService.createEmployee(employee);
+//        return "redirect:/employees";
+//    }
 
     //사원 퇴사(삭제) 처리
     @PostMapping("/resign/{empNum}")

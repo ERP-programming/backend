@@ -2,11 +2,13 @@ package ac.su.erp.service;
 
 import ac.su.erp.constant.GenderEnum;
 import ac.su.erp.domain.Bank;
+import ac.su.erp.domain.Contract;
 import ac.su.erp.domain.Department;
 import ac.su.erp.domain.Employee;
 import ac.su.erp.dto.EmployeeCreateForm;
 import ac.su.erp.dto.SpringUser;
 import ac.su.erp.repository.BankRepository;
+import ac.su.erp.repository.ContractRepository;
 import ac.su.erp.repository.DepartmentRepository;
 import ac.su.erp.repository.EmployeeRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +25,8 @@ import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +42,7 @@ public class EmployeeService implements UserDetailsService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final BankRepository bankRepository;
+    private final ContractRepository contractRepository;
     private final PasswordEncoder passwordEncoder;
     private FindByIndexNameSessionRepository<? extends Session> sessionRepository;
 
@@ -50,17 +55,43 @@ public class EmployeeService implements UserDetailsService {
         return SpringUser.getSpringUserDetails(registeredEmployee.get());
     }
 
-    public void createEmployee(Employee employee) {
+    public void createEmployee(EmployeeCreateForm form) {
+        Employee employee = new Employee();
+        // DTO에서 엔티티로 데이터 변환 및 설정
+        employee.setEmpNum(form.getEmpNum());
+        employee.setEmpName(form.getName());
+        employee.setEmpPnum(form.getPhone());
+        employee.setEmpEmail(form.getEmail());
+        employee.setEmpAddr(form.getAddress());
+        employee.setEmpBanknum(form.getBankCode().toString());
+        employee.setEmpPw(passwordEncoder.encode(parsePassword(form.getId())));
+
         // 주민등록번호로 생년월일, 성별, 나이 자동 입력
-        String birthNum = employee.getEmpBirthNum();
+        String birthNum = form.getId();
         employee.setEmpBirthNum(birthNum);
         employee.setEmpBirth(getBirthNumAsInt(birthNum));
         employee.setEmpGender(parseGender(birthNum));
-        employee.setEmpPw(passwordEncoder.encode(parsePassword(birthNum)));
         employee.setEmpAge(LocalDate.now().getYear() - employee.getEmpBirth());
+
         // 나머지 기본값 자동 설정
         employee.setEmpInfoChange(LocalDate.now());
+        employee.setStartDay(new Date());
+
+        // 부서 및 은행 설정
+        departmentRepository.findById(form.getDeptNo()).ifPresent(employee::setDeptNo);
+        bankRepository.findById(form.getBankCode()).ifPresent(employee::setBankCode);
+
+        // 계약 정보 설정
+        Contract contract = new Contract();
+        contract.setConIncome(Long.parseLong(form.getSalary()));
+        contract.setConStartday(Date.from(LocalDate.parse(form.getContractStart()).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+        contract.setConEndday(Date.from(LocalDate.parse(form.getContractEnd()).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+        contract.setEmployee(employee);
+
+        // Employee와 Contract 저장
         employeeRepository.save(employee);
+        contractRepository.save(contract);
+
     }
 
     private String parsePassword(String birthNum) {
@@ -75,11 +106,17 @@ public class EmployeeService implements UserDetailsService {
     }
 
     private GenderEnum parseGender(String birthNum) {
-        // 주민등록번호로 성별 파싱하는 로직 작성
-        return GenderEnum.MALE; // 예시 코드
+        int genderCode = Integer.parseInt(birthNum.substring(6, 7));
+        return (genderCode % 2 == 0) ? GenderEnum.FEMALE : GenderEnum.MALE;
     }
 
+    public List<Bank> getAllBanks() {
+        return bankRepository.findAll();
+    }
 
+    public List<Department> getAllDepartments() {
+        return departmentRepository.findAll();
+    }
 
     public Optional<Employee> findByEmployeeNum(Long empNum) {
         return employeeRepository.findByEmpNum(empNum);
@@ -91,7 +128,6 @@ public class EmployeeService implements UserDetailsService {
     public List<Employee> findAllEmployees() {
         return employeeRepository.findAll();
     }
-
 
 
     public void logout(Long empNum) {
@@ -142,5 +178,7 @@ public class EmployeeService implements UserDetailsService {
             sessionRepository.deleteById(sessionId);
         });
     }
+
+
 
 }
