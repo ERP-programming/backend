@@ -53,11 +53,11 @@ public class EquipmentRequest {
 
     // N:1 매핑
     @ManyToOne
-    @JoinColumn(name = "SENDER_EMP_NUM", referencedColumnName = "EMP_NUM")    // 요청자
+    @JoinColumn(name = "SENDER_EMP_NUM")    // 요청자
     private Employee sender;
 
     @ManyToOne
-    @JoinColumn(name = "APPROVER_EMP_NUM", referencedColumnName = "EMP_NUM")  // 승인자
+    @JoinColumn(name = "APPROVER_EMP_NUM")  // 승인자
     private Employee approver;
 
 }

@@ -110,10 +110,10 @@ public class Employee {
     private List<AnnualRequest> approvedAnnualRequests;
 
     @OneToMany(mappedBy = "sender")  // AnnualRequest의 sender 필드 참조
-    private List<EquipmentRequest> sentEquipmentRequests;
+    private List<EquipmentRequest> sentEquipmentRequestRequests;
 
     @OneToMany(mappedBy = "approver")  // AnnualRequest의 approver 필드 참조
-    private List<EquipmentRequest> approvedEquipmentRequests;
+    private List<EquipmentRequest> approvedEquipmentRequestRequests;
 
     // 1:1 매핑
     @OneToOne(mappedBy = "employee")
