@@ -1,0 +1,100 @@
+/* Topbar.css */
+body {
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.topbar-responsive {
+    background: #2c3840;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar-responsive .topbar-responsive-logo {
+    color: #fefefe;
+    vertical-align: middle;
+}
+
+.topbar-responsive .menu {
+    background: #2c3840;
+    display: flex;
+    gap: 1rem;
+}
+
+.topbar-responsive .menu li {
+    list-style: none;
+    text-align: center;
+}
+
+.topbar-responsive .menu li:last-of-type {
+    margin-right: 0;
+}
+
+.topbar-responsive .menu a {
+    color: #fefefe;
+    transition: color 0.15s ease-in;
+    text-decoration: none;
+}
+
+.topbar-responsive .menu a:hover {
+    color: #c6d1d8;
+}
+
+.topbar-responsive .menu i {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.topbar-responsive .topbar-responsive-button {
+    color: #fefefe;
+    padding: 0.5rem 1rem;
+    transition: color 0.15s ease-in, border-color 0.15s ease-in;
+}
+
+.topbar-responsive .topbar-responsive-button:hover {
+    color: #c6d1d8;
+    border-color: #c6d1d8;
+}
+
+.icon-group {
+    display: flex;
+    align-items: center;
+}
+
+.icon-group a {
+    margin-left: 10px;
+}
+
+@media screen and (max-width: 39.9375em) {
+    .topbar-responsive .menu {
+        flex-direction: column;
+    }
+    .topbar-responsive .menu a {
+        padding: 0.875rem 0;
+    }
+}
+
+@media screen and (max-width: 39.9375em) {
+    .topbar-responsive .menu .topbar-responsive-button {
+        width: 100%;
+        margin: 0.875rem 0;
+    }
+}
+
+@media screen and (max-width: 39.9375em) {
+    .topbar-responsive {
+        padding: 0.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .topbar-responsive .top-bar-title {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create/Update Break Time</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>Create/Update Break Time</h1>
+<form th:action="@{/break-times}" th:object="${breakTime}" method="post">
+    <input type="hidden" th:field="*{btId}" id="btId" />
+    <div>
+        <label for="btStart">Start Date:</label>
+        <input type="date" th:field="*{btStart}" id="btStart" />
+    </div>
+    <div>
+        <label for="btEnd">End Date:</label>
+        <input type="date" th:field="*{btEnd}" id="btEnd" />
+    </div>
+    <div>
+        <label for="btWhy">Reason:</label>
+        <input type="text" th:field="*{btWhy}" id="btWhy" />
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+
+<!-- Form for updating the break time -->
+<form th:action="@{/break-times/{id}(id=${breakTime.btId})}" th:object="${breakTime}" method="post">
+    <input type="hidden" name="_method" value="put"/>
+    <div>
+        <button type="submit">Update</button>
+    </div>
+</form>
+
+<a th:href="@{/break-times}">Back to List</a>
+</body>
+</html>

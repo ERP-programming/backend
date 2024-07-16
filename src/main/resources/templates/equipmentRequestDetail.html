@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="kr">
+<head>
+    <title>Equipment Request Details</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>Equipment Request Details</h1>
+<div>
+    <p>ID: <span th:text="${equipmentRequest.equipId}"></span></p>
+    <p>Status: <span th:text="${equipmentRequest.approvarStatus}"></span></p>
+    <p>Delete Status: <span th:text="${equipmentRequest.del}"></span></p>
+    <p>Quantity: <span th:text="${equipmentRequest.equipAmount}"></span></p>
+    <p>Price: <span th:text="${equipmentRequest.equipCost}"></span></p>
+    <p>Equipment Name: <span th:text="${equipmentRequest.equipName}"></span></p>
+    <p>Equipment Info: <span th:text="${equipmentRequest.equipInfo}"></span></p>
+    <p>Equipment Sum Cost: <span th:text="${equipmentRequest.equipSumcost}"></span></p>
+    <p>Equipment Why: <span th:text="${equipmentRequest.equipWhy}"></span></p>
+    <p>Request Date: <span th:text="${equipmentRequest.reqDate}"></span></p>
+    <p>Kinds: <span th:text="${equipmentRequest.kinds}"></span></p>
+    <p>Sender ID: <span th:text="${equipmentRequest.senderId}"></span></p>
+    <p>Approver ID: <span th:text="${equipmentRequest.approverId}"></span></p>
+</div>
+</body>
+</html>

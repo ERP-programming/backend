@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Break Time Detail</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>Break Time Detail</h1>
+<div>
+    <p>ID: <span th:text="${breakTime.btId}"></span></p>
+    <p>Start Date: <span th:text="${breakTime.btStart}"></span></p>
+    <p>End Date: <span th:text="${breakTime.btEnd}"></span></p>
+    <p>Reason: <span th:text="${breakTime.btWhy}"></span></p>
+    <p>Delete Status: <span th:text="${breakTime.del}"></span></p>
+    <p>Employee ID: <span th:text="${breakTime.employeeId}"></span></p>
+</div>
+<a th:href="@{/break-times}">Back to List</a>
+</body>
+</html>
+````

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/Topbar.css}">
+    <link rel="stylesheet" th:href="@{/css/Workflow.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>INTRANET</title>
+</head>
+<body>
+<div id="topbar" th:replace="components/Topbar :: topbar"></div>
+
+<h2>360 워크플로우</h2>
+
+<div class="container">
+    <nav>
+        <ul class="menu">
+            <li class="active"><a href="#" th:href="@{/user/created}">내가 작성</a></li>
+            <li><a href="#" th:href="@{/user/approved}">내가 승인</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div class="workflow-tabs">
+            <button class="tab-button active" th:classappend="${tab == 'my' ? ' active' : ''}">내 보관함</button>
+            <button class="tab-button" th:classappend="${tab == 'create' ? ' active' : ''}" onclick="openEquipmentRequestForm()">작성</button>
+        </div>
+        <div class="workflow-content">
+            <div class="section">
+                <div class="section-header">
+                    <h3>확인 필요 <span class="badge" th:text="${pendingCount}"></span></h3>
+                </div>
+                <div class="item" th:each="item : ${pendingItems}">
+                    <span class="status pending" th:text="${item.approvalStatus == 'PENDING' ? '미승인' : '승인'}">확인-미승인</span>
+                    <span class="description" th:text="${item.equipName}">비품 신청</span>
+                    <span class="meta" th:text="${item.meta}">관리자님 작성 | 21/04/13 14:04:11(화요일)</span>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <h3>보관함</h3>
+                </div>
+                <div class="item" th:each="item : ${completedItems}">
+                    <span class="status complete" th:text="${item.approvalStatus == 'PENDING' ? '미승인' : '승인'}">완료</span>
+                    <span class="description" th:text="${item.equipName}">비품 신청</span>
+                    <span class="meta" th:text="${item.meta}">관리자님 작성 | 21/04/13 14:04:44(화요일)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEquipmentRequestForm() {
+        window.location.href = "/equipmentRequestForm";
+    }
+
+    document.querySelectorAll('.tab-button').forEach(function(button) {
+        button.addEventListener('click', function() {
+            document.getElementById('equipmentRequestModal').style.display = 'block';
+        });
+    });
+
+    document.querySelectorAll('.close').forEach(function(button) {
+        button.addEventListener('click', function() {
+            document.getElementById('equipmentRequestModal').style.display = 'none';
+        });
+    });
+</script>
+</body>
+</html>

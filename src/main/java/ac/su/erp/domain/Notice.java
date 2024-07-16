@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 // 공지사항 엔티티
 @Entity
@@ -19,7 +19,7 @@ public class Notice {
     private Long noticeId;
 
     @Column(name = "CREATEDATE", nullable = false)  // 작성일
-    private LocalDate createDate = LocalDate.now();   // 기본값은 현재 날짜
+    private LocalDateTime createDate = LocalDateTime.now();   // 기본값은 현재 날짜
 
     @Enumerated(EnumType.STRING)
     @Column(name = "DEL", nullable = false) // 삭제여부

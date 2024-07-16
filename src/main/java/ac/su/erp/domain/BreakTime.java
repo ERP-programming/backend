@@ -1,3 +1,4 @@
+
 package ac.su.erp.domain;
 
 import ac.su.erp.constant.DeleteStatus;
@@ -5,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 // 휴직정보 엔티티
 @Entity
@@ -19,10 +20,10 @@ public class BreakTime {
     private Long btId;
 
     @Column(name = "BT_START", nullable = false)    // 휴직 시작일
-    private Date btStart;
+    private LocalDate btStart;
 
     @Column(name = "BT_END", nullable = false)  // 휴직 종료일
-    private Date btEnd;
+    private LocalDate btEnd;
 
     @Column(name = "BT_WHY", nullable = false)  // 휴직 사유
     private String btWhy;

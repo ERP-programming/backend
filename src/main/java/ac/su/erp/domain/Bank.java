@@ -25,6 +25,6 @@ public class Bank {
     private DeleteStatus del = DeleteStatus.ACTIVE; // 기본값은 ACTIVE
 
     // 1:N 매핑
-    @OneToMany(mappedBy = "empNum")   // 사원번호
+    @OneToMany(mappedBy = "bank")   // 사원번호
     private List<Employee> employees;
 }

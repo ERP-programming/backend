@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 // 월급 엔티티
 @Entity
@@ -43,7 +43,7 @@ public class MonthSalary {
     private Long realPay;
 
     @Column(name = "PAY_DATE", nullable = false)    // 지급일
-    private Date payDate;
+    private LocalDateTime payDate = LocalDateTime.now();    // 실제로는 now가 아님 편의를 위해 now로 설정
 
     @Enumerated(EnumType.STRING)
     @Column(name = "DEL", nullable = false) // 삭제여부

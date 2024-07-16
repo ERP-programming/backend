@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 // 출퇴근시간 엔티티
 @Entity
@@ -22,16 +23,16 @@ public class WorkTime {
     private LocalDate todayDate = LocalDate.now();  // 기본값은 현재 날짜
 
     @Column(name = "ON_WORK", nullable = false)    // 출근시간
-    private LocalDate onWork = LocalDate.now();  // 기본값은 현재 날짜
+    private LocalTime onWork = LocalTime.now();  // 기본값은 현재 시간
 
     @Column(name = "OFF_WORK", nullable = false)    // 퇴근시간
-    private LocalDate offWork = LocalDate.now();  // 기본값은 현재 날짜
+    private LocalTime offWork = LocalTime.now();  // 기본값은 현재 시간
 
     @Column(name = "TOTAL_WORKING", nullable = false)   // 총 근무시간
-    private String totalWorking = "0";
+    private LocalTime totalWorking = LocalTime.of(0, 0);    // 기본값은 0시간 0분
 
     @Column(name = "EXCESS_ALLOW", nullable = false)    // 초과시간
-    private String excessAllow = "0";
+    private LocalTime excessAllow = LocalTime.of(0, 0);   // 기본값은 0시간 0분
 
     @Enumerated(EnumType.STRING)
     @Column(name = "DEL", nullable = false) // 삭제여부

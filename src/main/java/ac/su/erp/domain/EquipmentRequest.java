@@ -1,13 +1,12 @@
 package ac.su.erp.domain;
 
-import ac.su.erp.constant.ApprovarStatus;
+import ac.su.erp.constant.ApprovalStatus;
 import ac.su.erp.constant.DeleteStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 // 비품 요청 엔티티
 @Entity
@@ -38,8 +37,8 @@ public class EquipmentRequest {
     @Column(name = "EQUIP_WHY") // 비품 요청 사유
     private String equipWhy;
 
-    @Column(name = "REQ_DATE", nullable = false)    // 요청일
-    private LocalDate reqDate = LocalDate.now();   // 기본값은 현재 날짜
+    @Column(name = "REQ_DATE", nullable = false)    // 요청 일자
+    private LocalDateTime reqDate = LocalDateTime.now();   // 기본값은 현재 일자
 
     @Column(name = "KINDS", nullable = false)   // 신청 종류
     private String kinds = "비품";    // 기본값은 "비품"
@@ -49,16 +48,16 @@ public class EquipmentRequest {
     private DeleteStatus del = DeleteStatus.ACTIVE; // 기본값은 ACTIVE
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "APPROVAR", nullable = false)    // 승인상태
-    private ApprovarStatus approvarStatus = ApprovarStatus.PENDING;   // 기본값은 PENDING
+    @Column(name = "APPROVAL", nullable = false)    // 승인상태
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;   // 기본값은 PENDING
 
     // N:1 매핑
     @ManyToOne
-    @JoinColumn(name = "SENDER")    // 요청자
+    @JoinColumn(name = "SENDER_EMP_NUM")    // 요청자
     private Employee sender;
 
     @ManyToOne
-    @JoinColumn(name = "APPROVER")  // 승인자
+    @JoinColumn(name = "APPROVER_EMP_NUM")  // 승인자
     private Employee approver;
 
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/Topbar.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>Topbar</title>
+</head>
+<body>
+<nav class="top-bar topbar-responsive" th:fragment="topbar">
+  <div class="top-bar-title">
+        <span data-responsive-toggle="topbar-responsive" data-hide-for="medium">
+            <button class="menu-icon" type="button" data-toggle></button>
+        </span>
+    <a class="topbar-responsive-logo" href="#" th:href="@{/}"><strong>INTRANET</strong></a>
+  </div>
+  <div id="topbar-responsive" class="topbar-responsive-links">
+    <div class="top-bar-right">
+      <ul class="menu simple vertical medium-horizontal">
+        <li><a href="#" th:href="@{/}"><i class="fas fa-home"></i><br>홈</a></li>
+        <li><a href="#" th:href="@{/worktime}"><i class="fas fa-clock"></i><br>근무·휴가</a></li>
+        <li><a href="#" th:href="@{/people}"><i class="fas fa-users"></i><br>사람</a></li>
+        <li><a href="#" th:href="@{/company}"><i class="fas fa-building"></i><br>회사정보</a></li>
+        <li><a href="#" th:href="@{/workflow}"><i class="fas fa-tasks"></i><br>워크플로우</a></li>
+        <li><a href="#" th:href="@{/insights}"><i class="fas fa-chart-bar"></i><br>인사이트</a></li>
+        <li><a href="#" th:href="@{/admin}"><i class="fas fa-user-shield"></i><br>관리자</a></li>
+        <li class="icon-group">
+          <a href="#" class="topbar-responsive-button" th:href="@{/search}"><i class="fas fa-search"></i></a>
+          <a href="#" class="profile-img" th:href="@{/mypage}">
+            <img th:src="@{/images/profile-img.png}" alt="Profile Image" style="width:60px;height:60px;border-radius:50%;">
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

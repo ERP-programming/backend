@@ -1,3 +1,4 @@
+
 package ac.su.erp.domain;
 
 import ac.su.erp.constant.DeleteStatus;
@@ -28,7 +29,7 @@ public class Department {
     private DeleteStatus del = DeleteStatus.ACTIVE; // 기본값은 ACTIVE
 
     // 1:N 매핑
-    @OneToMany(mappedBy = "empNum")
+    @OneToMany(mappedBy = "department")
     private List<Employee> employees;
 
 }
