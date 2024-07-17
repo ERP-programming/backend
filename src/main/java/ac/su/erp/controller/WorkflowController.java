@@ -26,7 +26,7 @@ public class WorkflowController {
         }).collect(Collectors.toList());
 
         List<EquipmentRequestDTO> completedItems = equipmentRequestService.getCompletedRequests().stream().map(request -> {
-            request.setMeta(request.getApprover() != null ? request.getApprover() : "미승인자");
+            request.setMeta(request.getApprover() != null ? request.getApprover() : "승인자");
             request.setApprovalStatus(request.getApprovalStatus());
             return request;
         }).collect(Collectors.toList());

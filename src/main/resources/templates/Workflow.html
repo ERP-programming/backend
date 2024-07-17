@@ -6,6 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/Topbar.css}">
     <link rel="stylesheet" th:href="@{/css/Workflow.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>INTRANET</title>
 </head>
 <body>
@@ -34,7 +35,7 @@
                 <div class="item" th:each="item : ${pendingItems}">
                     <span class="status pending" th:text="${item.approvalStatus == 'PENDING' ? '미승인' : '승인'}">확인-미승인</span>
                     <span class="description" th:text="${item.equipName}">비품 신청</span>
-                    <span class="meta" th:text="${item.meta}">관리자님 작성 | 21/04/13 14:04:11(화요일)</span>
+                    <span class="meta" th:text="${item.meta}"></span>
                 </div>
             </div>
             <div class="section">
@@ -44,27 +45,115 @@
                 <div class="item" th:each="item : ${completedItems}">
                     <span class="status complete" th:text="${item.approvalStatus == 'PENDING' ? '미승인' : '승인'}">완료</span>
                     <span class="description" th:text="${item.equipName}">비품 신청</span>
-                    <span class="meta" th:text="${item.meta}">관리자님 작성 | 21/04/13 14:04:44(화요일)</span>
+                    <span class="meta" th:text="${item.meta}"></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Equipment Request Modal -->
+<div id="equipmentRequestModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="equipmentRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- 동적 내용이 로드 -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="equipmentRequestModalLabel">비품 신청</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- 폼 내용 -->
+                <form id="equipmentRequestForm" th:action="@{/api/equipment-requests}" method="post" onsubmit="return handleFormSubmit(event)">
+                    <div>
+                        <label for="equipName">품명</label>
+                        <input type="text" id="equipName" name="equipName" required>
+                    </div>
+                    <div>
+                        <label for="equipInfo">상품 정보(링크)</label>
+                        <input type="text" id="equipInfo" name="equipInfo">
+                    </div>
+                    <div>
+                        <label for="equipAmount">수량</label>
+                        <input type="number" id="equipAmount" name="equipAmount" required>
+                    </div>
+                    <div>
+                        <label for="equipCost">단가</label>
+                        <input type="number" id="equipCost" name="equipCost" required>
+                    </div>
+                    <div>
+                        <label for="equipSumcost">금액</label>
+                        <input type="number" id="equipSumcost" name="equipSumcost" required>
+                    </div>
+                    <div>
+                        <label for="equipWhy">사유</label>
+                        <textarea id="equipWhy" name="equipWhy" required></textarea>
+                    </div>
+                    <div>
+                        <button type="submit">보내기</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary">신청</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- 동적 내용이 로드 -->
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/modal.js}"></script>
 <script>
     function openEquipmentRequestForm() {
-        window.location.href = "/equipmentRequestForm";
+        $('#equipmentRequestModal').modal('show');
     }
 
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        var form = document.getElementById('equipmentRequestForm');
+        var formData = new FormData(form);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', form.action, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                alert('완료되었습니다.');
+                window.location.href = "/workflow";
+            } else {
+                alert('오류가 발생했습니다. 다시 시도해 주세요.');
+            }
+        };
+        xhr.send(new URLSearchParams(formData).toString());
+    }
+
+    function openProfileModal(employeeId) {
+        $('#profileModal .modal-content').load('/employee/profileModalContent?id=' + employeeId, function() {
+            $('#profileModal').modal('show');
+        });
+    }
+    // 각 탭 버튼에 이벤트 리스너 추가
     document.querySelectorAll('.tab-button').forEach(function(button) {
         button.addEventListener('click', function() {
-            document.getElementById('equipmentRequestModal').style.display = 'block';
+            $('#equipmentRequestModal').modal('show');
         });
     });
 
+    // 닫기 버튼에 이벤트 리스너 추가
     document.querySelectorAll('.close').forEach(function(button) {
         button.addEventListener('click', function() {
-            document.getElementById('equipmentRequestModal').style.display = 'none';
+            $('#equipmentRequestModal').modal('hide');
         });
     });
 </script>

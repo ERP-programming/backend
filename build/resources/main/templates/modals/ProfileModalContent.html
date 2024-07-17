@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!-- 뷰포트 설정으로 모바일 장치에서의 레이아웃을 제어 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Profile Modal Content</title>
+    <!-- Bootstrap CSS를 포함하여 스타일링 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="modal-header">
+     <h5 class="modal-title" id="profileModalLabel">개인 정보</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="profile-section">
+        <img th:src="@{/images/profile-img.png}" alt="Profile Picture" class="profile-pic" style="width: 100px; height: 100px; border-radius: 50%;">
+        <div class="info">
+            <!-- 각 프로필 정보 항목을 표시 (Thymeleaf를 사용하여 동적으로 데이터 바인딩) -->
+            <p><strong>이름:</strong> <span th:text="${employee.empName}">이름</span></p>
+            <p><strong>전화번호:</strong> <span th:text="${employee.empPnum}">전화번호</span></p>
+            <p><strong>이메일:</strong> <span th:text="${employee.empEmail}">이메일</span></p>
+            <p><strong>소개:</strong> <span th:text="${employee.empIntroduce}">소개</span></p>
+            <p><strong>주민등록번호:</strong> <span th:text="${employee.empBirthNum}">주민등록번호</span></p>
+            <p><strong>주소:</strong> <span th:text="${employee.empAddr}">주소</span></p>
+            <p><strong>직급:</strong> <span th:text="${employee.empPos}">직급</span></p>
+            <p><strong>입사일:</strong> <span th:text="${employee.startDay}">입사일</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+</div>
+</body>
+</html>
