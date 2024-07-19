@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="eng"
+      layout:decorate="~{layouts/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" th:href="@{css/home.css}">
+  <style>
+
+  </style>
+</head>
+
+<body>
+<div layout:fragment="contents">
+  <div class="content-container">
+    <h2>닏동고님 환영합니다. 😊</h2>
+
+    <div class="main-content">
+      <div class="left-panel">
+        <div class="tab-menu">
+          <button class="tab-button active" onclick="openTab(event,'notice')">공지사항</button>
+          <button class="tab-button" onclick="openTab(event,'task')">할 일</button>
+        </div>
+
+        <div th:fragment="noticeFragment" id="notice" class="tab-content">
+
+          <div class="notice-container">
+            <button type="submit" id="creatBtn" class="btn">새 공지사항 작성</button>
+            <table>
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>제목</th>
+                <th>작성일</th>
+                <th>작성자</th>
+                <th>actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="notice : ${notices}" class="clickable-row " th:data-id="${notice.noticeId}">
+                <td th:text="${notice.noticeId}"></td>
+                <td th:text="${notice.title}"></td>
+                <td th:text="${notice.createDate}"></td>
+                <td th:text="${notice.employee.empName}"></td>
+                <td>
+                  <a class="btn-edit" th:data-id="${notice.noticeId}">수정</a>
+                  <a class="btn-delete" th:data-id="${notice.noticeId}">삭제</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 공지사항 상세 모달  -->
+          <div id="noticeDetailModal" class="modal">
+            <div class="modal-content">
+
+              <span class="close">&times;</span>
+              <h2 id="modalDetailTitle" class="modal-title"></h2>
+              <div class="modal-body">
+                <p id="modalDetailContent"></p>
+              </div>
+              <div class="modal-footer">
+                <p id="modalDetailDate"></p>
+                <p id="modalDetailAuthor"></p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 공지사항 작성 모달 -->
+          <div id="createNoticeModal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+
+              <h2 class="modal-title">새 공지사항 작성</h2>
+              <div class="modal-body">
+                <form id="createNoticeForm">
+                  <input type="text" id="createTitle" placeholder="제목" required>
+                  <textarea id="createContent" placeholder="내용" required></textarea>
+                  <button type="submit" class="btn">작성</button>
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 공지사항 수정 모달 -->
+          <div id="editNoticeModal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2 class="modal-title">공지사항 수정</h2>
+              <div class="modal-body">
+                <form id="editNoticeForm">
+                  <input type="hidden" id="editNoticeId">
+                  <input type="text" id="editTitle" placeholder="제목" required>
+                  <textarea id="editContent" placeholder="내용" required></textarea>
+                  <button type="submit" class="btn">수정</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div th:fragment="taskFragment" id="task" class="tab-content" style="display:none">
+
+          <div class="task-container">
+            <i class="fas fa-user-circle"></i>
+            <h3>새로운 할 일이 없습니다.</h3>
+            <p>정한솔님에게 할 일이 생기면 여기서 알려드릴게요.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div th:fragment="workPanelFragment" class="work-panel">
+        <h3>오늘 근무</h3>
+        <div class="work-status">
+          <p>출근: 08:55</p>
+          <p>퇴근: --:--</p>
+        </div>
+        <div class="work-timer">
+          <h1>05:04:58</h1>
+          <p>근무</p>
+          <p>09:00 - 18:00</p>
+          <div class="schedule">
+            <label for="schedule">예정 스케줄</label>
+            <select id="schedule">
+              <option>1</option>
+            </select>
+          </div>
+          <button id="startButton" class="btn">출근하기</button>
+          <button id="endButton" class="btn">퇴근하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block layout:fragment="script">
+  <script th:src="@{/js/home.js}"></script>
+</th:block>
+
+</body>
+</html>
