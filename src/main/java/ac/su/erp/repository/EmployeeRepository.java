@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByEmpName(String empName);
     Optional<Employee> findByEmpNum(Long empNum);
+    //
     boolean existsByEmpNum(Long empNum);
     List<Employee> findByEmpDel(EmploymentStatus status);
 

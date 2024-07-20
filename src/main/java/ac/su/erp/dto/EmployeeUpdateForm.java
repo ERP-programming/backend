@@ -1,5 +1,7 @@
 package ac.su.erp.dto;
 
+import ac.su.erp.constant.DepartmentPosition;
+import ac.su.erp.constant.EmployeePosition;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,6 +12,7 @@ public class EmployeeUpdateForm {
     private Long empNum;
     private String empName;
     private Long deptNo;
-    private String empGender;
+    private DepartmentPosition empHead;
+    private EmployeePosition empPos;
 
 }

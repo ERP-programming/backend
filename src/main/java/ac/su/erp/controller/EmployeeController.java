@@ -4,10 +4,12 @@ import ac.su.erp.domain.Bank;
 import ac.su.erp.domain.Department;
 import ac.su.erp.domain.Employee;
 import ac.su.erp.dto.EmployeeCreateForm;
+import ac.su.erp.dto.EmployeeUpdateForm;
 import ac.su.erp.dto.LoginForm;
 import ac.su.erp.repository.BankRepository;
 import ac.su.erp.repository.DepartmentRepository;
 import ac.su.erp.service.EmployeeService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Controller
@@ -58,8 +61,6 @@ public class EmployeeController {
         return "Hr";  // 같은 뷰 템플릿으로 이동
     }
 
-
-
     @GetMapping("/create")
     public String showCreateEmployeeForm(Model model) {
         model.addAttribute("employeeCreateForm", new EmployeeCreateForm());
@@ -75,25 +76,32 @@ public class EmployeeController {
 
     }
 
-
     @GetMapping("update/{empNum}")
     public String showUpdateEmployeeForm(@PathVariable Long empNum, Model model) {
         Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
-        model.addAttribute("employee", employeeOptional.get());
-        model.addAttribute("departments", departmentRepository.findAll());
-        model.addAttribute("banks", bankRepository.findAll());
-        return "UpdateEmployeeForm";
+        if (employeeOptional.isPresent()) {
+            Employee employee = employeeOptional.get();
+            EmployeeUpdateForm form = new EmployeeUpdateForm();
+            form.setEmpNum(employee.getEmpNum());
+            form.setEmpName(employee.getEmpName());
+            form.setDeptNo(employee.getDepartment().getDeptNo());
+            form.setEmpPos(employee.getEmpPos());
+            form.setEmpHead(employee.getEmpHead());
+
+            model.addAttribute("employeeUpdateForm", form);
+            model.addAttribute("departments", departmentRepository.findAll());
+            return "UpdateEmployeeForm";
+        } else {
+            // 사원이 존재하지 않을 경우 처리
+            return "redirect:/error"; // 또는 에러 페이지로 리디렉션
+        }
     }
 
-    @PostMapping("update/{empNum}")
-    public String updateEmployee(@PathVariable Long empNum, @ModelAttribute EmployeeCreateForm form, Model model) {
-        try {
-            employeeService.updateEmployee(empNum, form);
-            return "redirect:/Hr";
-        } catch (Exception e) {
-            model.addAttribute("error", "An error occurred while updating the employee.");
-            return "updateEmployee";
-        }
+    @PostMapping("/update")
+    public String updateEmployee(@ModelAttribute("employeeUpdateForm") EmployeeUpdateForm form) {
+        employeeService.updateEmployee(form);
+        return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
+
     }
 
 
