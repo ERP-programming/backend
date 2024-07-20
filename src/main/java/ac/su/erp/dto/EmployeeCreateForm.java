@@ -1,19 +1,67 @@
 package ac.su.erp.dto;
 
+import ac.su.erp.constant.DepartmentPosition;
+import ac.su.erp.constant.EmployeePosition;
+import ac.su.erp.constant.GenderEnum;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
+import java.time.LocalDate;
+import java.util.Date;
+
+@Getter
+@Setter
 public class EmployeeCreateForm {
+    @NotNull
     private Long empNum;
-    private String id;
-    private String name;
-    private String phone;
-    private String email;
-    private String address;
-    private Long bankCode;
+
+    @NotNull
+    private Long empBirth;
+
+    @NotNull
+    private DepartmentPosition empHead;
+
+    @NotNull
+    private String empName;
+
+    @NotNull
+    private GenderEnum empGender;
+
+    private String empIntroduce;
+
+    @NotNull
+    private String empBirthNum;
+
+    @NotNull
+    private String empPnum;
+
+    @NotNull
+    private String empAddr;
+
+    @NotNull
+    private EmployeePosition empPos;
+
+    @NotNull
+    private String empPw;
+
+    @NotNull
+    private String empEmail;
+
+    @NotNull
+    private Date startDay;
+
+    private String empDelInfo;
+
+    @NotNull
+    private String empBanknum;
+
+    @NotNull
+    private String bankCode;
+
+    @NotNull
     private Long deptNo;
-    private String salary;
-    private String contractStart;
-    private String contractEnd;
-    private String accountNum;  // 계좌번호 추가
 }
+

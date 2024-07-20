@@ -95,29 +95,31 @@ a:hover {
     text-decoration: underline;
 }
 
+/* 팝업 스타일 추가 */
 .popup {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
-    padding: 20px;
     border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
-
 .popup p {
-    margin: 0 0 20px 0;
+    margin: 0;
+    padding: 10px 0;
 }
-
 .popup button {
+    padding: 5px 10px;
+    border: none;
     background-color: #007bff;
     color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
     cursor: pointer;
 }
 

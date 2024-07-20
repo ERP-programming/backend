@@ -17,6 +17,7 @@ import ac.su.erp.repository.EmployeeRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,11 +27,10 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,72 +59,34 @@ public class EmployeeService implements UserDetailsService {
         return SpringUser.getSpringUserDetails(registeredEmployee.get());
     }
 
-    public void createEmployee(EmployeeCreateForm form) {
-        Employee employee = new Employee();
-        // DTO에서 엔티티로 데이터 변환 및 설정
-        employee.setEmpNum(form.getEmpNum());
-        employee.setEmpName(form.getName());
-        employee.setEmpPnum(form.getPhone());
-        employee.setEmpEmail(form.getEmail());
-        employee.setEmpAddr(form.getAddress());
-        employee.setEmpBanknum(form.getBankCode().toString());
-        employee.setEmpPw(passwordEncoder.encode(parsePassword(form.getId())));
-        employee.setEmpDel(EmploymentStatus.EMPLOYED);
-        employee.setEmpHead(DepartmentPosition.DepartmentMember);  // 기본값 설정
-        employee.setEmpPos(EmployeePosition.STAFF);   // 기본값 설정
+    public EmployeeCreateForm createEmployee(EmployeeCreateForm employeeCreateForm) {
+        Employee newEmployee = new Employee();
+        newEmployee.setEmpNum(employeeCreateForm.getEmpNum());
+        newEmployee.setEmpPw(passwordEncoder.encode("1234")); // 기본값 "1234"를 암호화하여 저장
+        newEmployee.setEmpName(employeeCreateForm.getEmpName());
+        newEmployee.setEmpBirth(employeeCreateForm.getEmpBirth());
+        newEmployee.setEmpBirthNum(employeeCreateForm.getEmpBirthNum());
+        newEmployee.setEmpHead(employeeCreateForm.getEmpHead());
+        newEmployee.setEmpGender(employeeCreateForm.getEmpGender());
+        newEmployee.setEmpPnum(employeeCreateForm.getEmpPnum());
+        newEmployee.setEmpAddr(employeeCreateForm.getEmpAddr());
+        newEmployee.setEmpPos(employeeCreateForm.getEmpPos());
+        newEmployee.setEmpEmail(employeeCreateForm.getEmpEmail());
+        newEmployee.setStartDay(employeeCreateForm.getStartDay());
+        newEmployee.setEmpBanknum(employeeCreateForm.getEmpBanknum());
 
-        // 주민등록번호로 생년월일, 성별, 나이 자동 입력
-        String birthNum = form.getId();
-        employee.setEmpBirthNum(birthNum);
-        employee.setEmpBirth(getBirthNumAsInt(birthNum));
-        employee.setEmpGender(parseGender(birthNum));
-        employee.setEmpBirth(LocalDate.now().getYear() - employee.getEmpBirth());
+        // Bank와 Department를 조회하여 설정
+        Bank bank = bankRepository.findByBankCode(String.valueOf(employeeCreateForm.getBankCode()))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid bank code: " + employeeCreateForm.getBankCode()));
+        newEmployee.setBankCode(bank);
 
-        // 나머지 기본값 자동 설정
-        employee.setEmpInfoChange(LocalDateTime.now());
-        employee.setStartDay(LocalDate.parse(form.getContractStart()));
-        employee.setEndDay(null);
-        employee.setEmpIntroduce(null);
-        employee.setEmpDelInfo(null);
+        Department department = departmentRepository.findById(employeeCreateForm.getDeptNo())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid department number: " + employeeCreateForm.getDeptNo()));
+        newEmployee.setDeptNo(department);
 
-        // 부서 및 은행 설정
-        departmentRepository.findById(form.getDeptNo()).ifPresent(employee::setDepartment);
-        bankRepository.findById(form.getBankCode()).ifPresent(employee::setBank);
-
-        // 계약 정보 설정
-        Contract contract = new Contract();
-        contract.setConIncome(Long.parseLong(form.getSalary()));
-        contract.setConStartday(Date.from(LocalDate.parse(form.getContractStart()).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
-        contract.setConEndday(Date.from(LocalDate.parse(form.getContractEnd()).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
-        contract.setEmployee(employee);
-
-        // Employee와 Contract 저장
-        employeeRepository.save(employee);
-        contractRepository.save(contract);
-    }
-
-    private String parsePassword(String birthNum) {
-        // 생년월일로 비밀번호 생성하는 로직 작성
-        return birthNum.substring(0, 6); // 예시 코드
-    }
-    public Long getBirthNumAsInt(String birthNum) {
-        // 첫 6자를 추출
-        String birthNumSubstring = birthNum.substring(0, 6);
-        // 문자열을 정수로 변환(생년월일)
-        return (Long) (long) Integer.parseInt(birthNumSubstring);
-    }
-
-    private GenderEnum parseGender(String birthNum) {
-        int genderCode = Integer.parseInt(birthNum.substring(6, 7));
-        return (genderCode % 2 == 0) ? GenderEnum.FEMALE : GenderEnum.MALE;
-    }
-
-    public List<Bank> getAllBanks() {
-        return bankRepository.findAll();
-    }
-
-    public List<Department> getAllDepartments() {
-        return departmentRepository.findAll();
+        validateDuplicateEmployee(newEmployee);
+        employeeRepository.save(newEmployee);
+        return employeeCreateForm;
     }
 
     public Optional<Employee> findByEmployeeNum(Long empNum) {
@@ -134,22 +96,14 @@ public class EmployeeService implements UserDetailsService {
     public List<Employee> findByEmployeeName(String empName) {
         return employeeRepository.findByEmpName(empName);
     }
-    public List<Employee> findAllEmployees() {
-        return employeeRepository.findAll();
+
+    public List<Employee> findResignedEmployees() {
+        return employeeRepository.findByEmpDel(EmploymentStatus.EMPLOYED);
     }
 
-
-    public void logout(Long empNum) {
-        Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
-        if (employeeOptional.isPresent()) {
-            //사용자 로그아웃 처리 (세션 삭제)
-            new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        } else {
-            throw new UsernameNotFoundException("User not found with empNum: " + empNum);
-        }
-    }
 
     //비밀번호 변경
+    @Transactional
     public void changePassword(Long empNum, String newPassword) {
         Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
         if (employeeOptional.isPresent()) {
@@ -159,6 +113,16 @@ public class EmployeeService implements UserDetailsService {
         } else {
             throw new UsernameNotFoundException("User not found with empNum: " + empNum);
         }
+    }
+
+    // 사원 인사 정보 변경
+    @Transactional
+    public void changeEmployeeInfo(Long empNum, EmployeeCreateForm form) {
+        Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
+            Employee employee = employeeOptional.get();
+            employee.setDepartment(departmentRepository.findById(form.getDeptNo()).get());
+            employeeRepository.save(employee);
+
     }
 
     // 사원 퇴사 처리
@@ -188,6 +152,13 @@ public class EmployeeService implements UserDetailsService {
         });
     }
 
+    public void saveEmployee(Employee employee) {
+        employeeRepository.save(employee);
+    }
 
+    public void updateEmployee(Long empNum, EmployeeCreateForm form) {
+        // 사원 정보 업데이트
+        Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
 
+    }
 }
