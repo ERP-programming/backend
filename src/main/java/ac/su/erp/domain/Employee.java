@@ -78,6 +78,15 @@ public class Employee {
     @Column(name = "EMP_BANKNUM", nullable = false)   // 계좌번호
     private String empBanknum;
 
+    @Column(name = "CON_INCOME", nullable = false)  // 계약금액(연봉)
+    private Long conIncome;
+
+    @Column(name = "CON_STARTDAY", nullable = false)    // 계약 시작일
+    private LocalDate conStartday;
+
+    @Column(name = "CON_ENDDAY", nullable = false)  // 계약 종료일
+    private LocalDate conEndday;
+
     // N:1 매핑
     @ManyToOne
     @JoinColumn(name = "bank_code") // 은행코드
@@ -113,7 +122,4 @@ public class Employee {
     @OneToMany(mappedBy = "approver")  // AnnualRequest의 approver 필드 참조
     private List<EquipmentRequest> approvedEquipmentRequestRequests;
 
-    // 1:1 매핑
-    @OneToOne(mappedBy = "employee")
-    private Contract contract;
 }

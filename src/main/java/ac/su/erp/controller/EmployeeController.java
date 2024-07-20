@@ -62,47 +62,19 @@ public class EmployeeController {
 
     @GetMapping("/create")
     public String showCreateEmployeeForm(Model model) {
-        model.addAttribute("employeeForm", new EmployeeCreateForm());
+        model.addAttribute("employeeCreateForm", new EmployeeCreateForm());
         model.addAttribute("departments", departmentRepository.findAll());
         model.addAttribute("banks", bankRepository.findAll());
         return "NewEmployForm";
     }
 
-//    @PostMapping("/create")
-//    public String createEmployee(@ModelAttribute EmployeeCreateForm form, Model model) {
-//        try {
-//            employeeService.createEmployee(form);
-//            return "redirect:/Hr"; // 성공 시 hr 페이지로 리다이렉트
-//        } catch (Exception e) {
-//            model.addAttribute("error", "An error occurred while creating the employee.");
-//            return "NewEmployForm"; // 오류 발생 시 같은 페이지 반환
-//        }
-//    }
-
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(
-            @Validated @RequestBody EmployeeCreateForm employeeCreateForm,
-            BindingResult bindingResult
-    ) {
-        // 1. Form 데이터 검증
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("입력값에 오류가 있습니다.");
-        }
+    public String createEmployee(@ModelAttribute EmployeeCreateForm form) {
+            employeeService.createEmployee(form);
+            return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
 
-        // 2. 백엔드 validation
-        try {
-            employeeService.createEmployee(employeeCreateForm);
-        } catch (IllegalStateException e) {
-            bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 등록된 사용자입니다.");
-        } catch (Exception e) {
-            bindingResult.reject("signupFailed", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-        // 3. 회원 가입 성공
-        return ResponseEntity.status(HttpStatus.OK).body("회원 가입이 성공적으로 완료되었습니다.");
     }
+
 
     @GetMapping("update/{empNum}")
     public String showUpdateEmployeeForm(@PathVariable Long empNum, Model model) {

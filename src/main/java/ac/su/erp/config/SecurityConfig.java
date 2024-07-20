@@ -46,6 +46,12 @@ public class SecurityConfig {
                                         ).permitAll().
                                         requestMatchers(
                                                 new AntPathRequestMatcher(
+                                                        "/**" //
+                                                )
+                                        ).permitAll().
+
+                                        requestMatchers(
+                                                new AntPathRequestMatcher(
                                                         "/css/**" //
                                                 )
                                         ).permitAll().
