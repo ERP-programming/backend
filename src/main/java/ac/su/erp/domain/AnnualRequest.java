@@ -1,6 +1,6 @@
 package ac.su.erp.domain;
 
-import ac.su.erp.constant.ApprovarStatus;
+import ac.su.erp.constant.ApprovalStatus;
 import ac.su.erp.constant.DeleteStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class AnnualRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "APPROVAL", nullable = false)    // 승인여부
-    private ApprovarStatus approval = ApprovarStatus.PENDING;   // 기본값은 PENDING
+    private ApprovalStatus approval = ApprovalStatus.PENDING;   // 기본값은 PENDING
 
     @Column(name = "REQ_DATE", nullable = false)    // 신청일
     private LocalDateTime reqDate = LocalDateTime.now();   // 기본값은 현재 날짜
@@ -39,11 +39,11 @@ public class AnnualRequest {
 
     // N:1 매핑
     @ManyToOne
-    @JoinColumn(name = "SENDER")    // 요청자
+    @JoinColumn(name = "SENDER_EMP_NUM")    // 요청자
     private Employee sender;
 
     @ManyToOne
-    @JoinColumn(name = "APPROVER")  // 승인자
+    @JoinColumn(name = "APPROVER_EMP_NUM")  // 승인자
     private Employee approver;
 }
 
