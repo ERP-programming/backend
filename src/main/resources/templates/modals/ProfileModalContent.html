@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!-- 뷰포트 설정으로 모바일 장치에서의 레이아웃을 제어 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Modal Content</title>
+    <!-- Bootstrap CSS를 포함하여 스타일링 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .profile-section {
+            display: flex;
+            align-items: flex-start;
+        }
+        .profile-pic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+            position: relative;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .edit-icon {
+            position: absolute;
+            top: 70px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .info {
+            flex: 1;
+        }
+        .info p {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .info p i {
+            margin-right: 10px;
+        }
+        .info p strong {
+            margin-right: 10px;
+            min-width: 80px;
+        }
+        .info p span {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="modal-header">
+    <h5 class="modal-title" id="profileModalLabel">개인 정보</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="profile-section">
+        <div class="profile-pic-container">
+            <img th:src="@{/images/profile-img.png}" alt="Profile Picture" class="profile-pic">
+            <i class="fas fa-edit edit-icon" id="editProfileIcon"></i>
+        </div>
+        <div class="info">
+            <!-- 각 프로필 정보 항목을 표시 (Thymeleaf를 사용하여 동적으로 데이터 바인딩) -->
+            <p><i class="fas fa-user"></i><strong>이름:</strong> <span th:text="${employee.empName}">이름</span></p>
+            <p><i class="fas fa-phone"></i><strong>전화번호:</strong> <span th:text="${employee.empPnum}">전화번호</span></p>
+            <p><i class="fas fa-envelope"></i><strong>이메일:</strong> <span th:text="${employee.empEmail}">이메일</span></p>
+            <p><i class="fas fa-info-circle"></i><strong>소개:</strong> <span th:text="${employee.empIntroduce}">소개</span></p>
+            <p><i class="fas fa-id-card"></i><strong>주민등록번호:</strong> <span th:text="${employee.empBirthNum}">주민등록번호</span></p>
+            <p><i class="fas fa-home"></i><strong>주소:</strong> <span th:text="${employee.empAddr}">주소</span></p>
+            <p><i class="fas fa-briefcase"></i><strong>직급:</strong> <span th:text="${employee.empPos}">직급</span></p>
+            <p><i class="fas fa-calendar-alt"></i><strong>입사일:</strong> <span th:text="${employee.startDay}">입사일</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+    <button type="button" class="btn btn-primary" id="saveChangesBtn" style="display: none;">저장</button>
+</div>
+
+<!-- Bootstrap JS와 jQuery를 포함하여 모달 기능을 활성화 -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#editProfileIcon').click(function() {
+            // 모든 span을 input으로 변경
+            $('.info span').each(function() {
+                var span = $(this);
+                var value = span.text();
+                var input = $('<input type="text" class="form-control">').val(value);
+                span.replaceWith(input);
+            });
+
+            // 저장 버튼을 보이게 함
+            $('#saveChangesBtn').show();
+
+        });
+
+        $('#saveChangesBtn').click(function() {
+            saveProfile('PUT');
+        });
+
+
+        function saveProfile(method) {
+            // 모든 input을 span으로 변경
+            $('.info input').each(function() {
+                var input = $(this);
+                var value = input.val();
+                var span = $('<span>').text(value);
+                input.replaceWith(span);
+            });
+
+            // 저장 버튼을 숨김
+            $('#saveChangesBtn').hide();
+
+
+            // 여기에 데이터를 서버에 저장하는 코드 추가
+            const profileData = {
+                empName: $('.info input:eq(0)').val(),
+                empPnum: $('.info input:eq(1)').val(),
+                empEmail: $('.info input:eq(2)').val(),
+                empIntroduce: $('.info input:eq(3)').val(),
+                empBirthNum: $('.info input:eq(4)').val(),
+                empAddr: $('.info input:eq(5)').val(),
+                empPos: $('.info input:eq(6)').val(),
+                startDay: $('.info input:eq(7)').val()
+            };
+
+            // CSRF 토큰 가져오기
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url: '/updateProfile',
+                type: method,
+                contentType: 'application/json',
+                data: JSON.stringify(profileData),
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 설정
+                },
+                success: function(response) {
+                    if (response === 'success') {
+                        alert('프로필이 성공적으로 업데이트되었습니다.');
+                    } else {
+                        alert('프로필 업데이트에 실패했습니다.');
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

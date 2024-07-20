@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Break Times List</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>Break Times List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Reason</th>
+        <th>Delete Status</th>
+        <th>Employee ID</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="breakTime : ${breakTimes}">
+        <td th:text="${breakTime.btId}"></td>
+        <td th:text="${breakTime.btStart}"></td>
+        <td th:text="${breakTime.btEnd}"></td>
+        <td th:text="${breakTime.btWhy}"></td>
+        <td th:text="${breakTime.del}"></td>
+        <td th:text="${breakTime.employeeId}"></td>
+        <td>
+            <a th:href="@{/break-times/{id}/edit(id=${breakTime.btId})}">Edit</a>
+            <form th:action="@{/break-times/{id}/delete(id=${breakTime.btId})}" method="post" th:object="${breakTime}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/break-times/new}">Create New Break Time</a>
+</body>
+</html>
