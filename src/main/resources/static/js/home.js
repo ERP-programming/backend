@@ -34,55 +34,56 @@ window.onload = function() {
 // S
 // C
 
-// 모달 관련 기능
 // 문서가 로드되면 실행될 함수
+// Notice 모달 관련 기능
 document.addEventListener('DOMContentLoaded', function() {
-    // 필요한 DOM 요소들 가져오기
-    const table = document.querySelector('#notice table');  // 공지사항 목록 테이블
-    const detailModal = document.getElementById('noticeDetailModal');  // 상세 모달
-    const createModal = document.getElementById('createNoticeModal');  // 생성 모달
-    const editModal = document.getElementById('editNoticeModal');  // 수정 모달
+    // 필요한 NOTICE DOM 요소들 가져오기
+    const noticeTable = document.querySelector('#notice table');  // 공지사항 목록 테이블
+    const noticeDetailModal = document.getElementById('noticeDetailModal');  // 상세 모달
+    const createNoticeModal = document.getElementById('createNoticeModal');  // 생성 모달
+    const editNoticeModal = document.getElementById('editNoticeModal');  // 수정 모달
 
-    // 각 모달의 닫기 버튼 가져오기
-    const detailCloseSpan = detailModal.querySelector('.close');
-    const createCloseSpan = createModal.querySelector('.close');
-    const editCloseSpan = editModal.querySelector('.close');
+    // 각 NOTICE 모달의 닫기 버튼 가져오기
+    const noticeDetailCloseSpan = noticeDetailModal.querySelector('.close');
+    const createNoticeCloseSpan = createNoticeModal.querySelector('.close');
+    const editNoticeCloseSpan = editNoticeModal.querySelector('.close');
 
     //
 
     // 상세 모달의 닫기 버튼 클릭 이벤트 처리
-    detailCloseSpan.onclick = function() {
-        detailModal.style.display = "none";  // 상세 모달 숨기기
+    noticeDetailCloseSpan.onclick = function() {
+        noticeDetailModal.style.display = "none";  // 상세 모달 숨기기
     };
 
     // 생성 모달의 닫기 버튼 클릭 이벤트 처리
-    createCloseSpan.onclick = function() {
-        createModal.style.display = "none";  // 생성 모달 숨기기
+    createNoticeCloseSpan.onclick = function() {
+        createNoticeModal.style.display = "none";  // 생성 모달 숨기기
     };
 
     // 수정 모달의 닫기 버튼 클릭 이벤트 처리
-    editCloseSpan.onclick = function() {
-        editModal.style.display = "none";  // 수정 모달 숨기기
+    editNoticeCloseSpan.onclick = function() {
+        editNoticeModal.style.display = "none";  // 수정 모달 숨기기
     };
 
     // 모달 외부 클릭 시 닫기 처리
     window.onclick = function(event) {
-        if (event.target == detailModal) {
-            detailModal.style.display = "none";  // 상세 모달 숨기기
-        } else if (event.target == createModal) {
-            createModal.style.display = "none";  // 생성 모달 숨기기
-        } else if (event.target == editModal) {
-            editModal.style.display = "none";  // 수정 모달 숨기기
+        if (event.target == noticeDetailModal) {
+            noticeDetailModal.style.display = "none";  // 상세 모달 숨기기
+        } else if (event.target == createNoticeModal) {
+            createNoticeModal.style.display = "none";  // 생성 모달 숨기기
+        } else if (event.target == editNoticeModal) {
+            editNoticeModal.style.display = "none";  // 수정 모달 숨기기
         }
     };
 
 
     //// GET
     // 테이블에서 클릭 이벤트 리스너 등록
-    table.addEventListener('click', function(e) {
+    noticeTable.addEventListener('click', function(e) {
         if (e.target.tagName === 'TD') {
             const row = e.target.closest('tr');  // 클릭한 셀이 속한 행
             const noticeId = row.dataset.id;  // 데이터 세트에서 공지사항 ID 가져오기
+            console.log(noticeId);
             fetchNoticeDetails(noticeId);  // 공지사항 상세 정보를 가져오는 함수 호출
         }
     });
@@ -93,34 +94,34 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 // 모달에 공지사항 정보 출력
-                document.getElementById('modalDetailTitle').textContent = data.title;  // 제목
-                document.getElementById('modalDetailContent').textContent = data.contents;  // 내용
-                document.getElementById('modalDetailDate').textContent = `작성일: ${data.createDate}`;  // 작성일
-                document.getElementById('modalDetailAuthor').textContent = `작성자: ${data.employee.empName}`;  // 작성자
-                detailModal.style.display = "block";  // 상세 모달 열기
+                document.getElementById('noticeDetailTitle').textContent = data.title;  // 제목
+                document.getElementById('noticeDetailContent').textContent = data.contents;  // 내용
+                document.getElementById('noticeDetailDate').textContent = `작성일: ${data.createDate}`;  // 작성일
+                document.getElementById('noticeDetailAuthor').textContent = `작성자: ${data.employee.empName}`;  // 작성자
+                noticeDetailModal.style.display = "block";  // 상세 모달 열기
             })
             .catch(error => console.error('Error:', error));  // 에러 처리
     }
 
     //// POST
     // 게시글 작성 버튼 클릭 시 모달 열기 함수 불러오기
-    document.querySelector('#creatBtn').addEventListener('click', function(e) {
+    document.querySelector('#createNoticeBtn').addEventListener('click', function(e) {
         e.preventDefault(); // 링크 기본 동작 방지
         openCreateNoticeModal(); // 모달 열기 함수 호출
     });
 
-    // 모달열기
+    // 작성 모달열기
     function openCreateNoticeModal() {
-        const createModal = document.getElementById('createNoticeModal');
-        createModal.style.display = "block";
+        const createNoticeModal = document.getElementById('createNoticeModal');
+        createNoticeModal.style.display = "block";
     }
 
     // 게시글 작성 폼 제출 처리
     document.getElementById('createNoticeForm').addEventListener('submit', function(e) {
         e.preventDefault(); // 폼 기본 동작 방지
 
-        const title = document.getElementById('createTitle').value;
-        const content = document.getElementById('createContent').value;
+        const title = document.getElementById('createNoticeTitle').value;
+        const content = document.getElementById('createNoticeContent').value;
         const emp_num = 1;  ////////// 1번 사원 가데이터 입력
 
         fetch('/api/notices', {
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //// PUT
     // 수정 버튼 클릭 시 공지사항 정보 불러오기
-    document.querySelector('table').addEventListener('click', function(e) {
+    document.querySelector('#notice table').addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-edit')) {
             // 수정 버튼 클릭 시
             const noticeId = e.target.dataset.id;  // 데이터 세트에서 공지사항 ID 가져오기
@@ -157,9 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 document.getElementById('editNoticeId').value = noticeId;  // ID (hidden)
-                document.getElementById('editTitle').value = data.title;  // 제목
-                document.getElementById('editContent').value = data.contents;  // 내용
-                editModal.style.display = "block";  // 수정 모달 열기
+                document.getElementById('editNoticeTitle').value = data.title;  // 제목
+                document.getElementById('editNoticeContent').value = data.contents;  // 내용
+                editNoticeModal.style.display = "block";  // 수정 모달 열기
             })
             .catch(error => console.error('Error:', error));  // 에러 처리
     }
@@ -169,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault(); // 폼 기본 동작 방지
 
         const noticeId = document.getElementById('editNoticeId').value;
-        const title = document.getElementById('editTitle').value;
-        const content = document.getElementById('editContent').value;
+        const title = document.getElementById('editNoticeTitle').value;
+        const content = document.getElementById('editNoticeContent').value;
         const emp_num = 1;  ////////// 1번 사원 가데이터 입력
 
         /*
@@ -204,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //// DELETE
     // 삭제 버튼 클릭 시 공지사항 정보 불러오기
-    document.querySelector('table').addEventListener('click', function(e) {
+    document.querySelector('#notice table').addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-delete')) {
             // 삭제 버튼 클릭 시
             const noticeId = e.target.dataset.id;  // 데이터 세트에서 공지사항 ID 가져오기
@@ -234,12 +235,193 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
     }
 
-
-
-
-
-
 });
+
+
+
+// Task 모달 관련 기능
+document.addEventListener('DOMContentLoaded', function() {
+    // 필요한 TASK DOM 요소들 가져오기
+    const taskTable = document.querySelector('#task table');  // 작업 목록 테이블
+    const taskDetailModal = document.getElementById('taskDetailModal');  // 상세 모달
+    const createTaskModal = document.getElementById('createTaskModal');  // 생성 모달
+    const editTaskModal = document.getElementById('editTaskModal');  // 수정 모달
+
+    // 각 TASK 모달의 닫기 버튼 가져오기
+    const taskDetailCloseSpan = taskDetailModal.querySelector('.close');
+    const createTaskCloseSpan = createTaskModal.querySelector('.close');
+    const editTaskCloseSpan = editTaskModal.querySelector('.close');
+
+    // 상세 모달의 닫기 버튼 클릭 이벤트 처리
+    taskDetailCloseSpan.onclick = function() {
+        taskDetailModal.style.display = "none";  // 상세 모달 숨기기
+    };
+
+    // 생성 모달의 닫기 버튼 클릭 이벤트 처리
+    createTaskCloseSpan.onclick = function() {
+        createTaskModal.style.display = "none";  // 생성 모달 숨기기
+    };
+
+    // 수정 모달의 닫기 버튼 클릭 이벤트 처리
+    editTaskCloseSpan.onclick = function() {
+        editTaskModal.style.display = "none";  // 수정 모달 숨기기
+    };
+
+    // 모달 외부 클릭 시 닫기 처리
+    window.onclick = function(event) {
+        if (event.target == taskDetailModal) {
+            taskDetailModal.style.display = "none";  // 상세 모달 숨기기
+        } else if (event.target == createTaskModal) {
+            createTaskModal.style.display = "none";  // 생성 모달 숨기기
+        } else if (event.target == editTaskModal) {
+            editTaskModal.style.display = "none";  // 수정 모달 숨기기
+        }
+    };
+
+    //// GET
+    // 테이블에서 클릭 이벤트 리스너 등록
+    taskTable.addEventListener('click', function(e) {
+        if (e.target.tagName === 'TD') {
+            const row = e.target.closest('tr');  // 클릭한 셀이 속한 행
+            const taskId = row.dataset.id;  // 데이터 세트에서 작업 ID 가져오기
+            fetchTaskDetails(taskId);  // 작업 상세 정보를 가져오는 함수 호출
+        }
+    });
+
+    // 작업 상세 정보 가져오기 함수
+    function fetchTaskDetails(taskId) {
+        fetch(`/api/tasks/${taskId}`)  // 해당 ID의 작업 정보 가져오기
+            .then(response => response.json())
+            .then(data => {
+                // 모달에 작업 정보 출력
+                document.getElementById('taskDetailContent').textContent = data.content;  // 내용
+                document.getElementById('taskDetailAuthor').textContent = `작성자: ${data.employee.empName}`;  // 작성자
+                taskDetailModal.style.display = "block";  // 상세 모달 열기
+            })
+            .catch(error => console.error('Error:', error));  // 에러 처리
+    }
+
+
+    //// POST
+    // 작업 작성 버튼 클릭 시 모달 열기 함수 불러오기
+    document.querySelector('#createTaskBtn').addEventListener('click', function(e) {
+        e.preventDefault(); // 링크 기본 동작 방지
+        openCreateTaskModal(); // 모달 열기 함수 호출
+    });
+
+    // 모달열기
+    function openCreateTaskModal() {
+        createTaskModal.style.display = "block";
+    }
+
+    // 작업 작성 폼 제출 처리
+    document.getElementById('createTaskForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // 폼 기본 동작 방지
+
+        const content = document.getElementById('createTaskContent').value;
+        const emp_num = 1;  ////////// 1번 사원 가데이터 입력
+
+        fetch('/api/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: content,
+                emp_num: emp_num
+            })
+        })
+            .then(data => {
+                alert('작업이 작성되었습니다.');
+                console.log('Response Data:', data); // 응답 데이터를 콘솔에 출력
+                location.reload(); // 페이지 새로고침
+            })
+    });
+
+    //// PUT
+    // 수정 버튼 클릭 시 작업 정보 불러오기
+    document.querySelector('#task table').addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-edit')) {
+            // 수정 버튼 클릭 시
+            const taskId = e.target.dataset.id;  // 데이터 세트에서 작업 ID 가져오기
+            console.log(taskId)
+            fetchTaskEdit(taskId);  // 작업 상세 정보를 가져오는 함수 호출
+        }
+    });
+
+    // 수정을 위한 작업 정보 가져오기 함수
+    function fetchTaskEdit(taskId) {
+        fetch(`/api/tasks/${taskId}`)  // 해당 ID의 작업 정보 가져오기
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editTaskId').value = taskId;  // ID (hidden)
+                document.getElementById('editTaskContent').value = data.content;  // 내용
+                editTaskModal.style.display = "block";  // 수정 모달 열기
+            })
+            .catch(error => console.error('Error:', error));  // 에러 처리
+    }
+
+    // 수정 폼 제출 처리
+    document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // 폼 기본 동작 방지
+
+        const taskId = document.getElementById('editTaskId').value;
+        const content = document.getElementById('editTaskContent').value;
+        const emp_num = 1;  ////////// 1번 사원 가데이터 입력
+
+        fetch(`/api/tasks/${taskId}`, {
+            method: 'PUT',  // 수정 요청을 위한 PUT 메서드 사용
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: content,
+                emp_num: emp_num
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alert('작업이 수정되었습니다.');
+                location.reload(); // 페이지 새로고침
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    //// DELETE
+    // 삭제 버튼 클릭 시 작업 정보 불러오기
+    document.querySelector('#task table').addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-delete')) {
+            // 삭제 버튼 클릭 시
+            const taskId = e.target.dataset.id;  // 데이터 세트에서 작업 ID 가져오기
+            const userConfirmed = confirm('정말로 삭제하시겠습니까?');  // 사용자 확인
+
+            if (userConfirmed) {
+                fetchTaskDelete(taskId);  // 작업 삭제 함수 호출
+            }
+        }
+    });
+
+    // 삭제를 위한 함수
+    function fetchTaskDelete(taskId) {
+        fetch(`/api/tasks/${taskId}`, {
+            method: 'DELETE',  // 삭제 요청을 위한 DELETE 메서드 사용
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alert('작업이 삭제되었습니다.');
+                location.reload(); // 페이지 새로고침
+            })
+            .catch(error => console.error('Error:', error));
+    }
+});
+
 
 
 

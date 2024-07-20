@@ -70,6 +70,7 @@ h2 {
   text-align: center;
 }
 
+/*notice container*/
 .notice-container {
   margin-top: 50px; /* 공지사항 섹션 여백 */
 }
@@ -97,10 +98,8 @@ h2 {
   color: #007bff; /* 헤더 텍스트 색 */
 }
 
-.task-container {
-  margin-top: 50px; /* 할 일 섹션 여백 */
-}
-
+/*task container*/
+/*task head*/
 .task-container i {
   font-size: 50px; /* 아이콘 크기 */
   color: #007bff; /* 아이콘 색상 */
@@ -113,6 +112,34 @@ h2 {
 
 .task-container p, .notice-container p {
   color: #666; /* 본문 텍스트 색상 */
+}
+/**/
+/*task body*/
+.task-container {
+  margin-top: 50px; /* 공지사항 섹션 여백 */
+}
+
+.task-container a {
+  display: inline-block;
+  margin-bottom: 20px; /* 링크 여백 */
+  color: #007bff; /* 링크 색상 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+
+.task-container table {
+  width: 100%; /* 테이블 너비 설정 */
+  border-collapse: collapse; /* 테두리 병합 */
+}
+
+.task-container th, .task-container td {
+  border: 1px solid #ccc; /* 테두리 스타일 */
+  padding: 10px; /* 패딩 추가 */
+  text-align: left; /* 텍스트 정렬 */
+}
+
+.task-container th {
+  background-color: #f2f2f2; /* 헤더 배경색 */
+  color: #007bff; /* 헤더 텍스트 색 */
 }
 /**/
 
@@ -221,3 +248,28 @@ tr.clickable-row {
   text-align: right; /* 오른쪽 정렬 */
 }
 /* 모달 end */
+
+
+/* task 수정버튼 스타일 */
+#taskContentEditBtn {
+  font-size: 12px;
+  padding: 2px 4px;
+  margin: 0;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+}
+
+/* td 요소에 relative 위치 설정 */
+td {
+  position: relative;
+}
+
+/* 버튼을 td 요소의 우측 하단으로 위치 조정 */
+td #taskContentEditBtn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}

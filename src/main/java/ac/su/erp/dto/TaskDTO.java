@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoticeDTO {
-    private String title;
-    private String contents;
+public class TaskDTO {
+    private String content;
     private Long emp_num;
 }

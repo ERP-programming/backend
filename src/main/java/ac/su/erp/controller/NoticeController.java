@@ -19,6 +19,7 @@ public class NoticeController {
         this.noticeService = noticeService;
     }
 
+    // 공지사항 상세내용
     @GetMapping("/{id}")
     public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
         Notice notice = noticeService.findById(id);
@@ -29,11 +30,13 @@ public class NoticeController {
         }
     }
 
+    /*
     @GetMapping("/all")
     public ResponseEntity<List<Notice>> getAllNotices() {
         List<Notice> notices = noticeService.getAllNotices();
         return ResponseEntity.ok(notices);
     }
+     */
 
     // 공지사항 생성
     @PostMapping
@@ -63,4 +66,5 @@ public class NoticeController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
