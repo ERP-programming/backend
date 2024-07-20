@@ -1,33 +1,23 @@
 package ac.su.erp.controller;
 
-import ac.su.erp.domain.Bank;
-import ac.su.erp.domain.Department;
 import ac.su.erp.domain.Employee;
+import ac.su.erp.dto.ContractUpdateForm;
 import ac.su.erp.dto.EmployeeCreateForm;
 import ac.su.erp.dto.EmployeeUpdateForm;
 import ac.su.erp.dto.LoginForm;
 import ac.su.erp.repository.BankRepository;
 import ac.su.erp.repository.DepartmentRepository;
 import ac.su.erp.service.EmployeeService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Controller
@@ -49,17 +39,11 @@ public class EmployeeController {
 
     @GetMapping("/Hr")
     public String listEmployees(Model model) {
-        List<Employee> employees = employeeService.findResignedEmployees();
+        List<Employee> employees = employeeService.findEmployedEmployees();
         model.addAttribute("employees", employees);
         return "Hr";
     }
 
-    @GetMapping("/search")
-    public String searchEmployees(@RequestParam String empName, Model model) {
-        List<Employee> employees = employeeService.findByEmployeeName(empName);
-        model.addAttribute("employees", employees);
-        return "Hr";  // 같은 뷰 템플릿으로 이동
-    }
 
     @GetMapping("/create")
     public String showCreateEmployeeForm(Model model) {
@@ -104,6 +88,37 @@ public class EmployeeController {
 
     }
 
+    //계약 정보 변경
+    @GetMapping("/updateContract/{empNum}")
+    public String showUpdateContractForm(@PathVariable Long empNum, Model model) {
+        Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
+        if (employeeOptional.isPresent()) {
+            Employee employee = employeeOptional.get();
+            ContractUpdateForm form = new ContractUpdateForm();
+            form.setEmpNum(employee.getEmpNum());
+            form.setEmpName(employee.getEmpName());
+            form.setEmpBanknum(employee.getEmpBanknum());
+            form.setBankCode(employee.getBank().getBankCode());
+            form.setSalary(employee.getConIncome());
+            form.setContractStart(employee.getConStartday());
+            form.setContractEnd(employee.getConEndday());
+
+            model.addAttribute("ContractUpdateForm", form);
+            model.addAttribute("banks", bankRepository.findAll());
+            return "UpdateContractForm";
+        } else {
+            // 사원이 존재하지 않을 경우 처리
+            return "redirect:/error"; // 또는 에러 페이지로 리디렉션
+        }
+    }
+
+    @PostMapping("/updateContract")
+    public String updateContract(@ModelAttribute("ContractUpdateForm") ContractUpdateForm form) {
+        employeeService.updateContract(form);
+        return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
+
+    }
+
 
     //사원 퇴사 처리
     @PostMapping("/resign/{empNum}")
@@ -126,26 +141,6 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/changePassword/{empNum}")
-    public ModelAndView changePassword(@PathVariable Long empNum, @RequestBody String newPassword) {
-        ModelAndView modelAndView = new ModelAndView("changePassword");
-        try {
-            employeeService.changePassword(empNum, newPassword);
-            modelAndView.setStatus(HttpStatus.OK);
-            modelAndView.addObject("message", "비밀번호 변경에 성공했습니다.");
-            modelAndView.setViewName("changePasswordSuccess");
-            return modelAndView;
-        } catch (UsernameNotFoundException e) {
-            modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
-            modelAndView.addObject("message", "유효하지 않은 사용자 ID입니다.");
-            return modelAndView;
-        } catch (Exception e) {
-            modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            modelAndView.addObject("message", "비밀번호 변경에 실패했습니다. 오류: " + e.getMessage());
-            return modelAndView;
-        }
-    }
-
     @GetMapping("/{empNum}")
     public ModelAndView getEmployee(@PathVariable Long empNum) {
         ModelAndView modelAndView = new ModelAndView("employeeDetail");
@@ -160,4 +155,26 @@ public class EmployeeController {
         modelAndView.addObject("employee", employeeOptional.get());
         return modelAndView;
     }
+
+
+
+//    @PostMapping("/changePassword/{empNum}")
+//    public ModelAndView changePassword(@PathVariable Long empNum, @RequestBody String newPassword) {
+//        ModelAndView modelAndView = new ModelAndView("changePassword");
+//        try {
+//            employeeService.changePassword(empNum, newPassword);
+//            modelAndView.setStatus(HttpStatus.OK);
+//            modelAndView.addObject("message", "비밀번호 변경에 성공했습니다.");
+//            modelAndView.setViewName("changePasswordSuccess");
+//            return modelAndView;
+//        } catch (UsernameNotFoundException e) {
+//            modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
+//            modelAndView.addObject("message", "유효하지 않은 사용자 ID입니다.");
+//            return modelAndView;
+//        } catch (Exception e) {
+//            modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+//            modelAndView.addObject("message", "비밀번호 변경에 실패했습니다. 오류: " + e.getMessage());
+//            return modelAndView;
+//        }
+//    }
 }

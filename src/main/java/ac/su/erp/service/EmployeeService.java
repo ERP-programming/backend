@@ -6,6 +6,7 @@ import ac.su.erp.constant.EmploymentStatus;
 import ac.su.erp.domain.Bank;
 import ac.su.erp.domain.Department;
 import ac.su.erp.domain.Employee;
+import ac.su.erp.dto.ContractUpdateForm;
 import ac.su.erp.dto.EmployeeCreateForm;
 import ac.su.erp.dto.EmployeeUpdateForm;
 import ac.su.erp.dto.SpringUser;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,16 +54,19 @@ public class EmployeeService implements UserDetailsService {
         return SpringUser.getSpringUserDetails(registeredEmployee.get());
     }
 
+    //은행 찾기
     private Bank getBankByCode(String bankCode) {
         return bankRepository.findByBankCode(bankCode)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 은행 코드입니다."));
     }
 
+    //부서 찾기
     private Department getDepartmentByNo(Long deptNo) {
         return departmentRepository.findById(deptNo)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 부서 번호입니다."));
     }
 
+    //사원 등록
     @Transactional
     public void createEmployee(EmployeeCreateForm form) {
         Employee employee = new Employee();
@@ -91,21 +94,17 @@ public class EmployeeService implements UserDetailsService {
 
     }
 
-
+    // 사원 번호로 사원 찾기
     public Optional<Employee> findByEmployeeNum(Long empNum) {
         return employeeRepository.findByEmpNum(empNum);
     }
 
-    public List<Employee> findByEmployeeName(String empName) {
-        return employeeRepository.findByEmpName(empName);
-    }
-
-    public List<Employee> findResignedEmployees() {
+    // 모든 사원 찾기
+    public List<Employee> findEmployedEmployees() {
         return employeeRepository.findByEmpDel(EmploymentStatus.EMPLOYED);
     }
 
     // 사원 인사 정보 변경
-
     public void updateEmployee(EmployeeUpdateForm form) {
         Employee employee = employeeRepository.findByEmpNum(form.getEmpNum())
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
@@ -119,20 +118,32 @@ public class EmployeeService implements UserDetailsService {
         employeeRepository.save(employee);
     }
 
-    //비밀번호 변경
-    @Transactional
-    public void changePassword(Long empNum, String newPassword) {
-        Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
-        if (employeeOptional.isPresent()) {
-            Employee employee = employeeOptional.get();
-            employee.setEmpPw(passwordEncoder.encode(newPassword));
-            employeeRepository.save(employee);
-        } else {
-            throw new UsernameNotFoundException("User not found with empNum: " + empNum);
-        }
+    // 계약 정보 변경
+    public void updateContract(ContractUpdateForm form) {
+        Employee employee = employeeRepository.findByEmpNum(form.getEmpNum())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+
+        employee.setConIncome(form.getSalary());
+        employee.setConStartday(form.getContractStart());
+        employee.setConEndday(form.getContractEnd());
+        employee.setEmpBanknum(form.getEmpBanknum());
+        employee.setBank(getBankByCode(form.getBankCode()));
+
+        employeeRepository.save(employee);
     }
 
-
+//    //비밀번호 변경
+//    @Transactional
+//    public void changePassword(Long empNum, String newPassword) {
+//        Optional<Employee> employeeOptional = employeeRepository.findByEmpNum(empNum);
+//        if (employeeOptional.isPresent()) {
+//            Employee employee = employeeOptional.get();
+//            employee.setEmpPw(passwordEncoder.encode(newPassword));
+//            employeeRepository.save(employee);
+//        } else {
+//            throw new UsernameNotFoundException("User not found with empNum: " + empNum);
+//        }
+//    }
 
     // 사원 퇴사 처리
     public void resignEmployee(Long empNum) {

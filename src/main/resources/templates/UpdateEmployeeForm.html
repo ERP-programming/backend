@@ -17,13 +17,11 @@
             <h2>기본정보</h2>
             <div class="form-group">
                 <label for="name">이름</label>
-                <input type="hidden" th:field="*{empName}" />
-                <input type="text" id="name" th:field="*{empName}" disabled />
+                <input type="text" id="name" th:field="*{empName}" readonly />
             </div>
             <div class="form-group">
                 <label for="empNum">사원번호</label>
-                <input type="hidden" th:field="*{empNum}" />
-                <input type="text" id="empNum" th:field="*{empNum}" disabled />
+                <input type="text" id="empNum" th:field="*{empNum}" readonly />
             </div>
         </div>
 
