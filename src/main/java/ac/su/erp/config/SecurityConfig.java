@@ -25,7 +25,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/notices/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/equipment-requests/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/v2/equipment-requests/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/employees/updateProfile/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/workflow/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
