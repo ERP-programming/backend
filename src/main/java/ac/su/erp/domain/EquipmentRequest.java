@@ -59,5 +59,19 @@ public class EquipmentRequest {
     @ManyToOne
     @JoinColumn(name = "APPROVER_EMP_NUM")  // 승인자
     private Employee approver;
-
+    public void setDefaultValues() {
+        if (this.reqDate == null) {
+            this.reqDate = LocalDateTime.now();
+        }
+        if (this.kinds == null) {
+            this.kinds = "비품";
+        }
+        if (this.del == null) {
+            this.del = DeleteStatus.ACTIVE;
+        }
+        if (this.approvalStatus == null) {
+            this.approvalStatus = ApprovalStatus.PENDING;
+        }
+    }
 }
+
