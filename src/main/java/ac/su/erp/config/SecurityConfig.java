@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/employees/hr-check")).permitAll()
                         .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf
@@ -45,7 +46,7 @@ public class SecurityConfig {
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/employees/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/home")
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/employees/logout"))

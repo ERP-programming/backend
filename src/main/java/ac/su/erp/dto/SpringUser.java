@@ -18,6 +18,7 @@ public class SpringUser extends User {  // Wrapper 로 작용
         return User.builder()
                 .username(employee.getEmpNum().toString())
                 .password(employee.getEmpPw())
+                .roles(String.valueOf(employee.getDepartment().getDeptName()))
                 .build();
     }
 }

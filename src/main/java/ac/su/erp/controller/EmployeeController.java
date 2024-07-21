@@ -33,11 +33,29 @@ public class EmployeeController {
         return modelAndView;
     }
 
+    //인사 정보 페이지
     @GetMapping("/Hr")
     public String listEmployees(Model model) {
         List<Employee> employees = employeeService.findEmployedEmployees();
         model.addAttribute("employees", employees);
         return "Hr";
+    }
+
+
+    // 인사 정보 변경 시 직원 목록을 보는 페이지
+    @GetMapping("/HrList")
+    public String HrListEmployees(Model model) {
+        List<Employee> employees = employeeService.findEmployedEmployees();
+        model.addAttribute("employees", employees);
+        return "EmployeeListHr";
+    }
+
+    //계약 정보 변경시 직원 목록을 보는 페이지
+    @GetMapping("/ContractList")
+    public String ContractListEmployees(Model model) {
+        List<Employee> employees = employeeService.findEmployedEmployees();
+        model.addAttribute("employees", employees);
+        return "EmployeeListContract";
     }
 
     @GetMapping("/create")
@@ -54,6 +72,7 @@ public class EmployeeController {
         return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
     }
 
+    //인사 정보 변경
     @GetMapping("/update/{empNum}")
     public String showUpdateEmployeeForm(@PathVariable Long empNum, Model model) {
         Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
@@ -160,4 +179,19 @@ public class EmployeeController {
         employeeService.updateEmployeeProfile(employeeId, profileDTO);
         return ResponseEntity.ok("success");
     }
+
+    //부서가 HR인지 확인하는 API
+    @GetMapping("/hr-check")
+    @ResponseBody
+    public ResponseEntity<String> checkHrAccess() {
+        String userDept = employeeService.getCurrentUserDepartment();
+
+        if ("HR".equals(userDept)) {
+            return ResponseEntity.ok("access-granted");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("access-denied");
+        }
+    }
+
+
 }

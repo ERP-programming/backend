@@ -1,0 +1,179 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.content-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+h4{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.main-content {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.left-panel, .right-panel {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.left-panel {
+    width: 30%;
+}
+
+.right-panel {
+    width: 65%;
+}
+
+.company-details {
+    text-align: left;
+}
+
+.company-details h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.company-details p {
+    margin: 10px 0;
+}
+
+.policies .tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: 17px;
+    flex: 1;
+    text-align: center;
+}
+
+.tab-button:hover {
+    background-color: #ddd;
+}
+
+.tab-button.active {
+    border-bottom: 3px solid #007bff;
+}
+
+.tab-content {
+    display: none;
+    padding: 16px;
+}
+
+.policy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.policy-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.policy-icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.policy-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.policy-duration {
+    margin-bottom: 10px;
+}
+
+.policy-item button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.policy-item button:hover {
+    background-color: #0056b3;
+}
+
+.policy-details h5 {
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.policy-details p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.holiday-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.holiday-table th, .holiday-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.holiday-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.holiday-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.holiday-table tr:hover {
+    background-color: #ddd;
+}
+
+.fas {
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+.company-details p {
+    margin: 10px 0;
+    font-size: large;
+}
