@@ -6,8 +6,7 @@ import ac.su.erp.service.EquipmentRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,16 +38,22 @@ public class WorkflowController {
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("equipmentRequest", new EquipmentRequestDTO());
 
-        return "Workflow";
+        return "Workflow"; // Thymeleaf 템플릿 경로
+    }
+
+    @GetMapping("/workflow/edit/{equipId}")
+    public String showEditForm(@PathVariable Long equipId, Model model) {
+        EquipmentRequestDTO equipmentRequest = equipmentRequestService.getEquipmentRequestById(equipId);
+        model.addAttribute("equipmentRequest", equipmentRequest);
+        return "editEquipmentRequest"; // 비품 수정 폼의 Thymeleaf 템플릿 경로
+    }
+
+    @PostMapping("/workflow/edit/{equipId}")
+    public String handleEditForm(@PathVariable Long equipId, @ModelAttribute EquipmentRequestDTO equipmentRequestDTO) {
+        // 비품 정보 업데이트 로직
+        equipmentRequestDTO.setId(equipId); // 수정할 비품의 ID 설정
+        equipmentRequestService.updateEquipmentRequest(equipmentRequestDTO); // 서비스를 통해 비품 정보 업데이트
+        return "redirect:/workflow"; // 수정 후 다시 Workflow 페이지로 리다이렉트
     }
 }
-
-//    @GetMapping("/equipmentRequestForm")
-//    public String showEquipmentRequestForm(Model model) {
-//        EquipmentRequestDTO equipmentRequest = new EquipmentRequestDTO();
-//        equipmentRequest.setDefaultValues(); // 기본값 설정
-//        model.addAttribute("equipmentRequest", equipmentRequest);
-//        return "equipmentRequestForm";
-//    }
-//}
 

@@ -24,9 +24,9 @@ public class EquipmentRequestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EquipmentRequestDTO> getEquipmentRequestById(@PathVariable Long id) {
-        EquipmentRequestDTO request = equipmentRequestService.getRequestById(id);
-        if (request != null) {
-            return ResponseEntity.ok(request);
+        EquipmentRequestDTO equipmentRequestDTO = equipmentRequestService.getRequestById(id);
+        if (equipmentRequestDTO != null) {
+            return ResponseEntity.ok(equipmentRequestDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -46,8 +46,8 @@ public class EquipmentRequestController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<EquipmentRequestDTO> updateRestRequest(@PathVariable Long id, @RequestBody EquipmentRequestDTO requestDTO) {
-        EquipmentRequestDTO updatedRequest = equipmentRequestService.updateRequest(id, requestDTO);
+    public ResponseEntity<EquipmentRequestDTO> updateEquipmentRequest(@PathVariable Long id, @RequestBody EquipmentRequestDTO equipmentRequestDTO) {
+        EquipmentRequestDTO updatedRequest = equipmentRequestService.updateRequest(id, equipmentRequestDTO);
         if (updatedRequest != null) {
             return ResponseEntity.ok(updatedRequest);
         } else {

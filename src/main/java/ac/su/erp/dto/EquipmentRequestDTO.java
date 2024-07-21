@@ -19,7 +19,7 @@ public class EquipmentRequestDTO {
     private String equipWhy;
     private LocalDate reqDate;
     private String kinds;
-    private DeleteStatus del;
+//    private DeleteStatus del;
     private ApprovalStatus approvalStatus;
     private String meta;
     private String approver;  // 승인자 이름을 저장하는 필드
@@ -32,11 +32,14 @@ public class EquipmentRequestDTO {
         if (this.kinds == null) {
             this.kinds = "비품";
         }
-        if (this.del == null) {
-            this.del = DeleteStatus.ACTIVE;
-        }
+//        if (this.del == null) {
+//            this.del = DeleteStatus.ACTIVE;
+//        }
         if (this.approvalStatus == null) {
             this.approvalStatus = ApprovalStatus.PENDING;
         }
+    }
+    public void setId(Long equipId) {
+        this.equipId = equipId;
     }
 }

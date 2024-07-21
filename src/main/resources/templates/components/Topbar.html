@@ -30,7 +30,7 @@
       <ul class="menu simple vertical medium-horizontal">
         <li><a href="#" th:href="@{/}"><i class="fas fa-home"></i><br>홈</a></li>
         <li><a href="#" th:href="@{/worktime}"><i class="fas fa-clock"></i><br>근무·휴가</a></li>
-        <li><a href="#" th:href="@{/people}"><i class="fas fa-users"></i><br>사람</a></li>
+        <li><a href="#" th:href="@{/employees/Hr}"><i class="fas fa-users"></i><br>사람</a></li>
         <li><a href="#" th:href="@{/company}"><i class="fas fa-building"></i><br>회사정보</a></li>
         <li><a href="#" th:href="@{/workflow}"><i class="fas fa-tasks"></i><br>워크플로우</a></li>
         <li>
@@ -51,21 +51,6 @@
     </div>
   </div>
 </div>
-
-<script>
-  function openProfileModal(employeeId) {
-    $('#profileModal .modal-content').load('/employee/profileModalContent?id=' + employeeId, function() {
-      $('#profileModal').modal('show');
-    });
-  }
-
-  // ProfileModal 닫기 버튼에 이벤트 리스너 추가
-  document.querySelectorAll('.close').forEach(function(button) {
-    button.addEventListener('click', function() {
-      $('#profileModal').modal('hide');
-    });
-  });
-</script>
 
 </body>
 </html>

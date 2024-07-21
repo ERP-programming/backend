@@ -3,13 +3,11 @@ package ac.su.erp.dto;
 import ac.su.erp.constant.DepartmentPosition;
 import ac.su.erp.constant.EmployeePosition;
 import ac.su.erp.constant.GenderEnum;
-
-
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
+
 
 @Data
 public class EmployeeCreateForm {
@@ -27,5 +25,14 @@ public class EmployeeCreateForm {
     private Long deptNo;
     private LocalDate contractStart;
     private LocalDate contractEnd;
+    private String empPw; // 비밀번호 필드 추가
+
+    public String getEmpPw() {
+        return empPw;
+    }
+
+    public void setEmpPw(String empPw) {
+        this.empPw = empPw;
+    }
 }
 
