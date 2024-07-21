@@ -126,15 +126,15 @@
               <p>정한솔님에게 할 일이 생기면 여기서 알려드릴게요.</p>
             </div>
              -->
-            <button type="submit" id="createTaskBtn" class="btn">새 공지사항 작성</button>  <!-- 작성버튼 -->
+            <button type="submit" id="createTaskBtn" class="btn">새 메모 작성</button>  <!-- 작성버튼 -->
             <table>
               <tr th:each="task : ${tasks}" class="clickable-row" th:data-id="${task.taskId}">
-                <td style="display: none;" th:text="${task.taskId}"></td>
+                <td style="display: none" th:text="${task.taskId}"></td>
                 <td>
                   <span th:text="${task.content}"></span>
                   <a class="btn-edit" th:data-id="${task.taskId}">수정</a>
                 </td>
-                <td style="display: none;" th:text="${task.employee.empName}"></td>
+                <td style="display: none" th:text="${task.employee.empName}"></td>
                 <td>
                   <a class="btn-delete" th:data-id="${task.taskId}">삭제</a>
                 </td>
@@ -198,25 +198,25 @@
       <div th:fragment="workPanelFragment" class="work-panel">
         <h3>오늘 근무</h3>
         <div class="work-status">
-          <p>출근: 08:55</p>
-          <p>퇴근: --:--</p>
+          <p th:text="'출근: ' + (${todayWork != null ? todayWork.onWork : '--:--'})">출근: --:--</p>
+          <p th:text="'퇴근: ' + (${todayWork != null ? todayWork.offWork : '--:--'})">퇴근: --:--</p>
+
         </div>
         <div class="work-timer">
-          <h1>05:04:58</h1>
-          <p>근무</p>
-          <p>09:00 - 18:00</p>
+          <h1 id="current-time">05:04:58</h1>
+          <p>근무일정 : 09:00 - 18:00</p><br><br><br><br>
           <div class="schedule">
             <label for="schedule">예정 스케줄</label>
-            <select id="schedule">
-              <option>1</option>
-            </select>
+            <p id="schedule" th:text="${tasks.size()}">1</p>
           </div>
-          <button id="startButton" class="btn">출근하기</button>
-          <button id="endButton" class="btn">퇴근하기</button>
+          <div class="button-container">
+            <button class="onWork-button" id="onWork-button" onclick="toggleButtons('onWork')">출근하기</button>
+            <button class="offWork-button" id="offWork-button" onclick="toggleButtons('offWork')">퇴근하기</button>
+          </div>
+          <br>
         </div>
       </div>
       <!-- 오른쪽 패널 (=workPanel) end -->
-
     </div>
     <!-- 메인 콘텐츠 end -->
 

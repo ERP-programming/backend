@@ -30,8 +30,8 @@ public class TaskController {
 
     // 할일 생성
     @PostMapping
-    public ResponseEntity<Void> createTask(@RequestBody TaskDTO task) {
-        taskService.saveTask(task);
+    public ResponseEntity<Void> createTask(@RequestBody TaskDTO taskDTO) {
+        taskService.saveTask(taskDTO);
         return ResponseEntity.ok().build();
     }
 

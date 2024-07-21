@@ -36,7 +36,7 @@ public class HomeController {
         List<Task> tasks = taskService.getAllTasks();
         model.addAttribute("tasks", tasks);
 
-        List<WorkTime> todayWork = workTimeService.getAllWorkTimes();
+        WorkTime todayWork = workTimeService.getTodayWorkTime();
         model.addAttribute("todayWork", todayWork);
 
         return "home";
