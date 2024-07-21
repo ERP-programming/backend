@@ -41,6 +41,7 @@ public class EmployeeController {
         return "Hr";
     }
 
+
     // 인사 정보 변경 시 직원 목록을 보는 페이지
     @GetMapping("/HrList")
     public String HrListEmployees(Model model) {
@@ -178,4 +179,19 @@ public class EmployeeController {
         employeeService.updateEmployeeProfile(employeeId, profileDTO);
         return ResponseEntity.ok("success");
     }
+
+    //부서가 HR인지 확인하는 API
+    @GetMapping("/hr-check")
+    @ResponseBody
+    public ResponseEntity<String> checkHrAccess() {
+        String userDept = employeeService.getCurrentUserDepartment();
+
+        if ("HR".equals(userDept)) {
+            return ResponseEntity.ok("access-granted");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("access-denied");
+        }
+    }
+
+
 }
