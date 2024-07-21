@@ -5,6 +5,7 @@ import ac.su.erp.domain.WorkTime;
 import ac.su.erp.repository.WorkTimeRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -56,7 +57,20 @@ public class WorkTimeService {
             throw new IllegalArgumentException("오늘의 출근 기록을 찾을 수 없습니다.");
         }
         WorkTime workTime = workTimes.get(0);
-        workTime.setOffWork(LocalTime.now());
+        LocalTime now = LocalTime.now();
+        workTime.setOffWork(now);
+
+        // 총 근무 시간 계산
+        Duration totalWorkingDuration = Duration.between(workTime.getOnWork(), now);
+        LocalTime totalWorkingTime = LocalTime.ofSecondOfDay(totalWorkingDuration.getSeconds());
+        workTime.setTotalWorking(totalWorkingTime);
+
+        // 초과 근무 시간 계산 (기준: 9시간)
+        Duration nineHours = Duration.ofHours(9);
+        Duration excessAllowDuration = totalWorkingDuration.minus(nineHours);
+        LocalTime excessAllowTime = LocalTime.ofSecondOfDay(excessAllowDuration.isNegative() ? 0 : excessAllowDuration.getSeconds());
+        workTime.setExcessAllow(excessAllowTime);
+
         workTimeRepository.save(workTime);
     }
 

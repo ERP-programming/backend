@@ -186,21 +186,21 @@ h2 {
   margin-top: 10px;
 }
 
-.logout-button {
+.offWork-button {
   background-color: #ff4b5c;
   visibility: hidden;
   opacity: 0;
 }
 
-.logout-button:hover {
+.offWork-button:hover {
   background-color: #ff2a3b;
 }
 
-.login-button {
+.onWork-button {
   background-color: #4caf50;
 }
 
-.login-button:hover {
+.onWork-button:hover {
   background-color: #45a049;
 }
 

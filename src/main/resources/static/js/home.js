@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 모달과 닫기 버튼 매핑
-    // 모달과 닫기 버튼 매핑
     const modals = [
         { modal: noticeDetailModal, closeSpan: noticeDetailCloseSpan },
         { modal: createNoticeModal, closeSpan: createNoticeCloseSpan },
@@ -379,13 +378,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
 //
 //
+// 시계
 //
 //
-//
-// 추가
-//
+
 // 페이지가 로드될 때 updateTime 함수 실행
 document.addEventListener('DOMContentLoaded', updateTime);
 
@@ -408,6 +407,7 @@ function updateTime() {
 //
 //
 
+// 페이지가 로드될 때 버튼 상태 초기화 함수 실행 (출퇴근버튼)
 function initializeButtons() {
     // 서버에서 현재 근무 상태를 받아오는 부분
     fetch('/api/workTimes/getWorkStatus')
@@ -420,21 +420,21 @@ function initializeButtons() {
         .then(data => {
             const startWork = data.startWork; // 응답에서 startWork 값 추출
 
-            const loginButton = document.getElementById('login-button');
-            const logoutButton = document.getElementById('logout-button');
+            const onWorkButton = document.getElementById('onWork-button');
+            const offWorkButton = document.getElementById('offWork-button');
 
             if (startWork) {
                 // 출근은 했지만 퇴근은 안 한 경우
-                loginButton.style.opacity = '0';
-                loginButton.style.visibility = 'hidden';
-                logoutButton.style.opacity = '1';
-                logoutButton.style.visibility = 'visible';
+                onWorkButton.style.opacity = '0';
+                onWorkButton.style.visibility = 'hidden';
+                offWorkButton.style.opacity = '1';
+                offWorkButton.style.visibility = 'visible';
             } else {
                 // 출근 및 퇴근 모두 했거나, 둘 다 안 한 경우
-                loginButton.style.opacity = '1';
-                loginButton.style.visibility = 'visible';
-                logoutButton.style.opacity = '0';
-                logoutButton.style.visibility = 'hidden';
+                onWorkButton.style.opacity = '1';
+                onWorkButton.style.visibility = 'visible';
+                offWorkButton.style.opacity = '0';
+                offWorkButton.style.visibility = 'hidden';
             }
         })
         .catch(error => {
@@ -442,15 +442,16 @@ function initializeButtons() {
         });
 }
 
+// 버튼 상태 토글 함수
 function toggleButtons(action) {
-    var loginButton = document.getElementById('login-button');
-    var logoutButton = document.getElementById('logout-button');
+    var onWorkButton = document.getElementById('onWork-button');
+    var offWorkButton = document.getElementById('offWork-button');
 
-    if (action === 'login') {
-        loginButton.style.opacity = '0';
-        loginButton.style.visibility = 'hidden';
-        logoutButton.style.opacity = '1';
-        logoutButton.style.visibility = 'visible';
+    if (action === 'onWork') {
+        onWorkButton.style.opacity = '0';
+        onWorkButton.style.visibility = 'hidden';
+        offWorkButton.style.opacity = '1';
+        offWorkButton.style.visibility = 'visible';
 
         // 출근 요청 POST
         fetch('/api/workTimes/startWork', {
@@ -480,11 +481,11 @@ function toggleButtons(action) {
                 console.error('출근 요청 실패:', error);
             });
 
-    } else if (action === 'logout') {
-        loginButton.style.opacity = '1';
-        loginButton.style.visibility = 'visible';
-        logoutButton.style.opacity = '0';
-        logoutButton.style.visibility = 'hidden';
+    } else if (action === 'offWork') {
+        onWorkButton.style.opacity = '1';
+        onWorkButton.style.visibility = 'visible';
+        offWorkButton.style.opacity = '0';
+        offWorkButton.style.visibility = 'hidden';
 
         // 퇴근 요청 POST
         fetch('/api/workTimes/endWork', {
@@ -519,13 +520,14 @@ function toggleButtons(action) {
 // 페이지 로드 시 버튼 상태 초기화
 document.addEventListener('DOMContentLoaded', initializeButtons);
 
-// 버튼 클릭 시 토글 처리
-document.getElementById('login-button').addEventListener('click', function() {
-    toggleButtons('login');
+// 버튼 클릭 시 토글 처리 (onWork=출근)
+document.getElementById('onWork-button').addEventListener('click', function() {
+    toggleButtons('onWork');
 });
 
-document.getElementById('logout-button').addEventListener('click', function() {
-    toggleButtons('logout');
+// 버튼 클릭 시 토글 처리 (offWork=퇴근)
+document.getElementById('offWork-button').addEventListener('click', function() {
+    toggleButtons('offWork');
 });
 
 //
