@@ -2,9 +2,11 @@ package ac.su.erp.service;
 
 import ac.su.erp.domain.Employee;
 import ac.su.erp.domain.WorkTime;
+import ac.su.erp.dto.WorkTimeSummary;
 import ac.su.erp.repository.WorkTimeRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,7 +45,8 @@ public class WorkTimeService {
         workTime.setEmployee(employee);
         workTime.setTodayDate(LocalDate.now());
         workTime.setOnWork(LocalTime.now());
-        workTime.setOffWork(null);
+//        workTime.setTodayDate(LocalDate.of(2024, 7, 22));
+//        workTime.setOnWork(LocalTime.of(9, 0, 0));
         workTimeRepository.save(workTime);
     }
 
@@ -81,5 +84,44 @@ public class WorkTimeService {
         LocalDate today = LocalDate.now();
         List<WorkTime> workTimes = workTimeRepository.findMostRecentWorkTime(employee, today);
         return !workTimes.isEmpty() && workTimes.get(0).getOffWork() == null;
+    }
+
+    //
+    // 특정 사원의 일주일 기록 조회
+    public List<WorkTime> getWeeklyWorkTimes() {
+        Employee employee = new Employee();
+        employee.setEmpNum(1L); // 1번 사원 가데이터 입력
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+        return workTimeRepository.findByEmployeeAndTodayDateBetween(employee, monday, sunday);
+    }
+
+    // 일주일 기록의 총 근무시간과 초과시간 계산
+    public WorkTimeSummary calculateWeeklySummary() {
+        List<WorkTime> weeklyWorkTimes = getWeeklyWorkTimes();
+
+        Duration totalWorkDuration = Duration.ZERO;
+        Duration totalExcessAllow = Duration.ZERO;
+
+        for (WorkTime workTime : weeklyWorkTimes) {
+            LocalTime onWorkTime = workTime.getOnWork();
+            LocalTime offWorkTime = workTime.getOffWork();
+            if (onWorkTime != null && offWorkTime != null) {
+                Duration dailyDuration = Duration.between(onWorkTime, offWorkTime);
+                totalWorkDuration = totalWorkDuration.plus(dailyDuration);
+
+                // Directly use the `excessAllow` column value for excess hours
+                Duration dailyExcessAllow = Duration.ofHours(workTime.getExcessAllow().getHour())
+                        .plusMinutes(workTime.getExcessAllow().getMinute());
+                totalExcessAllow = totalExcessAllow.plus(dailyExcessAllow);
+            }
+        }
+
+        WorkTimeSummary summary = new WorkTimeSummary();
+        summary.setTotalWorkHours(totalWorkDuration.toHours());
+        summary.setExcessHours(totalExcessAllow.toHours());
+
+        return summary;
     }
 }

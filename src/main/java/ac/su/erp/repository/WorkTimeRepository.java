@@ -16,4 +16,6 @@ public interface WorkTimeRepository extends JpaRepository<WorkTime, Long> {
     // 특정 사원의 오늘 WorkTime 중 가장 최근의 WorkTime을 조회하는 JPQL 쿼리
     @Query("SELECT wt FROM WorkTime wt WHERE wt.employee = :employee AND wt.todayDate = :today ORDER BY wt.onWork DESC")
     List<WorkTime> findMostRecentWorkTime(Employee employee, LocalDate today);
+
+    List<WorkTime> findByEmployeeAndTodayDateBetween(Employee employee, LocalDate startDate, LocalDate endDate);
 }

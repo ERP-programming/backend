@@ -443,91 +443,61 @@ function initializeButtons() {
 }
 
 // 버튼 상태 토글 함수
-function toggleButtons(action) {
+// 버튼 상태 토글 및 API 호출 함수
+function handleWorkAction(action) {
     var onWorkButton = document.getElementById('onWork-button');
     var offWorkButton = document.getElementById('offWork-button');
 
-    if (action === 'onWork') {
-        onWorkButton.style.opacity = '0';
-        onWorkButton.style.visibility = 'hidden';
-        offWorkButton.style.opacity = '1';
-        offWorkButton.style.visibility = 'visible';
+    let apiEndpoint = action === 'onWork' ? '/api/workTimes/startWork' : '/api/workTimes/endWork';
 
-        // 출근 요청 POST
-        fetch('/api/workTimes/startWork', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({})
+    // API 호출
+    fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text(); // 응답 본문을 텍스트로 가져온다
-            })
-            .then(text => {
-                if (text) {
-                    return JSON.parse(text); // 텍스트를 JSON으로 파싱
-                }
-                return {}; // 본문이 비어있다면 빈 객체 반환
-            })
-            .then(data => {
-                console.log('출근 요청 성공:', data);
-                location.reload(); // 페이지 새로고침
-            })
-            .catch(error => {
-                console.error('출근 요청 실패:', error);
-            });
+        .then(text => text ? JSON.parse(text) : {})
+        .then(data => {
+            console.log(action === 'onWork' ? '출근 요청 성공:' : '퇴근 요청 성공:', data);
 
-    } else if (action === 'offWork') {
-        onWorkButton.style.opacity = '1';
-        onWorkButton.style.visibility = 'visible';
-        offWorkButton.style.opacity = '0';
-        offWorkButton.style.visibility = 'hidden';
+            // API 호출 성공 후 버튼 상태 변경
+            if (action === 'onWork') {
+                onWorkButton.style.opacity = '0';
+                onWorkButton.style.visibility = 'hidden';
+                offWorkButton.style.opacity = '1';
+                offWorkButton.style.visibility = 'visible';
+            } else {
+                onWorkButton.style.opacity = '1';
+                onWorkButton.style.visibility = 'visible';
+                offWorkButton.style.opacity = '0';
+                offWorkButton.style.visibility = 'hidden';
+            }
 
-        // 퇴근 요청 POST
-        fetch('/api/workTimes/endWork', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({})
+            location.reload(); // 페이지 새로고침
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text(); // 응답 본문을 텍스트로 가져온다
-            })
-            .then(text => {
-                if (text) {
-                    return JSON.parse(text); // 텍스트를 JSON으로 파싱
-                }
-                return {}; // 본문이 비어있다면 빈 객체 반환
-            })
-            .then(data => {
-                console.log('퇴근 요청 성공:', data);
-                location.reload(); // 페이지 새로고침
-            })
-            .catch(error => {
-                console.error('퇴근 요청 실패:', error);
-            });
-    }
+        .catch(error => {
+            console.error(action === 'onWork' ? '출근 요청 실패:' : '퇴근 요청 실패:', error);
+        });
 }
 
 // 페이지 로드 시 버튼 상태 초기화
 document.addEventListener('DOMContentLoaded', initializeButtons);
 
-// 버튼 클릭 시 토글 처리 (onWork=출근)
+// 버튼 클릭 이벤트 리스너
 document.getElementById('onWork-button').addEventListener('click', function() {
-    toggleButtons('onWork');
+    handleWorkAction('onWork');
 });
 
-// 버튼 클릭 시 토글 처리 (offWork=퇴근)
 document.getElementById('offWork-button').addEventListener('click', function() {
-    toggleButtons('offWork');
+    handleWorkAction('offWork');
 });
 
 //

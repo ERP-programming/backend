@@ -68,6 +68,7 @@
         </div>
         <div class="info">
             <!-- 각 프로필 정보 항목을 표시 (Thymeleaf를 사용하여 동적으로 데이터 바인딩) -->
+            <p style="display: none" th:text="${employee.empNum}"></p>  <!-- 가데이터 -->
             <p><i class="fas fa-user"></i><strong>이름:</strong> <span th:text="${employee.empName}">이름</span></p>
             <p><i class="fas fa-phone"></i><strong>전화번호:</strong> <span th:text="${employee.empPnum}">전화번호</span></p>
             <p><i class="fas fa-envelope"></i><strong>이메일:</strong> <span th:text="${employee.empEmail}">이메일</span></p>
@@ -124,6 +125,7 @@
 
             // 여기에 데이터를 서버에 저장하는 코드 추가
             const profileData = {
+                empNum: $('#empNum').text(),    // 가데이터 --JCC // 프로필 데이터를 서버에 저장하는 AJAX 요청
                 empName: $('.info input:eq(0)').val(),
                 empPnum: $('.info input:eq(1)').val(),
                 empEmail: $('.info input:eq(2)').val(),
