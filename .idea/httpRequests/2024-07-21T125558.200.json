@@ -1,0 +1,47 @@
+[
+  {
+    "equipId": 11,
+    "equipName": "ㅁㄴㅇ",
+    "equipInfo": "http://www.naver.com",
+    "equipAmount": 1,
+    "equipCost": 1,
+    "equipSumcost": 1,
+    "equipWhy": "2",
+    "reqDate": "2024-07-21",
+    "kinds": "비품",
+    "del": "ACTIVE",
+    "approvalStatus": "PENDING",
+    "meta": null,
+    "approver": null
+  },
+  {
+    "equipId": 12,
+    "equipName": "자",
+    "equipInfo": "d",
+    "equipAmount": 1,
+    "equipCost": 3,
+    "equipSumcost": 4,
+    "equipWhy": "e",
+    "reqDate": "2024-07-21",
+    "kinds": "비품",
+    "del": "ACTIVE",
+    "approvalStatus": "PENDING",
+    "meta": null,
+    "approver": null
+  },
+  {
+    "equipId": 13,
+    "equipName": "ㅁㄴㅇ",
+    "equipInfo": "http://www.naver.com",
+    "equipAmount": 1,
+    "equipCost": 1,
+    "equipSumcost": 2,
+    "equipWhy": "2",
+    "reqDate": "2024-07-21",
+    "kinds": "비품",
+    "del": "ACTIVE",
+    "approvalStatus": "PENDING",
+    "meta": null,
+    "approver": null
+  }
+]

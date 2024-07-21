@@ -1,0 +1,3957 @@
+Index: src/main/resources/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"ko\" xmlns:th=\"http://www.thymeleaf.org\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n    <title>로그인</title>\r\n    <link rel=\"stylesheet\" th:href=\"@{/css/login.css}\">\r\n    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css\">\r\n</head>\r\n<body>\r\n<div class=\"login-container\">\r\n    <div class=\"login-box\">\r\n        <h1>KOYOTE</h1>\r\n        <h2>로그인</h2>\r\n        <p>환영합니다. 로그인을 해주세요!</p>\r\n        <form th:action=\"@{/employees/login}\" th:object=\"${loginForm}\" method=\"post\" id=\"login-form\">\r\n            <div class=\"input-group\">\r\n                <i class=\"fas fa-envelope\"></i>\r\n                <input type=\"text\" th:field=\"*{username}\" placeholder=\"아이디\" required>\r\n                <div class=\"error-message\" th:if=\"${#fields.hasErrors('username')}\" th:errors=\"*{username}\"></div>\r\n            </div>\r\n            <div class=\"input-group\">\r\n                <i class=\"fas fa-lock\"></i>\r\n                <input type=\"password\" th:field=\"*{password}\" placeholder=\"비밀번호\" required>\r\n                <div class=\"error-message\" th:if=\"${#fields.hasErrors('password')}\" th:errors=\"*{password}\"></div>\r\n            </div>\r\n            <button type=\"submit\">로그인</button>\r\n            <a href=\"#\">비밀번호를 잊으셨나요?</a>\r\n        </form>\r\n    </div>\r\n</div>\r\n\r\n<!-- 로그인 실패 시 표시할 팝업 -->\r\n<div class=\"popup\" id=\"popup\" th:if=\"${loginError}\">\r\n    <p>아이디 또는 비밀번호가 일치하지 않습니다.</p>\r\n    <button onclick=\"closePopup()\">확인</button>\r\n</div>\r\n\r\n<script>\r\n    function closePopup() {\r\n        document.getElementById('popup').style.display = 'none';\r\n    }\r\n</script>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/login.html b/src/main/resources/templates/login.html
+--- a/src/main/resources/templates/login.html	(revision 1da4ebd30c0332f77ab4a8ab51841640bf8f3b03)
++++ b/src/main/resources/templates/login.html	(date 1721525282330)
+@@ -42,4 +42,4 @@
+     }
+ </script>
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+Index: src/main/java/ac/su/erp/controller/WorkflowController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ac.su.erp.controller;\r\n\r\nimport ac.su.erp.constant.ApprovalStatus;\r\nimport ac.su.erp.dto.EquipmentRequestDTO;\r\nimport ac.su.erp.service.EquipmentRequestService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.Model;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport java.util.List;\r\nimport java.util.stream.Collectors;\r\n\r\n@Controller\r\n@RequiredArgsConstructor\r\npublic class WorkflowController {\r\n\r\n    private final EquipmentRequestService equipmentRequestService;\r\n\r\n    @GetMapping(\"/workflow\")\r\n    public String showWorkflow(Model model) {\r\n        List<EquipmentRequestDTO> pendingItems = equipmentRequestService.getPendingRequests().stream().map(request -> {\r\n            request.setMeta(request.getApprover() != null ? request.getApprover() : \"미승인\");\r\n            request.setApprovalStatus(request.getApprovalStatus());\r\n            return request;\r\n        }).collect(Collectors.toList());\r\n\r\n        List<EquipmentRequestDTO> completedItems = equipmentRequestService.getCompletedRequests().stream().map(request -> {\r\n            request.setMeta(request.getApprover() != null ? request.getApprover() : \" \");\r\n            request.setApprovalStatus(request.getApprovalStatus());\r\n            return request;\r\n        }).collect(Collectors.toList());\r\n\r\n        long pendingCount = pendingItems.stream().filter(item -> item.getApprovalStatus() == ApprovalStatus.PENDING).count();\r\n\r\n        model.addAttribute(\"pendingItems\", pendingItems);\r\n        model.addAttribute(\"completedItems\", completedItems);\r\n        model.addAttribute(\"pendingCount\", pendingCount);\r\n        model.addAttribute(\"equipmentRequest\", new EquipmentRequestDTO());\r\n\r\n        return \"Workflow\"; // Thymeleaf 템플릿 경로\r\n    }\r\n\r\n    @GetMapping(\"/workflow/edit/{equipId}\")\r\n    public String showEditForm(@PathVariable Long equipId, Model model) {\r\n        EquipmentRequestDTO equipmentRequest = equipmentRequestService.getEquipmentRequestById(equipId);\r\n        model.addAttribute(\"equipmentRequest\", equipmentRequest);\r\n        return \"editEquipmentRequest\"; // 비품 수정 폼의 Thymeleaf 템플릿 경로\r\n    }\r\n\r\n    @PostMapping(\"/workflow/edit/{equipId}\")\r\n    public String handleEditForm(@PathVariable Long equipId, @ModelAttribute EquipmentRequestDTO equipmentRequestDTO) {\r\n        // 비품 정보 업데이트 로직\r\n        equipmentRequestDTO.setId(equipId); // 수정할 비품의 ID 설정\r\n        equipmentRequestService.updateEquipmentRequest(equipmentRequestDTO); // 서비스를 통해 비품 정보 업데이트\r\n        return \"redirect:/workflow\"; // 수정 후 다시 Workflow 페이지로 리다이렉트\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/su/erp/controller/WorkflowController.java b/src/main/java/ac/su/erp/controller/WorkflowController.java
+--- a/src/main/java/ac/su/erp/controller/WorkflowController.java	(revision 1da4ebd30c0332f77ab4a8ab51841640bf8f3b03)
++++ b/src/main/java/ac/su/erp/controller/WorkflowController.java	(date 1721537978158)
+@@ -55,4 +55,4 @@
+         equipmentRequestService.updateEquipmentRequest(equipmentRequestDTO); // 서비스를 통해 비품 정보 업데이트
+         return "redirect:/workflow"; // 수정 후 다시 Workflow 페이지로 리다이렉트
+     }
+-}
++}
+\ No newline at end of file
+Index: src/main/java/ac/su/erp/controller/EquipmentRequestController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ac.su.erp.controller;\r\n\r\nimport ac.su.erp.dto.EquipmentRequestDTO;\r\nimport ac.su.erp.service.EquipmentRequestService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.http.HttpStatus;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport java.util.List;\r\n\r\n@RestController\r\n@RequestMapping(\"/api/v2/equipment-requests\")\r\n@RequiredArgsConstructor\r\npublic class EquipmentRequestController {\r\n\r\n    private final EquipmentRequestService equipmentRequestService;\r\n\r\n    @GetMapping\r\n    public ResponseEntity<List<EquipmentRequestDTO>> getAllRequests() {\r\n        List<EquipmentRequestDTO> requests = equipmentRequestService.getAllRequests();\r\n        return ResponseEntity.ok(requests);\r\n    }\r\n\r\n    @GetMapping(\"/{id}\")\r\n    public ResponseEntity<EquipmentRequestDTO> getEquipmentRequestById(@PathVariable Long id) {\r\n        EquipmentRequestDTO equipmentRequestDTO = equipmentRequestService.getRequestById(id);\r\n        if (equipmentRequestDTO != null) {\r\n            return ResponseEntity.ok(equipmentRequestDTO);\r\n        } else {\r\n            return ResponseEntity.notFound().build();\r\n        }\r\n    }\r\n\r\n    @PostMapping(consumes = \"application/json\")\r\n    public ResponseEntity<EquipmentRequestDTO> createRequest(@RequestBody EquipmentRequestDTO requestDTO) {\r\n        // 기본값 설정\r\n        requestDTO.setDefaultValues();\r\n        try {\r\n            EquipmentRequestDTO createdRequest = equipmentRequestService.createRequest(requestDTO);\r\n            return ResponseEntity.ok(createdRequest);\r\n        } catch (Exception e) {\r\n            // 서버 로그에 예외 메시지 기록\r\n            e.printStackTrace();\r\n            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();\r\n        }\r\n    }\r\n    @PutMapping(\"/{id}\")\r\n    public ResponseEntity<EquipmentRequestDTO> updateEquipmentRequest(@PathVariable Long id, @RequestBody EquipmentRequestDTO equipmentRequestDTO) {\r\n        EquipmentRequestDTO updatedRequest = equipmentRequestService.updateRequest(id, equipmentRequestDTO);\r\n        if (updatedRequest != null) {\r\n            return ResponseEntity.ok(updatedRequest);\r\n        } else {\r\n            return ResponseEntity.notFound().build();\r\n        }\r\n    }\r\n\r\n    @DeleteMapping(\"/{id}\")\r\n    public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {\r\n        equipmentRequestService.deleteRequest(id);\r\n        return ResponseEntity.noContent().build();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/su/erp/controller/EquipmentRequestController.java b/src/main/java/ac/su/erp/controller/EquipmentRequestController.java
+--- a/src/main/java/ac/su/erp/controller/EquipmentRequestController.java	(revision 1da4ebd30c0332f77ab4a8ab51841640bf8f3b03)
++++ b/src/main/java/ac/su/erp/controller/EquipmentRequestController.java	(date 1721537962780)
+@@ -60,4 +60,4 @@
+         equipmentRequestService.deleteRequest(id);
+         return ResponseEntity.noContent().build();
+     }
+-}
++}
+\ No newline at end of file
+Index: build/resources/main/templates/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/index.html b/build/resources/main/templates/index.html
+new file mode 100644
+--- /dev/null	(date 1721535228233)
++++ b/build/resources/main/templates/index.html	(date 1721535228233)
+@@ -0,0 +1,91 @@
++<!DOCTYPE html>
++<html lang="ko">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Home</title>
++    <link rel="stylesheet" th:href="@{/css/Home.css}">
++    <link rel="stylesheet" href="/Topbar.css">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++</head>
++<body>
++<div id="topbar-placeholder"></div>
++
++<div class="content-container">
++    <h2>OOO님 환영합니다. 😊</h2>
++
++    <div class="main-content">
++        <div class="left-panel">
++            <div class="tab-menu">
++                <button class="tab-button active" onclick="openTab(event, 'notice')">공지사항</button>
++                <button class="tab-button" onclick="openTab(event, 'task')">할 일</button>
++            </div>
++
++            <div id="notice" class="tab-content">
++                <h3>공지사항 표시</h3>
++                <p>공지사항 내용...</p>
++            </div>
++
++            <div id="task" class="tab-content" style="display:none">
++                <div class="task-container">
++                    <i class="fas fa-user-circle"></i>
++                    <h3>새로운 할 일이 없습니다.</h3>
++                    <p>정한솔님에게 할 일이 생기면 여기서 알려드릴게요.</p>
++                </div>
++            </div>
++        </div>
++
++        <div class="right-panel">
++            <h3>오늘 근무</h3>
++            <div class="work-status">
++                <p>출근: 08:55</p>
++                <p>퇴근: --:--</p>
++            </div>
++            <div class="work-timer">
++                <h1>05:04:58</h1>
++                <p>근무</p>
++                <p>09:00 - 18:00</p>
++                <div class="schedule">
++                    <label for="schedule">예정 스케줄</label>
++                    <select id="schedule">
++                        <option>1</option>
++                    </select>
++                </div>
++                <button class="logout-button">지금 퇴근하기</button>
++            </div>
++        </div>
++    </div>
++</div>
++
++<script>
++    async function fetchHtmlAsText(url) {
++        return await (await fetch(url)).text();
++    }
++
++    async function importTopbar() {
++        const topbarHtml = await fetchHtmlAsText('/topbar.html');
++        document.getElementById('topbar-placeholder').innerHTML = topbarHtml;
++    }
++
++    function openTab(evt, tabName) {
++        var i, tabcontent, tabbuttons;
++        tabcontent = document.getElementsByClassName("tab-content");
++        for (i = 0; i < tabcontent.length; i++) {
++            tabcontent[i].style.display = "none";
++        }
++        tabbuttons = document.getElementsByClassName("tab-button");
++        for (i = 0; i < tabbuttons.length; i++) {
++            tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
++        }
++        document.getElementById(tabName).style.display = "block";
++        evt.currentTarget.className += " active";
++    }
++
++    document.addEventListener('DOMContentLoaded', () => {
++        importTopbar();
++    });
++</script>
++
++</body>
++</html>
++
+Index: build/resources/main/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/login.html b/build/resources/main/templates/login.html
+new file mode 100644
+--- /dev/null	(date 1721535228237)
++++ b/build/resources/main/templates/login.html	(date 1721535228237)
+@@ -0,0 +1,45 @@
++<!DOCTYPE html>
++<html lang="ko" xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>로그인</title>
++    <link rel="stylesheet" th:href="@{/css/login.css}">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++</head>
++<body>
++<div class="login-container">
++    <div class="login-box">
++        <h1>KOYOTE</h1>
++        <h2>로그인</h2>
++        <p>환영합니다. 로그인을 해주세요!</p>
++        <form th:action="@{/employees/login}" th:object="${loginForm}" method="post" id="login-form">
++            <div class="input-group">
++                <i class="fas fa-envelope"></i>
++                <input type="text" th:field="*{username}" placeholder="아이디" required>
++                <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
++            </div>
++            <div class="input-group">
++                <i class="fas fa-lock"></i>
++                <input type="password" th:field="*{password}" placeholder="비밀번호" required>
++                <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
++            </div>
++            <button type="submit">로그인</button>
++            <a href="#">비밀번호를 잊으셨나요?</a>
++        </form>
++    </div>
++</div>
++
++<!-- 로그인 실패 시 표시할 팝업 -->
++<div class="popup" id="popup" th:if="${loginError}">
++    <p>아이디 또는 비밀번호가 일치하지 않습니다.</p>
++    <button onclick="closePopup()">확인</button>
++</div>
++
++<script>
++    function closePopup() {
++        document.getElementById('popup').style.display = 'none';
++    }
++</script>
++</body>
++</html>
+\ No newline at end of file
+Index: build/resources/main/static/css/home.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/home.css b/build/resources/main/static/css/home.css
+new file mode 100644
+--- /dev/null	(date 1721535228206)
++++ b/build/resources/main/static/css/home.css	(date 1721535228206)
+@@ -0,0 +1,275 @@
++body {
++  font-family: Arial, sans-serif;
++  margin: 0;
++  padding: 0;
++  background-color: #f4f4f4;
++  color: #333;
++}
++
++.content-container {
++  padding: 20px;
++  max-width: 1200px;
++  margin: 0 auto;
++}
++
++h2 {
++  text-align: center;
++  margin-top: 20px;
++}
++
++.main-content {
++  display: flex;
++  justify-content: space-between;
++  margin-top: 20px;
++}
++
++.left-panel, .work-panel {
++  background-color: #fff;
++  padding: 20px;
++  border-radius: 5px;
++  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
++}
++
++.left-panel {
++  width: 65%;
++}
++
++.work-panel {
++  width: 30%;
++}
++
++.tab-menu {
++  display: flex;
++  border-bottom: 1px solid #ddd;
++}
++
++.tab-button {
++  background-color: inherit;
++  border: none;
++  outline: none;
++  padding: 14px 16px;
++  cursor: pointer;
++  font-size: 17px;
++  flex: 1;
++  text-align: center;
++}
++
++.tab-button:hover {
++  background-color: #ddd;
++}
++
++.tab-button.active {
++  border-bottom: 3px solid #007bff;
++}
++
++
++/**/
++.tab-content {
++  display: none;
++  padding: 16px;
++  text-align: center;
++}
++
++/*notice container*/
++.notice-container {
++  margin-top: 50px; /* 공지사항 섹션 여백 */
++}
++
++.notice-container a {
++  display: inline-block;
++  margin-bottom: 20px; /* 링크 여백 */
++  color: #007bff; /* 링크 색상 */
++  text-decoration: none; /* 밑줄 제거 */
++}
++
++.notice-container table {
++  width: 100%; /* 테이블 너비 설정 */
++  border-collapse: collapse; /* 테두리 병합 */
++}
++
++.notice-container th, .notice-container td {
++  border: 1px solid #ccc; /* 테두리 스타일 */
++  padding: 10px; /* 패딩 추가 */
++  text-align: left; /* 텍스트 정렬 */
++}
++
++.notice-container th {
++  background-color: #f2f2f2; /* 헤더 배경색 */
++  color: #007bff; /* 헤더 텍스트 색 */
++}
++
++/*task container*/
++/*task head*/
++.task-container i {
++  font-size: 50px; /* 아이콘 크기 */
++  color: #007bff; /* 아이콘 색상 */
++  margin-bottom: 20px; /* 아이콘 아래 여백 */
++}
++
++.task-container h3, .notice-container h3 {
++  color: #007bff; /* 제목 색상 */
++}
++
++.task-container p, .notice-container p {
++  color: #666; /* 본문 텍스트 색상 */
++}
++/**/
++/*task body*/
++.task-container {
++  margin-top: 50px; /* 공지사항 섹션 여백 */
++}
++
++.task-container a {
++  display: inline-block;
++  margin-bottom: 20px; /* 링크 여백 */
++  color: #007bff; /* 링크 색상 */
++  text-decoration: none; /* 밑줄 제거 */
++}
++
++.task-container table {
++  width: 100%; /* 테이블 너비 설정 */
++  border-collapse: collapse; /* 테두리 병합 */
++}
++
++.task-container th, .task-container td {
++  border: 1px solid #ccc; /* 테두리 스타일 */
++  padding: 10px; /* 패딩 추가 */
++  text-align: left; /* 텍스트 정렬 */
++}
++
++.task-container th {
++  background-color: #f2f2f2; /* 헤더 배경색 */
++  color: #007bff; /* 헤더 텍스트 색 */
++}
++/**/
++
++.work-status, .work-timer {
++  text-align: center;
++  margin-top: 20px;
++}
++
++.work-status p {
++  margin: 5px 0;
++}
++
++.work-timer h1 {
++  font-size: 48px;
++  margin: 10px 0;
++}
++
++.schedule {
++  margin-top: 20px;
++}
++
++.logout-button {
++  background-color: #ff4b5c;
++  color: white;
++  border: none;
++  padding: 10px;
++  border-radius: 5px;
++  cursor: pointer;
++  margin-top: 20px;
++}
++
++.logout-button:hover {
++  background-color: #ff2a3b;
++}
++
++
++
++/*
++
++ */
++
++tr.clickable-row {
++  cursor: pointer;  /* 행 클릭가능 */
++}
++
++
++
++/* 모달 start */
++.modal {
++  display: none;
++  position: fixed;
++  z-index: 1;
++  left: 0;
++  top: 0;
++  width: 100%;
++  height: 100%;
++  overflow: auto;
++  background-color: rgba(0, 0, 0, 0.5); /* 배경을 조금 더 어둡게 */
++}
++
++.modal-content {
++  background-color: #ffffff; /* 흰색 배경 */
++  margin: 10% auto; /* 중앙에 배치 */
++  padding: 30px; /* 패딩 증가 */
++  border-radius: 8px; /* 둥근 모서리 */
++  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
++  width: 80%; /* 너비 설정 */
++  max-width: 600px; /* 최대 너비 설정 */
++}
++
++.close {
++  color: #aaa;
++  float: right;
++  font-size: 28px;
++  font-weight: bold;
++}
++
++.close:hover,
++.close:focus {
++  color: #ff0000; /* 마우스 오버 시 빨간색 */
++  text-decoration: none;
++  cursor: pointer;
++}
++
++.modal-title {
++  margin: 0; /* 제목 상단 여백 제거 */
++  color: #333; /* 제목 색상 */
++  font-size: 24px; /* 제목 크기 */
++  border-bottom: 1px solid #ddd; /* 제목 아래 경계선 추가 */
++  padding-bottom: 10px; /* 제목 아래 패딩 */
++}
++
++.modal-body {
++  margin: 20px 0; /* 본문 상하 여백 */
++}
++
++.modal-body p {
++  color: #555; /* 본문 텍스트 색상 */
++  line-height: 1.5; /* 줄 간격 */
++}
++
++.modal-footer {
++  margin-top: 20px; /* 푸터 상단 여백 */
++  font-size: 14px; /* 작은 글씨 크기 */
++  color: #777; /* 푸터 색상 */
++  text-align: right; /* 오른쪽 정렬 */
++}
++/* 모달 end */
++
++
++/* task 수정버튼 스타일 */
++#taskContentEditBtn {
++  font-size: 12px;
++  padding: 2px 4px;
++  margin: 0;
++  border: none;
++  background-color: #007bff;
++  color: white;
++  cursor: pointer;
++  position: absolute;
++}
++
++/* td 요소에 relative 위치 설정 */
++td {
++  position: relative;
++}
++
++/* 버튼을 td 요소의 우측 하단으로 위치 조정 */
++td #taskContentEditBtn {
++  position: absolute;
++  bottom: 5px;
++  right: 5px;
++}
+Index: build/resources/main/templates/home.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/home.html b/build/resources/main/templates/home.html
+new file mode 100644
+--- /dev/null	(date 1721535228231)
++++ b/build/resources/main/templates/home.html	(date 1721535228231)
+@@ -0,0 +1,231 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org"
++      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
++      lang="eng"
++      layout:decorate="~{layouts/layout}">
++
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Home</title>
++  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++  <link rel="stylesheet" th:href="@{css/home.css}">
++  <style>
++
++  </style>
++</head>
++
++<body>
++<div layout:fragment="contents">
++  <div class="content-container">
++    <h2>닏동고님 환영합니다. 😊</h2>
++
++    <!-- 메인 콘텐츠 start -->
++    <div class="main-content">
++
++      <!-- 왼쪽 패널 start -->
++      <div class="left-panel">
++        <div class="tab-menu">
++          <button class="tab-button active" onclick="openTab(event,'notice')">공지사항</button>
++          <button class="tab-button" onclick="openTab(event,'task')">할 일</button>
++        </div>
++
++        <!-- 공지사항 start -->
++        <div th:fragment="noticeFragment" id="notice" class="tab-content">
++
++          <!-- 공지사항 컨테이너 -->
++          <div class="notice-container">
++            <button type="submit" id="createNoticeBtn" class="btn">새 공지사항 작성</button>
++            <table>
++              <thead>
++              <tr>
++                <th>ID</th>
++                <th>제목</th>
++                <th>작성일</th>
++                <th>작성자</th>
++                <th>actions</th>
++              </tr>
++              </thead>
++              <tbody>
++              <tr th:each="notice : ${notices}" class="clickable-row " th:data-id="${notice.noticeId}">
++                <td th:text="${notice.noticeId}"></td>
++                <td th:text="${notice.title}"></td>
++                <td th:text="${notice.createDate}"></td>
++                <td th:text="${notice.employee.empName}"></td>
++                <td>
++                  <a class="btn-edit" th:data-id="${notice.noticeId}">수정</a>
++                  <a class="btn-delete" th:data-id="${notice.noticeId}">삭제</a>
++                </td>
++              </tr>
++              </tbody>
++            </table>
++          </div>
++          <!-- 공지사항 컨테이너 end -->
++
++          <!-- 공지사항 상세 모달  -->
++          <div id="noticeDetailModal" class="modal">
++            <div class="modal-content">
++              <span class="close">&times;</span>
++              <h2 id="noticeDetailTitle" class="modal-title"></h2>
++              <div class="modal-body">
++                <p id="noticeDetailContent" style="white-space: pre-wrap"></p>
++              </div>
++              <div class="modal-footer">
++                <p id="noticeDetailDate"></p>
++                <p id="noticeDetailAuthor"></p>
++              </div>
++            </div>
++          </div>
++          <!-- 공지사항 상세 모달 end -->
++
++          <!-- 공지사항 작성 모달 -->
++          <div id="createNoticeModal" class="modal">
++            <div class="modal-content">
++              <span class="close">&times;</span>
++              <h2 class="modal-title">새 공지사항 작성</h2>
++              <div class="modal-body">
++                <form id="createNoticeForm">
++                  <input type="text" id="createNoticeTitle" placeholder="제목" required>
++                  <textarea id="createNoticeContent" placeholder="내용" required></textarea>
++                  <button type="submit" class="btn">작성</button>
++                </form>
++              </div>
++            </div>
++          </div>
++          <!-- 공지사항 작성 모달 end -->
++
++          <!-- 공지사항 수정 모달 -->
++          <div id="editNoticeModal" class="modal">
++            <div class="modal-content">
++              <span class="close">&times;</span>
++              <h2 class="modal-title">공지사항 수정</h2>
++              <div class="modal-body">
++                <form id="editNoticeForm">
++                  <input type="hidden" id="editNoticeId">
++                  <input type="text" id="editNoticeTitle" placeholder="제목" required>
++                  <textarea id="editNoticeContent" placeholder="내용" required></textarea>
++                  <button type="submit" class="btn">수정</button>
++                </form>
++              </div>
++            </div>
++          </div>
++          <!-- 공지사항 수정 모달 end -->
++
++        </div>
++        <!-- 공지사항 end -->
++
++        <!-- 할일 start -->
++        <div th:fragment="taskFragment" id="task" class="tab-content" style="display:none">
++
++          <!-- 할일 컨테이너 -->
++          <div class="task-container">
++            <!-- 수정예정
++            <div>
++              <i class="fas fa-user-circle"></i>
++              <h3>새로운 할 일이 없습니다.</h3>
++              <p>정한솔님에게 할 일이 생기면 여기서 알려드릴게요.</p>
++            </div>
++             -->
++            <button type="submit" id="createTaskBtn" class="btn">새 공지사항 작성</button>  <!-- 작성버튼 -->
++            <table>
++              <tr th:each="task : ${tasks}" class="clickable-row" th:data-id="${task.taskId}">
++                <td style="display: none;" th:text="${task.taskId}"></td>
++                <td>
++                  <span th:text="${task.content}"></span>
++                  <a class="btn-edit" th:data-id="${task.taskId}">수정</a>
++                </td>
++                <td style="display: none;" th:text="${task.employee.empName}"></td>
++                <td>
++                  <a class="btn-delete" th:data-id="${task.taskId}">삭제</a>
++                </td>
++              </tr>
++            </table>
++          </div>
++          <!-- 할일 컨테이너 end -->
++
++          <!-- 할일 상세 모달  -->
++          <div id="taskDetailModal" class="modal">
++            <div class="modal-content">
++              <span class="close">&times;</span>
++              <div class="modal-body">
++                <p id="taskDetailContent"></p>
++              </div>
++              <div class="modal-footer">
++                <p id="taskDetailAuthor"></p>
++              </div>
++            </div>
++          </div>
++          <!-- 할일 상세 모달 end -->
++
++          <!-- 할일 작성 모달 -->
++          <div id="createTaskModal" class="modal">
++            <div class="modal-content">
++              <span class="close">&times;</span>
++              <h2 class="modal-title">새 할일 작성</h2>
++              <div class="modal-body">
++                <form id="createTaskForm">
++                  <textarea id="createTaskContent" placeholder="내용" required></textarea>
++                  <button type="submit" class="btn">작성</button>
++                </form>
++              </div>
++            </div>
++          </div>
++          <!-- 할일 작성 모달 end -->
++
++          <!-- 할일 수정 모달 -->
++          <div id="editTaskModal" class="modal">
++            <div class="modal-content">
++              <span class="close">&times;</span>
++              <h2 class="modal-title">할일 수정</h2>
++              <div class="modal-body">
++                <form id="editTaskForm">
++                  <input type="hidden" id="editTaskId">
++                  <textarea id="editTaskContent" placeholder="내용" required></textarea>
++                  <button type="submit" class="btn">수정</button>
++                </form>
++              </div>
++            </div>
++          </div>
++          <!-- 할일 수정 모달 end -->
++
++        </div>
++        <!-- 할일 end -->
++
++      </div>
++      <!-- 왼쪽 패널 end -->
++
++      <!-- 오른쪽 패널 (=workPanel) start -->
++      <div th:fragment="workPanelFragment" class="work-panel">
++        <h3>오늘 근무</h3>
++        <div class="work-status">
++          <p>출근: 08:55</p>
++          <p>퇴근: --:--</p>
++        </div>
++        <div class="work-timer">
++          <h1>05:04:58</h1>
++          <p>근무</p>
++          <p>09:00 - 18:00</p>
++          <div class="schedule">
++            <label for="schedule">예정 스케줄</label>
++            <select id="schedule">
++              <option>1</option>
++            </select>
++          </div>
++          <button id="startButton" class="btn">출근하기</button>
++          <button id="endButton" class="btn">퇴근하기</button>
++        </div>
++      </div>
++      <!-- 오른쪽 패널 (=workPanel) end -->
++
++    </div>
++    <!-- 메인 콘텐츠 end -->
++
++  </div>
++</div>
++
++<th:block layout:fragment="script">
++  <script th:src="@{/js/home.js}"></script>
++</th:block>
++
++</body>
++</html>
+\ No newline at end of file
+Index: build/resources/main/static/css/Mypage.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/Mypage.css b/build/resources/main/static/css/Mypage.css
+new file mode 100644
+--- /dev/null	(date 1721535228209)
++++ b/build/resources/main/static/css/Mypage.css	(date 1721535228209)
+@@ -0,0 +1,46 @@
++/* Add styles for modal */
++.modal {
++    display: none;
++    position: fixed;
++    z-index: 1;
++    padding-top: 100px;
++    left: 0;
++    top: 0;
++    width: 100%;
++    height: 100%;
++    overflow: auto;
++    background-color: rgba(0,0,0,0.4);
++}
++.modal-content {
++    background-color: #fefefe;
++    margin: auto;
++    padding: 20px;
++    border: 1px solid #888;
++    width: 50%; /* Adjust width to your needs */
++}
++.close {
++    color: #aaa;
++    float: right;
++    font-size: 28px;
++    font-weight: bold;
++}
++.close:hover,
++.close:focus {
++    color: black;
++    text-decoration: none;
++    cursor: pointer;
++}
++.profile-section {
++    text-align: center; /* Center the profile section */
++}
++.profile-pic {
++    cursor: pointer;
++    width: 100px; /* Adjust to fit your design */
++    height: 100px; /* Adjust to fit your design */
++    border-radius: 50%;
++}
++.info i {
++    cursor: pointer;
++    font-size: 24px; /* Adjust to fit your design */
++    margin: 0 10px; /* Adjust spacing */
++}
+Index: build/resources/main/static/js/EmployForm.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/js/EmployForm.js b/build/resources/main/static/js/EmployForm.js
+new file mode 100644
+--- /dev/null	(date 1721535228217)
++++ b/build/resources/main/static/js/EmployForm.js	(date 1721535228217)
+@@ -0,0 +1,9 @@
++function execDaumPostcode() {
++    new daum.Postcode({
++        oncomplete: function(data) {
++            // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
++            // 예제를 참고하여 다양한 활용법을 확인해 보세요.
++            document.getElementById('address').value = data.address;
++        }
++    }).open();
++}
+\ No newline at end of file
+Index: build/resources/main/static/css/Workflow.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/Workflow.css b/build/resources/main/static/css/Workflow.css
+new file mode 100644
+--- /dev/null	(date 1721535228212)
++++ b/build/resources/main/static/css/Workflow.css	(date 1721535228212)
+@@ -0,0 +1,237 @@
++body {
++    font-family: Arial, sans-serif;
++    background-color: #f5f5f5;
++    margin: 0;
++    padding: 0;
++}
++
++.container {
++    padding: 20px;
++}
++
++nav {
++    background-color: #ffffff;
++    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
++    margin-bottom: 20px;
++}
++
++nav .menu {
++    display: flex;
++    list-style: none;
++    padding: 0;
++    margin: 0;
++}
++
++nav .menu li {
++    margin-right: 20px;
++}
++
++nav .menu li a {
++    display: block;
++    padding: 15px 20px;
++    color: #333;
++    text-decoration: none;
++}
++
++nav .menu li.active a {
++    background-color: #193284;
++    color: white;
++    border-radius: 4px;
++}
++
++.content h1, .content h2 {
++    color: #333;
++}
++
++.workflow-tabs {
++    display: flex;
++    margin-bottom: 20px;
++}
++
++.tab-button {
++    background-color: #f5f5f5;
++    border: 1px solid #ddd;
++    padding: 10px 20px;
++    cursor: pointer;
++    margin-right: 10px;
++}
++
++.tab-button.active {
++    background-color: #193284;
++    color: white;
++    border: none;
++}
++
++.workflow-content .section {
++    background-color: #ffffff;
++    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
++    border-radius: 8px;
++    margin-bottom: 20px;
++    padding: 20px;
++}
++
++.section-header {
++    display: flex;
++    justify-content: space-between;
++    align-items: center;
++    margin-bottom: 10px;
++}
++
++.section-header h3 {
++    margin: 0;
++    font-size: 18px;
++}
++
++.badge {
++    background-color: red;
++    color: white;
++    padding: 2px 8px;
++    border-radius: 12px;
++    font-size: 12px;
++}
++
++.item {
++    display: flex;
++    justify-content: space-between;
++    align-items: center;
++    padding: 10px 0;
++    border-top: 1px solid #ddd;
++}
++
++.item:first-child {
++    border-top: none;
++}
++
++.status {
++    font-size: 14px;
++    padding: 5px 10px;
++    border-radius: 12px;
++    border: #333333;
++}
++
++.status.pending {
++    background-color: #ffffFF;
++    color: #193284;
++    border: #333333;
++    border-radius: 100px;
++}
++
++.status.complete {
++    background-color: #ffffFF;
++    color: #066426;
++    border: #333333;
++    border-radius: 100px;
++}
++
++.description {
++    flex: 1;
++    margin-left: 20px;
++}
++
++.meta {
++    font-size: 12px;
++    color: #666;
++}
++
++/* Modal 스타일 */
++.modal {
++    display: none;
++    position: fixed;
++    z-index: 1;
++    left: 0;
++    top: 0;
++    width: 100%;
++    height: 100%;
++    overflow: auto;
++    background-color: rgba(0, 0, 0, 0.4);
++    padding-top: 60px;
++}
++
++.modal-content {
++    background-color: #fff;
++    margin: 5% auto;
++    padding: 20px;
++    border-radius: 10px;
++    border: 1px solid #ddd;
++    width: 50%;
++    max-width: 600px;
++    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
++}
++
++.modal-header {
++    display: flex;
++    align-items: center;
++    justify-content: space-between;
++    border-bottom: 1px solid #ddd;
++    padding-bottom: 10px;
++}
++
++.modal-header .modal-icon {
++    width: 40px;
++    height: 40px;
++    margin-right: 10px;
++}
++
++.modal-header h5 {
++    margin: 0;
++    font-size: 1.5em;
++}
++
++.modal-body {
++    padding: 20px 0;
++}
++
++.modal-footer {
++    display: flex;
++    justify-content: flex-end;
++    align-items: center;
++    padding-top: 10px;
++    border-top: 1px solid #ddd;
++}
++
++.modal-footer .btn {
++    padding: 10px 20px;
++    border-radius: 5px;
++    cursor: pointer;
++    margin-left: 10px;
++}
++
++.modal-footer .btn-secondary {
++    background-color: #f5f5f5;
++    color: #333;
++}
++
++.modal-footer .btn-primary {
++    background-color: #28a745;
++    color: white;
++}
++
++.close {
++    color: #aaa;
++    float: right;
++    font-size: 28px;
++    font-weight: bold;
++}
++
++.close:hover,
++.close:focus {
++    color: black;
++    text-decoration: none;
++    cursor: pointer;
++}
++
++.form-group {
++    margin-bottom: 1rem;
++}
++
++.form-group label {
++    font-weight: bold;
++}
++
++.form-control {
++    width: 100%;
++    padding: 0.5rem;
++    border: 1px solid #ddd;
++    border-radius: 5px;
++    margin-top: 0.25rem;
++}
+Index: build/resources/main/static/css/EmployForm.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/EmployForm.css b/build/resources/main/static/css/EmployForm.css
+new file mode 100644
+--- /dev/null	(date 1721535228203)
++++ b/build/resources/main/static/css/EmployForm.css	(date 1721535228203)
+@@ -0,0 +1,83 @@
++body {
++    font-family: Arial, sans-serif;
++    margin: 0;
++    padding: 0;
++    box-sizing: border-box;
++}
++.container {
++    max-width: 800px;
++    margin: 20px auto;
++    padding: 20px;
++    border: 1px solid #ccc;
++    border-radius: 8px;
++    box-shadow: 0 0 10px rgba(0,0,0,0.1);
++}
++h1 {
++    font-size: 24px;
++    margin-bottom: 20px;
++}
++.section {
++    margin-bottom: 40px;
++}
++.section h2 {
++    font-size: 20px;
++    margin-bottom: 10px;
++}
++.form-group {
++    margin-bottom: 15px;
++}
++.form-group label {
++    display: block;
++    margin-bottom: 5px;
++    font-weight: bold;
++}
++.form-group input,
++.form-group select {
++    width: 100%;
++    padding: 8px;
++    border: 1px solid #ccc;
++    border-radius: 4px;
++}
++.warning {
++    color: red;
++    margin-top: 5px;
++}
++.address-api {
++    display: flex;
++    justify-content: space-between;
++    align-items: center;
++}
++.address-api input {
++    width: calc(100% - 100px);
++}
++.address-api button {
++    width: 80px;
++    padding: 8px;
++    border: 1px solid #ccc;
++    background-color: #f5f5f5;
++    border-radius: 4px;
++    cursor: pointer;
++}
++.submit-btn {
++    width: 100%;
++    padding: 10px;
++    background-color: #4CAF50;
++    color: white;
++    border: none;
++    border-radius: 4px;
++    cursor: pointer;
++    font-size: 16px;
++}
++.submit-btn:hover {
++    background-color: #45a049;
++}
++.contract-info {
++    margin-bottom: 20px;
++}
++.contract-info p {
++    margin: 5px 0;
++}
++.email-template {
++    font-size: 14px;
++    color: #555;
++}
+\ No newline at end of file
+Index: build/resources/main/static/css/login.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/login.css b/build/resources/main/static/css/login.css
+new file mode 100644
+--- /dev/null	(date 1721535228208)
++++ b/build/resources/main/static/css/login.css	(date 1721535228208)
+@@ -0,0 +1,128 @@
++body {
++    font-family: Arial, sans-serif;
++    margin: 0;
++    padding: 0;
++    background-color: #f4f4f4;
++    color: #333;
++    display: flex;
++    justify-content: center;
++    align-items: center;
++    height: 100vh;
++}
++
++.login-container {
++    width: 100%;
++    max-width: 550px; /* increased max-width */
++    height: 700px; /* added height */
++    margin: 0 auto;
++}
++
++.login-box {
++    background-color: #fff;
++    padding: 60px 40px; /* increased padding for more space */
++    border-radius: 10px;
++    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
++    text-align: center;
++    height: 100%; /* makes the box take the full height of the container */
++    box-sizing: border-box; /* ensures padding is included in the height calculation */
++}
++
++.login-box h1 {
++    color: #007bff;
++}
++
++.login-box h2 {
++    margin: 10px 0;
++}
++
++.login-box p {
++    color: #666;
++}
++
++.input-group {
++    position: relative;
++    margin: 50px 0;
++}
++
++.input-group i {
++    position: absolute;
++    left: 10px;
++    top: 50%;
++    transform: translateY(-50%);
++    color: #007bff;
++}
++
++.input-group input {
++    width: calc(100% - 20px); /* adjusted width */
++    padding: 15px 10px 15px 40px;
++    border: 1px solid #ddd;
++    border-radius: 5px;
++    font-size: 13px;
++    height: 25px;
++}
++
++.error-message {
++    color: red;
++    font-size: 12px;
++    text-align: left;
++    margin: 5px 0; /* adjusted margin */
++    display: none; /* hide by default */
++}
++
++button {
++    background-color: #007bff;
++    color: white;
++    border: none;
++    padding: 15px; /* increased padding for more space */
++    border-radius: 5px;
++    cursor: pointer;
++    width: 100%;
++    margin-top: 30px; /* increased margin for spacing */
++}
++
++button:hover {
++    background-color: #0056b3;
++}
++
++a {
++    display: block;
++    margin-top: 10px;
++    color: #007bff;
++    text-decoration: none;
++}
++
++a:hover {
++    text-decoration: underline;
++}
++
++/* 팝업 스타일 추가 */
++.popup {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    justify-content: center;
++    position: fixed;
++    top: 50%;
++    left: 50%;
++    transform: translate(-50%, -50%);
++    background-color: white;
++    border: 1px solid #ccc;
++    padding: 20px;
++    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
++    z-index: 1000;
++}
++.popup p {
++    margin: 0;
++    padding: 10px 0;
++}
++.popup button {
++    padding: 5px 10px;
++    border: none;
++    background-color: #007bff;
++    color: white;
++    cursor: pointer;
++}
++
++.popup button:hover {
++    background-color: #0056b3;
++}
+Index: build/resources/main/static/js/modal.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/js/modal.js b/build/resources/main/static/js/modal.js
+new file mode 100644
+--- /dev/null	(date 1721535228221)
++++ b/build/resources/main/static/js/modal.js	(date 1721535228221)
+@@ -0,0 +1,24 @@
++// src/main/resources/static/js/modal.js
++
++// Function to open a modal
++function openModal(modalId, url) {
++    if (url) {
++        $('#' + modalId + ' .modal-content').load(url, function () {
++            $('#' + modalId).modal('show');
++        });
++    } else {
++        $('#' + modalId).modal('show');
++    }
++}
++
++// Function to close a modal
++function closeModal(modalId) {
++    $('#' + modalId).modal('hide');
++}
++
++// Close the modal when the user clicks outside of it
++window.onclick = function(event) {
++    if (event.target.classList.contains('modal')) {
++        closeModal(event.target.id);
++    }
++}
+Index: build/resources/main/static/css/topbar.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/topbar.css b/build/resources/main/static/css/topbar.css
+new file mode 100644
+--- /dev/null	(date 1721535228211)
++++ b/build/resources/main/static/css/topbar.css	(date 1721535228211)
+@@ -0,0 +1,92 @@
++body {
++  font-size: 15px;
++  font-family: Arial, sans-serif;
++  background-color: #f4f4f4;
++  color: #333;
++}
++
++.topbar-responsive {
++  background: #2c3840;
++  padding: 1rem 1.5rem;
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++}
++
++.topbar-responsive .topbar-responsive-logo {
++  color: #fefefe;
++  vertical-align: middle;
++}
++
++.topbar-responsive .menu {
++  background: #2c3840;
++  display: flex;
++  gap: 1rem;
++}
++
++.topbar-responsive .menu li {
++  list-style: none;
++  text-align: center;
++}
++
++.topbar-responsive .menu li:last-of-type {
++  margin-right: 0;
++}
++
++.topbar-responsive .menu a {
++  color: #fefefe;
++  transition: color 0.15s ease-in;
++  text-decoration: none;
++}
++
++.topbar-responsive .menu a:hover {
++  color: #c6d1d8;
++}
++
++.topbar-responsive .menu i {
++  font-size: 24px;
++  margin-bottom: 5px;
++}
++
++.topbar-responsive .topbar-responsive-button {
++  color: #fefefe;
++  /**border: 1px solid #fefefe;
++  order-radius: 5000px; **/
++  padding: 0.5rem 1rem;
++  transition: color 0.15s ease-in, border-color 0.15s ease-in;
++}
++
++.topbar-responsive .topbar-responsive-button:hover {
++  color: #c6d1d8;
++  border-color: #c6d1d8;
++}
++
++@media screen and (max-width: 39.9375em) {
++  .topbar-responsive .menu {
++    flex-direction: column;
++  }
++  .topbar-responsive .menu a {
++    padding: 0.875rem 0;
++  }
++}
++
++@media screen and (max-width: 39.9375em) {
++  .topbar-responsive .menu .topbar-responsive-button {
++    width: 100%;
++    margin: 0.875rem 0;
++  }
++}
++
++@media screen and (max-width: 39.9375em) {
++  .topbar-responsive {
++    padding: 0.75rem;
++    flex-direction: column;
++    align-items: flex-start;
++  }
++  .topbar-responsive .top-bar-title {
++    width: 100%;
++    display: flex;
++    justify-content: space-between;
++    align-items: center
++  }
++}
+\ No newline at end of file
+Index: build/resources/main/templates/layouts/layout.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/layouts/layout.html b/build/resources/main/templates/layouts/layout.html
+new file mode 100644
+--- /dev/null	(date 1721535228236)
++++ b/build/resources/main/templates/layouts/layout.html	(date 1721535228236)
+@@ -0,0 +1,34 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org"
++      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
++      lang="en">
++<head>
++    <meta charset="UTF-8">
++    <title>ERP Project</title>
++    <link rel="stylesheet" th:href="@{/css/topbar.css}">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++    <th:block layout:fragment="script"></th:block>
++</head>
++<body>
++<!-- 네비게이션 바를 프래그먼트 밖으로 이동 -->
++<nav th:replace="~{fragments/topbar :: topbarFragment}">네비게이션 바</nav>
++
++<!--  헤더 선언 및 기본 콘텐츠 추가  -->
++<header layout:fragment="header">
++    <h3>레이아웃의 Header 부분입니다.</h3>
++    <hr>
++</header>
++
++<!--  fragment 선언 및 기본 콘텐츠 추가  -->
++<main layout:fragment="contents">
++    <!-- 이 부분을 개별 페이지 작성 시 채워서 완성 -->
++    <h3>레이아웃의 Contents 부분입니다.</h3>
++</main>
++
++<!--  푸터 선언 및 기본 콘텐츠 추가  -->
++<footer layout:fragment="footer">
++    <hr>
++    <h3>레이아웃의 Footer 부분입니다.</h3>
++</footer>
++</body>
++</html>
+\ No newline at end of file
+Index: build/resources/main/templates/breakTimeForm.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/breakTimeForm.html b/build/resources/main/templates/breakTimeForm.html
+new file mode 100644
+--- /dev/null	(date 1721535228224)
++++ b/build/resources/main/templates/breakTimeForm.html	(date 1721535228224)
+@@ -0,0 +1,38 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org">
++<head>
++    <title>Create/Update Break Time</title>
++    <meta charset="UTF-8">
++</head>
++<body>
++<h1>Create/Update Break Time</h1>
++<form th:action="@{/break-times}" th:object="${breakTime}" method="post">
++    <input type="hidden" th:field="*{btId}" id="btId" />
++    <div>
++        <label for="btStart">Start Date:</label>
++        <input type="date" th:field="*{btStart}" id="btStart" />
++    </div>
++    <div>
++        <label for="btEnd">End Date:</label>
++        <input type="date" th:field="*{btEnd}" id="btEnd" />
++    </div>
++    <div>
++        <label for="btWhy">Reason:</label>
++        <input type="text" th:field="*{btWhy}" id="btWhy" />
++    </div>
++    <div>
++        <button type="submit">Submit</button>
++    </div>
++</form>
++
++<!-- Form for updating the break time -->
++<form th:action="@{/break-times/{id}(id=${breakTime.btId})}" th:object="${breakTime}" method="post">
++    <input type="hidden" name="_method" value="put"/>
++    <div>
++        <button type="submit">Update</button>
++    </div>
++</form>
++
++<a th:href="@{/break-times}">Back to List</a>
++</body>
++</html>
+Index: build/resources/main/templates/workflow.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/workflow.html b/build/resources/main/templates/workflow.html
+new file mode 100644
+--- /dev/null	(date 1721535228244)
++++ b/build/resources/main/templates/workflow.html	(date 1721535228244)
+@@ -0,0 +1,223 @@
++<!DOCTYPE html>
++<html lang="ko" xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <link rel="stylesheet" th:href="@{/css/Topbar.css}">
++    <link rel="stylesheet" th:href="@{/css/Workflow.css}">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
++    <title>INTRANET</title>
++</head>
++<body>
++<div id="topbar" th:replace="components/Topbar :: topbar"></div>
++
++<h2>360 워크플로우</h2>
++
++<div class="container">
++    <nav>
++        <ul class="menu">
++            <li class="active"><a href="#" th:href="@{/user/created}">내가 작성</a></li>
++            <li><a href="#" th:href="@{/user/approved}">내가 승인</a></li>
++        </ul>
++    </nav>
++
++    <div class="content">
++        <div class="workflow-tabs">
++            <button class="tab-button active" th:classappend="${tab == 'my' ? ' active' : ''}">내 보관함</button>
++            <button class="tab-button" th:classappend="${tab == 'create' ? ' active' : ''}" onclick="openEquipmentRequestForm()">작성</button>
++        </div>
++        <div class="workflow-content">
++            <div class="section">
++                <div class="section-header">
++                    <h3>확인 필요 <span class="badge" th:text="${pendingCount}"></span></h3>
++                </div>
++                <div class="item" th:each="item : ${pendingItems}" th:onclick="'openEquipmentDetail(' + ${item.equipId} + ')'" data-toggle="modal" data-target="#equipmentRequestModal">
++                    <span class="status pending" th:text="${item.approvalStatus == 'PENDING' ? '미승인' : '승인'}">확인-미승인</span>
++                    <span class="description" th:text="${item.equipName}">비품 신청</span>
++                    <span class="meta" th:text="${item.meta}"></span>
++                </div>
++            </div>
++            <div class="section">
++                <div class="section-header">
++                    <h3>보관함</h3>
++                </div>
++                <div class="item" th:each="item : ${completedItems}" th:onclick="'openEquipmentDetail(' + ${item.equipId} + ')'" data-toggle="modal" data-target="#equipmentRequestModal">
++                    <span class="status complete" th:text="${item.approvalStatus == 'PENDING' ? '미승인' : '승인'}"> </span>
++                    <span class="description" th:text="${item.equipName}">비품 신청</span>
++                    <span class="meta" th:text="${item.meta}"></span>
++                    <button class="btn btn-sm btn-info ml-2" onclick="editEquipmentDetail(${item.equipId})">수정</button>
++                </div>
++            </div>
++        </div>
++    </div>
++</div>
++
++<!-- Equipment Request Modal -->
++<div id="equipmentRequestModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="equipmentRequestModalLabel" aria-hidden="true">
++    <div class="modal-dialog modal-lg" role="document">
++        <div class="modal-content">
++            <div class="modal-header">
++                <img th:src="@{/images/workflow.png}" alt="Workflow Icon" class="modal-icon">
++                <h5 class="modal-title" id="equipmentRequestModalLabel">비품 신청</h5>
++                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
++                    <span aria-hidden="true">&times;</span>
++                </button>
++            </div>
++            <div class="modal-body">
++                <form id="equipmentRequestForm" onsubmit="handleFormSubmit(event)">
++                    <input type="hidden" id="equipId" name="equipId"> <!-- Hidden input for equipment ID -->
++                    <div class="form-group">
++                        <label for="equipName">품명</label>
++                        <input type="text" id="equipName" name="equipName" class="form-control" required>
++                    </div>
++                    <div class="form-group">
++                        <label for="equipInfo">상품 정보(링크)</label>
++                        <input type="text" id="equipInfo" name="equipInfo" class="form-control">
++                    </div>
++                    <div class="form-group">
++                        <label for="equipAmount">수량</label>
++                        <input type="number" id="equipAmount" name="equipAmount" class="form-control" required>
++                    </div>
++                    <div class="form-group">
++                        <label for="equipCost">단가</label>
++                        <input type="number" id="equipCost" name="equipCost" class="form-control" required>
++                    </div>
++                    <div class="form-group">
++                        <label for="equipSumcost">금액</label>
++                        <input type="number" id="equipSumcost" name="equipSumcost" class="form-control" required>
++                    </div>
++                    <div class="form-group">
++                        <label for="equipWhy">사유</label>
++                        <textarea id="equipWhy" name="equipWhy" class="form-control" required></textarea>
++                    </div>
++                    <div class="modal-footer">
++                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
++                        <button type="submit" id="submitBtn" class="btn btn-primary">신청</button>
++                    </div>
++                </form>
++            </div>
++        </div>
++    </div>
++</div>
++
++<!-- Profile Modal -->
++<div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
++    <div class="modal-dialog modal-lg" role="document">
++        <div class="modal-content">
++            <!-- 동적 내용이 로드 -->
++        </div>
++    </div>
++</div>
++
++<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
++<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
++<script th:src="@{/js/modal.js}"></script>
++<script>
++    function openEquipmentRequestForm() {
++        $('#equipmentRequestModal').modal('show');
++        $('#submitBtn').text('신청'); // 버튼 텍스트를 신청으로 변경
++        $('#equipmentRequestForm').attr('action', '/api/v2/equipment-requests');
++        $('#equipmentRequestForm')[0].reset(); // 폼 리셋
++        $('#equipId').val(''); // hidden input 리셋
++    }
++
++    function editEquipmentDetail(equipId) {
++        $.ajax({
++            url: '/api/v2/equipment-requests/' + equipId,
++            type: 'GET',
++            success: function(data) {
++                $('#equipId').val(data.equipId); // Hidden input 값 설정
++                $('#equipName').val(data.equipName);
++                $('#equipInfo').val(data.equipInfo);
++                $('#equipAmount').val(data.equipAmount);
++                $('#equipCost').val(data.equipCost);
++                $('#equipSumcost').val(data.equipSumcost);
++                $('#equipWhy').val(data.equipWhy);
++                $('#submitBtn').text('수정'); // 버튼 텍스트를 수정으로 변경
++                $('#equipmentRequestForm').attr('action', '/api/v2/equipment-requests/' + equipId);
++                $('#equipmentRequestModal').modal('show');
++            },
++            error: function(error) {
++                console.error('Error fetching equipment request details:', error);
++                alert('비품 신청 정보를 불러오는 데 오류가 발생했습니다.');
++            }
++        });
++    }
++
++    function handleFormSubmit(event) {
++        event.preventDefault();
++        var equipId = $('#equipId').val(); // Get equipment ID
++        var formData = {
++            equipId: equipId, // Hidden input value 포함
++            equipName: $('#equipName').val(),
++            equipInfo: $('#equipInfo').val(),
++            equipAmount: $('#equipAmount').val(),
++            equipCost: $('#equipCost').val(),
++            equipSumcost: $('#equipSumcost').val(),
++            equipWhy: $('#equipWhy').val(),
++            reqDate: new Date().toISOString().split('T')[0], // 현재 날짜를 yyyy-mm-dd 형식으로 추가
++            approvalStatus: "PENDING", // 기본값 설정
++            del: "ACTIVE", // 기본값 설정
++            kinds: "비품" // 기본값 설정
++        };
++
++        var url = '/api/v2/equipment-requests';
++        var method = 'POST';
++
++        if (equipId) {
++            url += '/' + equipId;
++            method = 'PUT';
++        }
++
++        $.ajax({
++            url: url,
++            type: method,
++            contentType: 'application/json',
++            data: JSON.stringify(formData),
++            success: function(response) {
++                var message = equipId ? '비품 수정이 완료되었습니다.' : '비품 신청이 완료되었습니다.';
++                alert(message);
++                window.location.href = "/workflow";
++            },
++            error: function(error) {
++                var message = equipId ? '비품 수정 중 오류가 발생했습니다. 다시 시도해 주세요.' : '비품 신청 중 오류가 발생했습니다. 다시 시도해 주세요.';
++                alert(message);
++                console.log('Error:', error);
++            }
++        });
++    }
++
++    // 프로필 모달창
++    function openProfileModal(employeeId) {
++        $('#profileModal .modal-content').load('/employees/profileModalContent?id=' + employeeId, function() {
++            $('#profileModal').modal('show');
++        });
++    }
++
++    // 비품 신청 정보 불러오기
++    function openEquipmentDetail(equipId) {
++        $.ajax({
++            url: '/api/v2/equipment-requests/' + equipId,
++            type: 'GET',
++            success: function(data) {
++                $('#equipId').val(data.equipId); // Hidden input 값 설정
++                $('#equipName').val(data.equipName);
++                $('#equipInfo').val(data.equipInfo);
++                $('#equipAmount').val(data.equipAmount);
++                $('#equipCost').val(data.equipCost);
++                $('#equipSumcost').val(data.equipSumcost);
++                $('#equipWhy').val(data.equipWhy);
++                $('#submitBtn').text('수정');
++                $('#equipmentRequestForm').attr('action', '/api/v2/equipment-requests/' + equipId);
++                $('#equipmentRequestModal').modal('show');
++            },
++            error: function(error) {
++                console.error('Error fetching equipment request details:', error);
++                alert('비품 신청 정보를 불러오는 데 오류가 발생했습니다.');
++            }
++        });
++    }
++</script>
++</body>
++</html>
+Index: build/resources/main/templates/NewEmployForm.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/NewEmployForm.html b/build/resources/main/templates/NewEmployForm.html
+new file mode 100644
+--- /dev/null	(date 1721535228240)
++++ b/build/resources/main/templates/NewEmployForm.html	(date 1721535228240)
+@@ -0,0 +1,100 @@
++<!DOCTYPE html>
++<html lang="ko" xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>구성원 정보 입력</title>
++    <link rel="stylesheet" th:href="@{/css/EmployForm.css}">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++</head>
++<body>
++
++<div class="container">
++    <h1>구성원 정보 입력</h1>
++
++    <form th:action="@{/employees/create}" th:object="${employeeCreateForm}" method="post">
++    <div class="section">
++            <h2>기본 · 인사정보</h2>
++            <div class="form-group">
++                <label for="name">이름</label>
++                <input type="text" id="name" th:field="*{empName}">
++            </div>
++            <div class="form-group">
++                <label for="empNum">사원번호</label>
++                <input type="text" id="empNum" th:field="*{empNum}">
++            </div>
++            <div class="form-group">
++                <label for="id">주민등록번호</label>
++                <input type="text" id="id" th:field="*{empBirthNum}">
++            </div>
++            <div class="form-group">
++                <label for="age">나이</label>
++                <input type="text" id="age" th:field="*{empBirth}">
++            </div>
++            <div class="form-group">
++                <label for="phone">전화번호</label>
++                <input type="text" id="phone" th:field="*{empPnum}">
++            </div>
++            <div class="form-group">
++                <label for="email">이메일</label>
++                <input type="text" id="email" th:field="*{empEmail}">
++            </div>
++            <div class="form-group address-api">
++                <label for="address"></label><input type="text" id="address" th:field="*{empAddr}" placeholder="주소">
++                <button type="button" onclick="execDaumPostcode()">주소 찾기</button>
++            </div>
++            <div class="form-group">
++                <label for="gender">성별</label>
++                <select id="gender" th:field="*{empGender}">
++                    <option value="MALE">남성</option>
++                    <option value="FEMALE">여성</option>
++                </select>
++            </div>
++        </div>
++
++        <div class="section">
++            <h2>급여 · 계약정보</h2>
++            <div class="form-group">
++                <label for="bank">은행명</label>
++                <select id="bank" th:field="*{bankCode}">
++                    <option value="">선택</option>
++                    <option th:each="bank : ${banks}" th:value="${bank.bankCode}" th:text="${bank.bankName}">은행1</option>
++                </select>
++            </div>
++            <div class="form-group">
++                <label for="accountNum">계좌번호</label>
++                <input type="text" id="accountNum" th:field="*{empBanknum}">
++            </div>
++            <div class="form-group">
++                <label for="salary">계약금액</label>
++                <input type="text" id="salary" th:field="*{salary}">
++            </div>
++            <div class="form-group">
++                <label for="contract-start">연봉계약 시작일</label>
++                <input type="date" id="contract-start" th:field="*{contractStart}">
++            </div>
++            <div class="form-group">
++                <label for="contract-end">연봉계약 종료일</label>
++                <input type="date" id="contract-end" th:field="*{contractEnd}">
++            </div>
++            <div class="form-group">
++                <label for="deptNo">부서</label>
++                <select id="deptNo" th:field="*{deptNo}">
++                    <option value="">선택</option>
++                    <option th:each="dept : ${departments}" th:value="${dept.deptNo}" th:text="${dept.deptName}">부서1</option>
++                </select>
++            </div>
++        </div>
++
++        <div class="section">
++            <button type="submit" class="submit-btn">사원 정보 등록</button>
++        </div>
++    </form>
++
++</div>
++
++<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
++<script src="/js/EmployForm.js"></script>
++
++</body>
++</html>
+\ No newline at end of file
+Index: build/resources/main/templates/UpdateContractForm.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/UpdateContractForm.html b/build/resources/main/templates/UpdateContractForm.html
+new file mode 100644
+--- /dev/null	(date 1721535228242)
++++ b/build/resources/main/templates/UpdateContractForm.html	(date 1721535228242)
+@@ -0,0 +1,66 @@
++<!DOCTYPE html>
++<html lang="ko" xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>구성원 정보 입력</title>
++    <link rel="stylesheet" th:href="@{/css/EmployForm.css}">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++</head>
++<body>
++
++<div class="container">
++    <h1>구성원 정보 입력</h1>
++
++    <form th:action="@{/employees/updateContract}" th:object="${ContractUpdateForm}" method="post">
++        <div class="section">
++            <h2>기본 정보</h2>
++            <div class="form-group">
++                <label for="name">이름</label>
++                <input type="text" id="name" th:field="*{empName}" readonly/>
++            </div>
++            <div class="form-group">
++                <label for="empNum">사원번호</label>
++                <input type="text" id="empNum" th:field="*{empNum}" readonly/>
++            </div>
++        </div>
++
++        <div class="section">
++            <h2>급여 · 계약정보</h2>
++            <div class="form-group">
++                <label for="bank">은행명</label>
++                <select id="bank" th:field="*{bankCode}">
++                    <option value="">선택</option>
++                    <option th:each="bank : ${banks}" th:value="${bank.bankCode}" th:text="${bank.bankName}">은행1</option>
++                </select>
++            </div>
++            <div class="form-group">
++                <label for="accountNum">계좌번호</label>
++                <input type="text" id="accountNum" th:field="*{empBanknum}">
++            </div>
++            <div class="form-group">
++                <label for="salary">계약금액</label>
++                <input type="text" id="salary" th:field="*{salary}">
++            </div>
++            <div class="form-group">
++                <label for="contract-start">연봉계약 시작일</label>
++                <input type="date" id="contract-start" th:field="*{contractStart}">
++            </div>
++            <div class="form-group">
++                <label for="contract-end">연봉계약 종료일</label>
++                <input type="date" id="contract-end" th:field="*{contractEnd}">
++            </div>
++        </div>
++
++        <div class="section">
++            <button type="submit" class="submit-btn">계약 정보 변경</button>
++        </div>
++    </form>
++
++</div>
++
++<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
++<script src="/js/EmployForm.js"></script>
++
++</body>
++</html>
+\ No newline at end of file
+Index: .idea/.name
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.name b/.idea/.name
+new file mode 100644
+--- /dev/null	(date 1721474578499)
++++ b/.idea/.name	(date 1721474578499)
+@@ -0,0 +1,1 @@
++erp
+\ No newline at end of file
+Index: build/resources/main/templates/breakTimeDetail.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/breakTimeDetail.html b/build/resources/main/templates/breakTimeDetail.html
+new file mode 100644
+--- /dev/null	(date 1721535228223)
++++ b/build/resources/main/templates/breakTimeDetail.html	(date 1721535228223)
+@@ -0,0 +1,20 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org">
++<head>
++    <title>Break Time Detail</title>
++    <meta charset="UTF-8">
++</head>
++<body>
++<h1>Break Time Detail</h1>
++<div>
++    <p>ID: <span th:text="${breakTime.btId}"></span></p>
++    <p>Start Date: <span th:text="${breakTime.btStart}"></span></p>
++    <p>End Date: <span th:text="${breakTime.btEnd}"></span></p>
++    <p>Reason: <span th:text="${breakTime.btWhy}"></span></p>
++    <p>Delete Status: <span th:text="${breakTime.del}"></span></p>
++    <p>Employee ID: <span th:text="${breakTime.employeeId}"></span></p>
++</div>
++<a th:href="@{/break-times}">Back to List</a>
++</body>
++</html>
++````
+\ No newline at end of file
+Index: build/resources/main/templates/breakTimeList.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/breakTimeList.html b/build/resources/main/templates/breakTimeList.html
+new file mode 100644
+--- /dev/null	(date 1721535228226)
++++ b/build/resources/main/templates/breakTimeList.html	(date 1721535228226)
+@@ -0,0 +1,40 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org">
++<head>
++    <title>Break Times List</title>
++    <meta charset="UTF-8">
++</head>
++<body>
++<h1>Break Times List</h1>
++<table>
++    <thead>
++    <tr>
++        <th>ID</th>
++        <th>Start Date</th>
++        <th>End Date</th>
++        <th>Reason</th>
++        <th>Delete Status</th>
++        <th>Employee ID</th>
++        <th>Actions</th>
++    </tr>
++    </thead>
++    <tbody>
++    <tr th:each="breakTime : ${breakTimes}">
++        <td th:text="${breakTime.btId}"></td>
++        <td th:text="${breakTime.btStart}"></td>
++        <td th:text="${breakTime.btEnd}"></td>
++        <td th:text="${breakTime.btWhy}"></td>
++        <td th:text="${breakTime.del}"></td>
++        <td th:text="${breakTime.employeeId}"></td>
++        <td>
++            <a th:href="@{/break-times/{id}/edit(id=${breakTime.btId})}">Edit</a>
++            <form th:action="@{/break-times/{id}/delete(id=${breakTime.btId})}" method="post" th:object="${breakTime}">
++                <button type="submit">Delete</button>
++            </form>
++        </td>
++    </tr>
++    </tbody>
++</table>
++<a th:href="@{/break-times/new}">Create New Break Time</a>
++</body>
++</html>
+Index: .idea/modules/erp.main.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules/erp.main.iml b/.idea/modules/erp.main.iml
+new file mode 100644
+--- /dev/null	(date 1721474644472)
++++ b/.idea/modules/erp.main.iml	(date 1721474644472)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module version="4">
++  <component name="AdditionalModuleElements">
++    <content url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main">
++      <sourceFolder url="file://$MODULE_DIR$/../../build/generated/sources/annotationProcessor/java/main" isTestSource="false" generated="true" />
++    </content>
++  </component>
++</module>
+\ No newline at end of file
+Index: build/resources/main/templates/fragments/topbar.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/fragments/topbar.html b/build/resources/main/templates/fragments/topbar.html
+new file mode 100644
+--- /dev/null	(date 1721535228230)
++++ b/build/resources/main/templates/fragments/topbar.html	(date 1721535228230)
+@@ -0,0 +1,24 @@
++<nav th:fragment="topbarFragment" class="top-bar topbar-responsive">
++  <div class="top-bar-title">
++      <span data-responsive-toggle="topbar-responsive" data-hide-for="medium">
++        <button class="menu-icon" type="button" data-toggle></button>
++      </span>
++    <a class="topbar-responsive-logo" href="#"><strong>INTRANET</strong></a>
++  </div>
++  <div id="topbar-responsive" class="topbar-responsive-links">
++    <div class="top-bar-right">
++      <ul class="menu simple vertical medium-horizontal">
++        <li><a href="#"><i class="fas fa-home"></i><br>홈</a></li>
++        <li><a href="#"><i class="fas fa-clock"></i><br>근무·휴가</a></li>
++        <li><a href="#"><i class="fas fa-users"></i><br>사람</a></li>
++        <li><a href="#"><i class="fas fa-building"></i><br>회사정보</a></li>
++        <li><a href="#"><i class="fas fa-tasks"></i><br>워크플로우</a></li>
++        <li><a href="#"><i class="fas fa-chart-bar"></i><br>인사이트</a></li>
++        <li><a href="#"><i class="fas fa-user-shield"></i><br>관리자</a></li>
++        <li>
++          <a href="#" class="topbar-responsive-button"><i class="fas fa-search"></i></a>
++        </li>
++      </ul>
++    </div>
++  </div>
++</nav>
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+--- /dev/null	(date 1721474644576)
++++ b/.idea/modules.xml	(date 1721474644576)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/modules/erp.main.iml" filepath="$PROJECT_DIR$/.idea/modules/erp.main.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: build/resources/main/templates/UpdateEmployeeForm.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/UpdateEmployeeForm.html b/build/resources/main/templates/UpdateEmployeeForm.html
+new file mode 100644
+--- /dev/null	(date 1721535228243)
++++ b/build/resources/main/templates/UpdateEmployeeForm.html	(date 1721535228243)
+@@ -0,0 +1,74 @@
++<!DOCTYPE html>
++<html lang="ko" xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>구성원 정보 수정</title>
++    <link rel="stylesheet" th:href="@{/css/EmployForm.css}">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++</head>
++<body>
++
++<div class="container">
++    <h1>구성원 정보 수정</h1>
++
++    <form th:action="@{/employees/update}" th:object="${employeeUpdateForm}" method="post">
++        <div class="section">
++            <h2>기본정보</h2>
++            <div class="form-group">
++                <label for="name">이름</label>
++                <input type="text" id="name" th:field="*{empName}" readonly />
++            </div>
++            <div class="form-group">
++                <label for="empNum">사원번호</label>
++                <input type="text" id="empNum" th:field="*{empNum}" readonly />
++            </div>
++        </div>
++
++        <div class="section">
++            <h2>부서 정보</h2>
++            <div class="form-group">
++                <label for="deptNo">부서</label>
++                <select id="deptNo" th:field="*{deptNo}">
++                    <option value="">선택</option>
++                    <option th:each="dept : ${departments}" th:value="${dept.deptNo}" th:text="${dept.deptName}">부서1</option>
++                </select>
++            </div>
++        </div>
++
++        <div class="section">
++            <h2>인사정보</h2>
++            <div class="form-group">
++                <label for="empPos">부서원/부서장</label>
++                <select id="empPos" th:field="*{empPos}">
++                    <option value="STAFF">사원</option>
++                    <option value="ASSOCIATE">주임</option>
++                    <option value="SENIOR_ASSOCIATE">대리</option>
++                    <option value="MANAGER">과장</option>
++                    <option value="SENIOR_MANAGER">차장</option>
++                    <option value="GENERAL_MANAGER">부장</option>
++                    <option value="DIRECTOR">이사</option>
++                    <option value="SENIOR_DIRECTOR">전무</option>
++                </select>
++            </div>
++            <div class="form-group">
++                <label for="empHead">부서원/부서장</label>
++                <select id="empHead" th:field="*{empHead}">
++                    <option value="DepartmentMember">부서원</option>
++                    <option value="DepartmentHead">부서장</option>
++                </select>
++            </div>
++        </div>
++
++        <div class="section">
++            <button type="submit" class="submit-btn">사원 정보 변경</button>
++        </div>
++    </form>
++
++</div>
++
++<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
++<script src="/js/EmployForm.js"></script>
++
++</body>
++</html>
+\ No newline at end of file
+Index: build/resources/main/templates/modals/ProfileModalContent.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/modals/ProfileModalContent.html b/build/resources/main/templates/modals/ProfileModalContent.html
+new file mode 100644
+--- /dev/null	(date 1721535228239)
++++ b/build/resources/main/templates/modals/ProfileModalContent.html	(date 1721535228239)
+@@ -0,0 +1,161 @@
++<!DOCTYPE html>
++<html lang="ko">
++<head>
++    <meta charset="UTF-8">
++    <!-- 뷰포트 설정으로 모바일 장치에서의 레이아웃을 제어 -->
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Profile Modal Content</title>
++    <!-- Bootstrap CSS를 포함하여 스타일링 -->
++    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++    <style>
++        .profile-section {
++            display: flex;
++            align-items: flex-start;
++        }
++        .profile-pic-container {
++            display: flex;
++            flex-direction: column;
++            align-items: center;
++            margin-right: 20px;
++            position: relative;
++        }
++        .profile-pic {
++            width: 100px;
++            height: 100px;
++            border-radius: 50%;
++        }
++        .edit-icon {
++            position: absolute;
++            top: 70px;
++            right: 10px;
++            cursor: pointer;
++        }
++        .info {
++            flex: 1;
++        }
++        .info p {
++            display: flex;
++            align-items: center;
++            margin-bottom: 10px;
++        }
++        .info p i {
++            margin-right: 10px;
++        }
++        .info p strong {
++            margin-right: 10px;
++            min-width: 80px;
++        }
++        .info p span {
++            flex: 1;
++        }
++    </style>
++</head>
++<body>
++
++<div class="modal-header">
++    <h5 class="modal-title" id="profileModalLabel">개인 정보</h5>
++    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
++        <span aria-hidden="true">&times;</span>
++    </button>
++</div>
++
++<div class="modal-body">
++    <div class="profile-section">
++        <div class="profile-pic-container">
++            <img th:src="@{/images/profile-img.png}" alt="Profile Picture" class="profile-pic">
++            <i class="fas fa-edit edit-icon" id="editProfileIcon"></i>
++        </div>
++        <div class="info">
++            <!-- 각 프로필 정보 항목을 표시 (Thymeleaf를 사용하여 동적으로 데이터 바인딩) -->
++            <p><i class="fas fa-user"></i><strong>이름:</strong> <span th:text="${employee.empName}">이름</span></p>
++            <p><i class="fas fa-phone"></i><strong>전화번호:</strong> <span th:text="${employee.empPnum}">전화번호</span></p>
++            <p><i class="fas fa-envelope"></i><strong>이메일:</strong> <span th:text="${employee.empEmail}">이메일</span></p>
++            <p><i class="fas fa-info-circle"></i><strong>소개:</strong> <span th:text="${employee.empIntroduce}">소개</span></p>
++            <p><i class="fas fa-id-card"></i><strong>주민등록번호:</strong> <span th:text="${employee.empBirthNum}">주민등록번호</span></p>
++            <p><i class="fas fa-home"></i><strong>주소:</strong> <span th:text="${employee.empAddr}">주소</span></p>
++            <p><i class="fas fa-briefcase"></i><strong>직급:</strong> <span th:text="${employee.empPos}">직급</span></p>
++            <p><i class="fas fa-calendar-alt"></i><strong>입사일:</strong> <span th:text="${employee.startDay}">입사일</span></p>
++        </div>
++    </div>
++</div>
++
++<div class="modal-footer">
++    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
++    <button type="button" class="btn btn-primary" id="saveChangesBtn" style="display: none;">저장</button>
++</div>
++
++<!-- Bootstrap JS와 jQuery를 포함하여 모달 기능을 활성화 -->
++<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
++<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
++<script>
++    $(document).ready(function() {
++        $('#editProfileIcon').click(function() {
++            // 모든 span을 input으로 변경
++            $('.info span').each(function() {
++                var span = $(this);
++                var value = span.text();
++                var input = $('<input type="text" class="form-control">').val(value);
++                span.replaceWith(input);
++            });
++
++            // 저장 버튼을 보이게 함
++            $('#saveChangesBtn').show();
++
++        });
++
++        $('#saveChangesBtn').click(function() {
++            saveProfile('PUT');
++        });
++
++
++        function saveProfile(method) {
++            // 모든 input을 span으로 변경
++            $('.info input').each(function() {
++                var input = $(this);
++                var value = input.val();
++                var span = $('<span>').text(value);
++                input.replaceWith(span);
++            });
++
++            // 저장 버튼을 숨김
++            $('#saveChangesBtn').hide();
++
++
++            // 여기에 데이터를 서버에 저장하는 코드 추가
++            const profileData = {
++                empName: $('.info input:eq(0)').val(),
++                empPnum: $('.info input:eq(1)').val(),
++                empEmail: $('.info input:eq(2)').val(),
++                empIntroduce: $('.info input:eq(3)').val(),
++                empBirthNum: $('.info input:eq(4)').val(),
++                empAddr: $('.info input:eq(5)').val(),
++                empPos: $('.info input:eq(6)').val(),
++                startDay: $('.info input:eq(7)').val()
++            };
++
++            // CSRF 토큰 가져오기
++            const csrfToken = $("meta[name='_csrf']").attr("content");
++            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
++
++            $.ajax({
++                url: '/updateProfile',
++                type: method,
++                contentType: 'application/json',
++                data: JSON.stringify(profileData),
++                beforeSend: function(xhr) {
++                    xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 설정
++                },
++                success: function(response) {
++                    if (response === 'success') {
++                        alert('프로필이 성공적으로 업데이트되었습니다.');
++                    } else {
++                        alert('프로필 업데이트에 실패했습니다.');
++                    }
++                }
++            });
++        }
++    });
++</script>
++</body>
++</html>
+Index: build/resources/main/templates/components/Topbar.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/components/Topbar.html b/build/resources/main/templates/components/Topbar.html
+new file mode 100644
+--- /dev/null	(date 1721535228228)
++++ b/build/resources/main/templates/components/Topbar.html	(date 1721535228228)
+@@ -0,0 +1,71 @@
++<!DOCTYPE html>
++<html lang="ko" xmlns:th="http://www.thymeleaf.org">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <link rel="stylesheet" th:href="@{/css/Topbar.css}">
++  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
++  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++  <title>Topbar</title>
++  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
++  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
++  <script>
++    function openProfileModal(employeeId) {
++      $('#profileModal .modal-content').load('/employee/profileModalContent?id=' + employeeId, function() {
++        $('#profileModal').modal('show');
++      });
++    }
++  </script>
++</head>
++<body>
++<nav class="top-bar topbar-responsive" th:fragment="topbar">
++  <div class="top-bar-title">
++    <span data-responsive-toggle="topbar-responsive" data-hide-for="medium">
++        <button class="menu-icon" type="button" data-toggle></button>
++    </span>
++    <a class="topbar-responsive-logo" href="#" th:href="@{/}"><strong>INTRANET</strong></a>
++  </div>
++  <div id="topbar-responsive" class="topbar-responsive-links">
++    <div class="top-bar-right">
++      <ul class="menu simple vertical medium-horizontal">
++        <li><a href="#" th:href="@{/}"><i class="fas fa-home"></i><br>홈</a></li>
++        <li><a href="#" th:href="@{/worktime}"><i class="fas fa-clock"></i><br>근무·휴가</a></li>
++        <li><a href="#" th:href="@{/people}"><i class="fas fa-users"></i><br>사람</a></li>
++        <li><a href="#" th:href="@{/company}"><i class="fas fa-building"></i><br>회사정보</a></li>
++        <li><a href="#" th:href="@{/workflow}"><i class="fas fa-tasks"></i><br>워크플로우</a></li>
++        <li>
++          <a href="#" onclick="openProfileModal(1)">
++            <img th:src="@{/images/profile-img.png}" alt="Profile Image" style="width:60px;height:60px;border-radius:50%;">
++          </a>
++        </li>
++      </ul>
++    </div>
++  </div>
++</nav>
++
++<!-- Profile Modal -->
++<div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
++  <div class="modal-dialog modal-lg" role="document">
++    <div class="modal-content">
++      <!-- 동적 내용이 여기에 로드됩니다 -->
++    </div>
++  </div>
++</div>
++
++<script>
++  function openProfileModal(employeeId) {
++    $('#profileModal .modal-content').load('/employee/profileModalContent?id=' + employeeId, function() {
++      $('#profileModal').modal('show');
++    });
++  }
++
++  // ProfileModal 닫기 버튼에 이벤트 리스너 추가
++  document.querySelectorAll('.close').forEach(function(button) {
++    button.addEventListener('click', function() {
++      $('#profileModal').modal('hide');
++    });
++  });
++</script>
++
++</body>
++</html>
+Index: build/resources/main/static/css/EquipmentRequestForm.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/EquipmentRequestForm.css b/build/resources/main/static/css/EquipmentRequestForm.css
+new file mode 100644
+--- /dev/null	(date 1721535228204)
++++ b/build/resources/main/static/css/EquipmentRequestForm.css	(date 1721535228204)
+@@ -0,0 +1,35 @@
++/* EquipmentRequestForm.css */
++.modal {
++    display: none; /* Hidden by default */
++    position: fixed; /* Stay in place */
++    z-index: 1; /* Sit on top */
++    left: 0;
++    top: 0;
++    width: 100%; /* Full width */
++    height: 100%; /* Full height */
++    overflow: auto; /* Enable scroll if needed */
++    background-color: rgb(0,0,0); /* Fallback color */
++    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
++}
++
++.modal-content {
++    background-color: #fefefe;
++    margin: 15% auto; /* 15% from the top and centered */
++    padding: 20px;
++    border: 1px solid #888;
++    width: 80%; /* Could be more or less, depending on screen size */
++}
++
++.close {
++    color: #aaa;
++    float: right;
++    font-size: 28px;
++    font-weight: bold;
++}
++
++.close:hover,
++.close:focus {
++    color: black;
++    text-decoration: none;
++    cursor: pointer;
++}
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+--- /dev/null	(date 1721490163097)
++++ b/.gitignore	(date 1721490163097)
+@@ -0,0 +1,4 @@
++/.gradle/
++/.idea/
++/build/
++/*.class
+\ No newline at end of file
+Index: .idea/dataSources.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+new file mode 100644
+--- /dev/null	(date 1721476365630)
++++ b/.idea/dataSources.xml	(date 1721476365630)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
++    <data-source source="LOCAL" name="@localhost" uuid="f121e9e3-dddf-4278-85f2-b5dba89c4b10">
++      <driver-ref>mysql.8</driver-ref>
++      <synchronize>true</synchronize>
++      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
++      <jdbc-url>jdbc:mysql://localhost:3306</jdbc-url>
++      <jdbc-additional-properties>
++        <property name="com.intellij.clouds.kubernetes.db.host.port" />
++        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
++        <property name="com.intellij.clouds.kubernetes.db.container.port" />
++      </jdbc-additional-properties>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/jsLibraryMappings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/jsLibraryMappings.xml b/.idea/jsLibraryMappings.xml
+new file mode 100644
+--- /dev/null	(date 1721476465117)
++++ b/.idea/jsLibraryMappings.xml	(date 1721476465117)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="JavaScriptLibraryMappings">
++    <file url="file://$PROJECT_DIR$/build/generated/sources/annotationProcessor/java/main" libraries="{font-awesome}" />
++    <file url="file://$PROJECT_DIR$/src/main" libraries="{font-awesome}" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/main/resources/static/css/Home.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>body {\r\n    font-family: Arial, sans-serif;\r\n    margin: 0;\r\n    padding: 0;\r\n    background-color: #f4f4f4;\r\n    color: #333;\r\n}\r\n\r\n.content-container {\r\n    padding: 20px;\r\n    max-width: 1200px;\r\n    margin: 0 auto;\r\n}\r\n\r\nh2 {\r\n    text-align: center;\r\n    margin-top: 20px;\r\n}\r\n\r\n.main-content {\r\n    display: flex;\r\n    justify-content: space-between;\r\n    margin-top: 20px;\r\n}\r\n\r\n.left-panel, .right-panel {\r\n    background-color: #fff;\r\n    padding: 20px;\r\n    border-radius: 5px;\r\n    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n.left-panel {\r\n    width: 65%;\r\n}\r\n\r\n.right-panel {\r\n    width: 30%;\r\n}\r\n\r\n.tab-menu {\r\n    display: flex;\r\n    border-bottom: 1px solid #ddd;\r\n}\r\n\r\n.tab-button {\r\n    background-color: inherit;\r\n    border: none;\r\n    outline: none;\r\n    padding: 14px 16px;\r\n    cursor: pointer;\r\n    font-size: 17px;\r\n    flex: 1;\r\n    text-align: center;\r\n}\r\n\r\n.tab-button:hover {\r\n    background-color: #ddd;\r\n}\r\n\r\n.tab-button.active {\r\n    border-bottom: 3px solid #007bff;\r\n}\r\n\r\n.tab-content {\r\n    display: none;\r\n    padding: 16px;\r\n    text-align: center;\r\n}\r\n\r\n.task-container {\r\n    margin-top: 50px;\r\n}\r\n\r\n.task-container i {\r\n    font-size: 50px;\r\n    color: #007bff;\r\n    margin-bottom: 20px;\r\n}\r\n\r\n.task-container h3 {\r\n    color: #007bff;\r\n}\r\n\r\n.task-container p {\r\n    color: #666;\r\n}\r\n\r\n.work-status, .work-timer {\r\n    text-align: center;\r\n    margin-top: 20px;\r\n}\r\n\r\n.work-status p {\r\n    margin: 5px 0;\r\n}\r\n\r\n.work-timer h1 {\r\n    font-size: 48px;\r\n    margin: 10px 0;\r\n}\r\n\r\n.schedule {\r\n    margin-top: 20px;\r\n}\r\n\r\n.logout-button {\r\n    background-color: #ff4b5c;\r\n    color: white;\r\n    border: none;\r\n    padding: 10px;\r\n    border-radius: 5px;\r\n    cursor: pointer;\r\n    margin-top: 20px;\r\n}\r\n\r\n.logout-button:hover {\r\n    background-color: #ff2a3b;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/static/css/Home.css b/src/main/resources/static/css/Home.css
+--- a/src/main/resources/static/css/Home.css	(revision 1da4ebd30c0332f77ab4a8ab51841640bf8f3b03)
++++ b/src/main/resources/static/css/Home.css	(date 1721474756888)
+@@ -1,119 +1,275 @@
+ body {
+-    font-family: Arial, sans-serif;
+-    margin: 0;
+-    padding: 0;
+-    background-color: #f4f4f4;
+-    color: #333;
++  font-family: Arial, sans-serif;
++  margin: 0;
++  padding: 0;
++  background-color: #f4f4f4;
++  color: #333;
+ }
+ 
+ .content-container {
+-    padding: 20px;
+-    max-width: 1200px;
+-    margin: 0 auto;
++  padding: 20px;
++  max-width: 1200px;
++  margin: 0 auto;
+ }
+ 
+ h2 {
+-    text-align: center;
+-    margin-top: 20px;
++  text-align: center;
++  margin-top: 20px;
+ }
+ 
+ .main-content {
+-    display: flex;
+-    justify-content: space-between;
+-    margin-top: 20px;
++  display: flex;
++  justify-content: space-between;
++  margin-top: 20px;
+ }
+ 
+-.left-panel, .right-panel {
+-    background-color: #fff;
+-    padding: 20px;
+-    border-radius: 5px;
+-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
++.left-panel, .work-panel {
++  background-color: #fff;
++  padding: 20px;
++  border-radius: 5px;
++  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+ }
+ 
+ .left-panel {
+-    width: 65%;
++  width: 65%;
+ }
+ 
+-.right-panel {
+-    width: 30%;
++.work-panel {
++  width: 30%;
+ }
+ 
+ .tab-menu {
+-    display: flex;
+-    border-bottom: 1px solid #ddd;
++  display: flex;
++  border-bottom: 1px solid #ddd;
+ }
+ 
+ .tab-button {
+-    background-color: inherit;
+-    border: none;
+-    outline: none;
+-    padding: 14px 16px;
+-    cursor: pointer;
+-    font-size: 17px;
+-    flex: 1;
+-    text-align: center;
++  background-color: inherit;
++  border: none;
++  outline: none;
++  padding: 14px 16px;
++  cursor: pointer;
++  font-size: 17px;
++  flex: 1;
++  text-align: center;
+ }
+ 
+ .tab-button:hover {
+-    background-color: #ddd;
++  background-color: #ddd;
+ }
+ 
+ .tab-button.active {
+-    border-bottom: 3px solid #007bff;
++  border-bottom: 3px solid #007bff;
+ }
+ 
++
++/**/
+ .tab-content {
+-    display: none;
+-    padding: 16px;
+-    text-align: center;
++  display: none;
++  padding: 16px;
++  text-align: center;
+ }
+ 
+-.task-container {
+-    margin-top: 50px;
++/*notice container*/
++.notice-container {
++  margin-top: 50px; /* 공지사항 섹션 여백 */
++}
++
++.notice-container a {
++  display: inline-block;
++  margin-bottom: 20px; /* 링크 여백 */
++  color: #007bff; /* 링크 색상 */
++  text-decoration: none; /* 밑줄 제거 */
++}
++
++.notice-container table {
++  width: 100%; /* 테이블 너비 설정 */
++  border-collapse: collapse; /* 테두리 병합 */
++}
++
++.notice-container th, .notice-container td {
++  border: 1px solid #ccc; /* 테두리 스타일 */
++  padding: 10px; /* 패딩 추가 */
++  text-align: left; /* 텍스트 정렬 */
++}
++
++.notice-container th {
++  background-color: #f2f2f2; /* 헤더 배경색 */
++  color: #007bff; /* 헤더 텍스트 색 */
+ }
+ 
++/*task container*/
++/*task head*/
+ .task-container i {
+-    font-size: 50px;
+-    color: #007bff;
+-    margin-bottom: 20px;
++  font-size: 50px; /* 아이콘 크기 */
++  color: #007bff; /* 아이콘 색상 */
++  margin-bottom: 20px; /* 아이콘 아래 여백 */
+ }
+ 
+-.task-container h3 {
+-    color: #007bff;
++.task-container h3, .notice-container h3 {
++  color: #007bff; /* 제목 색상 */
+ }
+ 
+-.task-container p {
+-    color: #666;
++.task-container p, .notice-container p {
++  color: #666; /* 본문 텍스트 색상 */
++}
++/**/
++/*task body*/
++.task-container {
++  margin-top: 50px; /* 공지사항 섹션 여백 */
+ }
++
++.task-container a {
++  display: inline-block;
++  margin-bottom: 20px; /* 링크 여백 */
++  color: #007bff; /* 링크 색상 */
++  text-decoration: none; /* 밑줄 제거 */
++}
++
++.task-container table {
++  width: 100%; /* 테이블 너비 설정 */
++  border-collapse: collapse; /* 테두리 병합 */
++}
++
++.task-container th, .task-container td {
++  border: 1px solid #ccc; /* 테두리 스타일 */
++  padding: 10px; /* 패딩 추가 */
++  text-align: left; /* 텍스트 정렬 */
++}
++
++.task-container th {
++  background-color: #f2f2f2; /* 헤더 배경색 */
++  color: #007bff; /* 헤더 텍스트 색 */
++}
++/**/
+ 
+ .work-status, .work-timer {
+-    text-align: center;
+-    margin-top: 20px;
++  text-align: center;
++  margin-top: 20px;
+ }
+ 
+ .work-status p {
+-    margin: 5px 0;
++  margin: 5px 0;
+ }
+ 
+ .work-timer h1 {
+-    font-size: 48px;
+-    margin: 10px 0;
++  font-size: 48px;
++  margin: 10px 0;
+ }
+ 
+ .schedule {
+-    margin-top: 20px;
++  margin-top: 20px;
+ }
+ 
+ .logout-button {
+-    background-color: #ff4b5c;
+-    color: white;
+-    border: none;
+-    padding: 10px;
+-    border-radius: 5px;
+-    cursor: pointer;
+-    margin-top: 20px;
++  background-color: #ff4b5c;
++  color: white;
++  border: none;
++  padding: 10px;
++  border-radius: 5px;
++  cursor: pointer;
++  margin-top: 20px;
+ }
+ 
+ .logout-button:hover {
+-    background-color: #ff2a3b;
++  background-color: #ff2a3b;
+ }
++
++
++
++/*
++
++ */
++
++tr.clickable-row {
++  cursor: pointer;  /* 행 클릭가능 */
++}
++
++
++
++/* 모달 start */
++.modal {
++  display: none;
++  position: fixed;
++  z-index: 1;
++  left: 0;
++  top: 0;
++  width: 100%;
++  height: 100%;
++  overflow: auto;
++  background-color: rgba(0, 0, 0, 0.5); /* 배경을 조금 더 어둡게 */
++}
++
++.modal-content {
++  background-color: #ffffff; /* 흰색 배경 */
++  margin: 10% auto; /* 중앙에 배치 */
++  padding: 30px; /* 패딩 증가 */
++  border-radius: 8px; /* 둥근 모서리 */
++  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
++  width: 80%; /* 너비 설정 */
++  max-width: 600px; /* 최대 너비 설정 */
++}
++
++.close {
++  color: #aaa;
++  float: right;
++  font-size: 28px;
++  font-weight: bold;
++}
++
++.close:hover,
++.close:focus {
++  color: #ff0000; /* 마우스 오버 시 빨간색 */
++  text-decoration: none;
++  cursor: pointer;
++}
++
++.modal-title {
++  margin: 0; /* 제목 상단 여백 제거 */
++  color: #333; /* 제목 색상 */
++  font-size: 24px; /* 제목 크기 */
++  border-bottom: 1px solid #ddd; /* 제목 아래 경계선 추가 */
++  padding-bottom: 10px; /* 제목 아래 패딩 */
++}
++
++.modal-body {
++  margin: 20px 0; /* 본문 상하 여백 */
++}
++
++.modal-body p {
++  color: #555; /* 본문 텍스트 색상 */
++  line-height: 1.5; /* 줄 간격 */
++}
++
++.modal-footer {
++  margin-top: 20px; /* 푸터 상단 여백 */
++  font-size: 14px; /* 작은 글씨 크기 */
++  color: #777; /* 푸터 색상 */
++  text-align: right; /* 오른쪽 정렬 */
++}
++/* 모달 end */
++
++
++/* task 수정버튼 스타일 */
++#taskContentEditBtn {
++  font-size: 12px;
++  padding: 2px 4px;
++  margin: 0;
++  border: none;
++  background-color: #007bff;
++  color: white;
++  cursor: pointer;
++  position: absolute;
++}
++
++/* td 요소에 relative 위치 설정 */
++td {
++  position: relative;
++}
++
++/* 버튼을 td 요소의 우측 하단으로 위치 조정 */
++td #taskContentEditBtn {
++  position: absolute;
++  bottom: 5px;
++  right: 5px;
++}
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1721474644606)
++++ b/.idea/misc.xml	(date 1721474644606)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
++  <component name="FrameworkDetectionExcludesConfiguration">
++    <file type="web" url="file://$PROJECT_DIR$" />
++  </component>
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="corretto-17" project-jdk-type="JavaSDK" />
++</project>
+\ No newline at end of file
+Index: .idea/jarRepositories.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/jarRepositories.xml b/.idea/jarRepositories.xml
+new file mode 100644
+--- /dev/null	(date 1721474579616)
++++ b/.idea/jarRepositories.xml	(date 1721474579616)
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RemoteRepositoriesConfiguration">
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Maven Central repository" />
++      <option name="url" value="https://repo1.maven.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="jboss.community" />
++      <option name="name" value="JBoss Community repository" />
++      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="MavenRepo" />
++      <option name="name" value="MavenRepo" />
++      <option name="url" value="https://repo.maven.apache.org/maven2/" />
++    </remote-repository>
++  </component>
++</project>
+\ No newline at end of file
+Index: build/resources/main/static/js/Hr.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/js/Hr.js b/build/resources/main/static/js/Hr.js
+new file mode 100644
+--- /dev/null	(date 1721535228220)
++++ b/build/resources/main/static/js/Hr.js	(date 1721535228220)
+@@ -0,0 +1,13 @@
++document.querySelectorAll('.tab-button').forEach(button => {
++    button.addEventListener('click', () => {
++        const tabButtons = document.querySelectorAll('.tab-button');
++        const tabContents = document.querySelectorAll('.tab-content');
++
++        tabButtons.forEach(btn => btn.classList.remove('active'));
++        tabContents.forEach(content => content.classList.remove('active'));
++
++        button.classList.add('active');
++        const tabName = button.getAttribute('data-tab');
++        document.querySelector(`.tab-content[data-tab="${tabName}"]`).classList.add('active');
++    });
++});
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1721474579688)
++++ b/.idea/vcs.xml	(date 1721474579688)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1721474579454)
++++ b/.idea/compiler.xml	(date 1721474579454)
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <annotationProcessing>
++      <profile name="Gradle Imported" enabled="true">
++        <outputRelativeToContentRoot value="true" />
++        <processorPath useClasspath="false">
++          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
++        </processorPath>
++        <module name="erp.main" />
++      </profile>
++    </annotationProcessing>
++    <bytecodeTargetLevel target="17" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+new file mode 100644
+--- /dev/null	(date 1721486438288)
++++ b/.idea/gradle.xml	(date 1721486438288)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
++  <component name="GradleSettings">
++    <option name="linkedExternalProjectsSettings">
++      <GradleProjectSettings>
++        <option name="externalProjectPath" value="$PROJECT_DIR$" />
++        <option name="gradleJvm" value="#JAVA_HOME" />
++        <option name="modules">
++          <set>
++            <option value="$PROJECT_DIR$" />
++          </set>
++        </option>
++      </GradleProjectSettings>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .gradle/buildOutputCleanup/cache.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/.gradle/buildOutputCleanup/cache.properties b/.gradle/buildOutputCleanup/cache.properties
+new file mode 100644
+--- /dev/null	(date 1721474214351)
++++ b/.gradle/buildOutputCleanup/cache.properties	(date 1721474214351)
+@@ -0,0 +1,2 @@
++#Sat Jul 20 20:16:54 KST 2024
++gradle.version=8.8
+Index: build/resources/main/static/css/Hr.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/css/Hr.css b/build/resources/main/static/css/Hr.css
+new file mode 100644
+--- /dev/null	(date 1721535228207)
++++ b/build/resources/main/static/css/Hr.css	(date 1721535228207)
+@@ -0,0 +1,235 @@
++body {
++    font-family: Arial, sans-serif;
++    margin: 0;
++    padding: 0;
++    background-color: #f4f4f4;
++    color: #333;
++}
++
++.content-container {
++    padding: 20px;
++    max-width: 1200px;
++    margin: 0 auto;
++}
++
++h2 {
++    text-align: center;
++    margin-top: 20px;
++}
++
++.tab-menu {
++    display: flex;
++    justify-content: center;
++    margin-top: 20px;
++    border-bottom: 1px solid #ddd;
++}
++
++.tab-button {
++    background-color: inherit;
++    border: none;
++    outline: none;
++    padding: 14px 16px;
++    cursor: pointer;
++    font-size: 17px;
++    flex: 1;
++    text-align: center;
++}
++
++.tab-button:hover {
++    background-color: #ddd;
++}
++
++.tab-button.active {
++    border-bottom: 3px solid #007bff;
++}
++
++.main-content {
++    justify-content: space-between;
++    margin-top: 20px;
++}
++
++.left-panel, .right-panel {
++    background-color: #fff;
++    padding: 20px;
++    border-radius: 5px;
++    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
++}
++
++.left-panel {
++    width: 30%;
++}
++
++.right-panel {
++    width: 65%;
++}
++
++.tab-content {
++    display: none;
++    padding: 16px;
++    text-align: center;
++}
++
++.tab-content.active {
++    display: flex;
++}
++
++.team-list {
++    list-style-type: none;
++    padding: 0;
++    margin: 0;
++    text-align: left;
++}
++
++.team-list li {
++    margin: 10px 0;
++    padding: 10px;
++    border-bottom: 1px solid #ddd;
++    display: flex;
++    align-items: center;
++}
++
++.team-list li i {
++    margin-right: 10px;
++}
++
++.search-bar {
++    margin-bottom: 20px;
++    text-align: center;
++}
++
++.search-bar input {
++    width: 100%;
++    padding: 10px;
++    box-sizing: border-box;
++    border: 1px solid #ddd;
++    border-radius: 5px;
++}
++
++.members-list {
++    max-height: 500px;
++    overflow-y: auto;
++    border: 1px solid #ddd;
++    border-radius: 5px;
++    padding: 10px;
++}
++
++.members-list ul {
++    list-style-type: none;
++    padding: 0;
++    margin: 0;
++}
++
++.members-list ul li {
++    padding: 10px;
++    border-bottom: 1px solid #ddd;
++    display: flex;
++    align-items: center;
++}
++
++.members-list ul li:last-child {
++    border-bottom: none;
++}
++
++.members-list ul li img.profile-img {
++    width: 40px;
++    height: 40px;
++    border-radius: 50%;
++    margin-right: 10px;
++}
++
++.members-list ul li span.department {
++    color: #888;
++    margin-left: 10px;
++}
++
++.header {
++    background-color: #007bff;
++    padding: 10px 20px;
++    color: white;
++    text-align: center;
++}
++
++.header nav {
++    display: flex;
++    justify-content: center;
++    gap: 20px;
++}
++
++.header nav a {
++    color: white;
++    text-decoration: none;
++    padding: 5px 10px;
++}
++
++.header nav a:hover {
++    background-color: #0056b3;
++    border-radius: 5px;
++}
++
++.hr-actions {
++    display: flex;
++    justify-content: space-around;
++    margin-top: 20px;
++}
++
++.hr-actions .action-card {
++    width: 22%;
++    background-color: #fff;
++    padding: 20px;
++    border-radius: 5px;
++    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
++    text-align: center;
++    cursor: pointer;
++}
++
++.hr-actions .action-card:hover {
++    background-color: #f4f4f4;
++}
++
++.hr-actions .action-card i {
++    font-size: 24px;
++    color: #007bff;
++    margin-bottom: 10px;
++}
++
++.hr-actions .action-card p {
++    margin: 0;
++    font-size: 14px;
++}
++
++.change-status {
++    margin-top: 20px;
++}
++
++.change-item {
++    display: flex;
++    align-items: center;
++    padding: 10px;
++    border-bottom: 1px solid #ddd;
++}
++
++.change-item i {
++    font-size: 24px;
++    color: #28a745;
++    margin-right: 10px;
++}
++
++.change-item p {
++    margin: 0;
++    flex: 1;
++}
++
++.change-item span {
++    font-size: 12px;
++    color: #888;
++}
++
++.change-item .description {
++    margin-top: 5px;
++    color: #333;
++    font-size: 14px;
++}
++
++.tab-content[data-tab="hr"] {
++    flex-direction : column;
++}
+\ No newline at end of file
+Index: build/resources/main/static/js/home.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/static/js/home.js b/build/resources/main/static/js/home.js
+new file mode 100644
+--- /dev/null	(date 1721535228219)
++++ b/build/resources/main/static/js/home.js	(date 1721535228219)
+@@ -0,0 +1,488 @@
++function openTab(evt, tabName) {
++    var i, tabcontent, tabbuttons;
++
++    // 모든 탭 내용 숨기기
++    tabcontent = document.getElementsByClassName("tab-content");
++    for (i = 0; i < tabcontent.length; i++) {
++        tabcontent[i].style.display = "none";
++    }
++
++    // 모든 탭 버튼에서 'active' 클래스 제거
++    tabbuttons = document.getElementsByClassName("tab-button");
++    for (i = 0; i < tabbuttons.length; i++) {
++        tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
++    }
++
++    // 선택한 탭 내용 보여주기
++    document.getElementById(tabName).style.display = "block";
++    evt.currentTarget.className += " active";
++
++
++
++}
++
++// 페이지가 로드될 때 notice 탭을 열도록 초기화
++window.onload = function() {
++    // '공지사항' 탭 클릭 이벤트를 트리거
++    var noticeButton = document.querySelector('.tab-button.active');
++    if (noticeButton) {
++        openTab({ currentTarget: noticeButton }, 'notice');
++    }
++};
++
++// J
++// S
++// C
++
++// 문서가 로드되면 실행될 함수
++// Notice 모달 관련 기능
++document.addEventListener('DOMContentLoaded', function() {
++    // 필요한 NOTICE DOM 요소들 가져오기
++    const noticeTable = document.querySelector('#notice table');  // 공지사항 목록 테이블
++    const noticeDetailModal = document.getElementById('noticeDetailModal');  // 상세 모달
++    const createNoticeModal = document.getElementById('createNoticeModal');  // 생성 모달
++    const editNoticeModal = document.getElementById('editNoticeModal');  // 수정 모달
++
++    // 각 NOTICE 모달의 닫기 버튼 가져오기
++    const noticeDetailCloseSpan = noticeDetailModal.querySelector('.close');
++    const createNoticeCloseSpan = createNoticeModal.querySelector('.close');
++    const editNoticeCloseSpan = editNoticeModal.querySelector('.close');
++
++    //
++
++    // 상세 모달의 닫기 버튼 클릭 이벤트 처리
++    noticeDetailCloseSpan.onclick = function() {
++        noticeDetailModal.style.display = "none";  // 상세 모달 숨기기
++    };
++
++    // 생성 모달의 닫기 버튼 클릭 이벤트 처리
++    createNoticeCloseSpan.onclick = function() {
++        createNoticeModal.style.display = "none";  // 생성 모달 숨기기
++    };
++
++    // 수정 모달의 닫기 버튼 클릭 이벤트 처리
++    editNoticeCloseSpan.onclick = function() {
++        editNoticeModal.style.display = "none";  // 수정 모달 숨기기
++    };
++
++    // 모달 외부 클릭 시 닫기 처리
++    window.onclick = function(event) {
++        if (event.target == noticeDetailModal) {
++            noticeDetailModal.style.display = "none";  // 상세 모달 숨기기
++        } else if (event.target == createNoticeModal) {
++            createNoticeModal.style.display = "none";  // 생성 모달 숨기기
++        } else if (event.target == editNoticeModal) {
++            editNoticeModal.style.display = "none";  // 수정 모달 숨기기
++        }
++    };
++
++
++    //// GET
++    // 테이블에서 클릭 이벤트 리스너 등록
++    noticeTable.addEventListener('click', function(e) {
++        if (e.target.tagName === 'TD') {
++            const row = e.target.closest('tr');  // 클릭한 셀이 속한 행
++            const noticeId = row.dataset.id;  // 데이터 세트에서 공지사항 ID 가져오기
++            console.log(noticeId);
++            fetchNoticeDetails(noticeId);  // 공지사항 상세 정보를 가져오는 함수 호출
++        }
++    });
++
++    // 공지사항 상세 정보 가져오기 함수
++    function fetchNoticeDetails(noticeId) {
++        fetch(`/api/notices/${noticeId}`)  // 해당 ID의 공지사항 정보 가져오기
++            .then(response => response.json())
++            .then(data => {
++                // 모달에 공지사항 정보 출력
++                document.getElementById('noticeDetailTitle').textContent = data.title;  // 제목
++                document.getElementById('noticeDetailContent').textContent = data.contents;  // 내용
++                document.getElementById('noticeDetailDate').textContent = `작성일: ${data.createDate}`;  // 작성일
++                document.getElementById('noticeDetailAuthor').textContent = `작성자: ${data.employee.empName}`;  // 작성자
++                noticeDetailModal.style.display = "block";  // 상세 모달 열기
++            })
++            .catch(error => console.error('Error:', error));  // 에러 처리
++    }
++
++    //// POST
++    // 게시글 작성 버튼 클릭 시 모달 열기 함수 불러오기
++    document.querySelector('#createNoticeBtn').addEventListener('click', function(e) {
++        e.preventDefault(); // 링크 기본 동작 방지
++        openCreateNoticeModal(); // 모달 열기 함수 호출
++    });
++
++    // 작성 모달열기
++    function openCreateNoticeModal() {
++        const createNoticeModal = document.getElementById('createNoticeModal');
++        createNoticeModal.style.display = "block";
++    }
++
++    // 게시글 작성 폼 제출 처리
++    document.getElementById('createNoticeForm').addEventListener('submit', function(e) {
++        e.preventDefault(); // 폼 기본 동작 방지
++
++        const title = document.getElementById('createNoticeTitle').value;
++        const content = document.getElementById('createNoticeContent').value;
++        const emp_num = 1;  ////////// 1번 사원 가데이터 입력
++
++        fetch('/api/notices', {
++            method: 'POST',
++            headers: {
++                'Content-Type': 'application/json'
++            },
++            body: JSON.stringify({
++                title: title,
++                contents: content,
++                emp_num: emp_num
++            })
++        })
++            .then(data => {
++                alert('게시글이 작성되었습니다.');
++                console.log('Response Data:', data); // 응답 데이터를 콘솔에 출력
++                location.reload(); // 페이지 새로고침
++            })
++    });
++
++    //// PUT
++    // 수정 버튼 클릭 시 공지사항 정보 불러오기
++    document.querySelector('#notice table').addEventListener('click', function(e) {
++        if (e.target.classList.contains('btn-edit')) {
++            // 수정 버튼 클릭 시
++            const noticeId = e.target.dataset.id;  // 데이터 세트에서 공지사항 ID 가져오기
++            fetchNoticeEdit(noticeId);  // 공지사항 상세 정보를 가져오는 함수 호출
++        }
++    });
++
++    // 수정을 위한 공지사항 정보 가져오기 함수
++    function fetchNoticeEdit(noticeId) {
++        fetch(`/api/notices/${noticeId}`)  // 해당 ID의 공지사항 정보 가져오기
++            .then(response => response.json())
++            .then(data => {
++                document.getElementById('editNoticeId').value = noticeId;  // ID (hidden)
++                document.getElementById('editNoticeTitle').value = data.title;  // 제목
++                document.getElementById('editNoticeContent').value = data.contents;  // 내용
++                editNoticeModal.style.display = "block";  // 수정 모달 열기
++            })
++            .catch(error => console.error('Error:', error));  // 에러 처리
++    }
++
++    // 수정 폼 제출 처리
++    document.getElementById('editNoticeForm').addEventListener('submit', function(e) {
++        e.preventDefault(); // 폼 기본 동작 방지
++
++        const noticeId = document.getElementById('editNoticeId').value;
++        const title = document.getElementById('editNoticeTitle').value;
++        const content = document.getElementById('editNoticeContent').value;
++        const emp_num = 1;  ////////// 1번 사원 가데이터 입력
++
++        /*
++        // 로그로 데이터 확인
++        console.log('Notice ID:', noticeId);
++        console.log('Title:', title);
++        console.log('Content:', content);
++        console.log('Emp Num:', emp_num);
++        */
++
++        fetch(`/api/notices/${noticeId}`, {
++            method: 'PUT',  // 수정 요청을 위한 PUT 메서드 사용
++            headers: {
++                'Content-Type': 'application/json'
++            },
++            body: JSON.stringify({
++                title: title,
++                contents: content,
++                emp_num: emp_num
++            })
++        })
++            .then(response => {
++                if (!response.ok) {
++                    throw new Error('Network response was not ok');
++                }
++                alert('게시글이 수정되었습니다.');
++                location.reload(); // 페이지 새로고침
++            })
++            .catch(error => console.error('Error:', error));
++    });
++
++    //// DELETE
++    // 삭제 버튼 클릭 시 공지사항 정보 불러오기
++    document.querySelector('#notice table').addEventListener('click', function(e) {
++        if (e.target.classList.contains('btn-delete')) {
++            // 삭제 버튼 클릭 시
++            const noticeId = e.target.dataset.id;  // 데이터 세트에서 공지사항 ID 가져오기
++            const userConfirmed = confirm('정말로 삭제하시겠습니까?');  // 사용자 확인
++
++            if (userConfirmed) {
++                fetchNoticeDelete(noticeId);  // 공지사항 삭제 함수 호출
++            }
++        }
++    });
++
++    // 삭제를 위한 함수
++    function fetchNoticeDelete(noticeId) {
++        fetch(`/api/notices/${noticeId}`, {
++            method: 'DELETE',  // 삭제 요청을 위한 DELETE 메서드 사용
++            headers: {
++                'Content-Type': 'application/json'
++            }
++        })
++            .then(response => {
++                if (!response.ok) {
++                    throw new Error('Network response was not ok');
++                }
++                alert('게시글이 삭제되었습니다.');
++                location.reload(); // 페이지 새로고침
++            })
++            .catch(error => console.error('Error:', error));
++    }
++
++});
++
++
++
++// Task 모달 관련 기능
++document.addEventListener('DOMContentLoaded', function() {
++    // 필요한 TASK DOM 요소들 가져오기
++    const taskTable = document.querySelector('#task table');  // 작업 목록 테이블
++    const taskDetailModal = document.getElementById('taskDetailModal');  // 상세 모달
++    const createTaskModal = document.getElementById('createTaskModal');  // 생성 모달
++    const editTaskModal = document.getElementById('editTaskModal');  // 수정 모달
++
++    // 각 TASK 모달의 닫기 버튼 가져오기
++    const taskDetailCloseSpan = taskDetailModal.querySelector('.close');
++    const createTaskCloseSpan = createTaskModal.querySelector('.close');
++    const editTaskCloseSpan = editTaskModal.querySelector('.close');
++
++    // 상세 모달의 닫기 버튼 클릭 이벤트 처리
++    taskDetailCloseSpan.onclick = function() {
++        taskDetailModal.style.display = "none";  // 상세 모달 숨기기
++    };
++
++    // 생성 모달의 닫기 버튼 클릭 이벤트 처리
++    createTaskCloseSpan.onclick = function() {
++        createTaskModal.style.display = "none";  // 생성 모달 숨기기
++    };
++
++    // 수정 모달의 닫기 버튼 클릭 이벤트 처리
++    editTaskCloseSpan.onclick = function() {
++        editTaskModal.style.display = "none";  // 수정 모달 숨기기
++    };
++
++    // 모달 외부 클릭 시 닫기 처리
++    window.onclick = function(event) {
++        if (event.target == taskDetailModal) {
++            taskDetailModal.style.display = "none";  // 상세 모달 숨기기
++        } else if (event.target == createTaskModal) {
++            createTaskModal.style.display = "none";  // 생성 모달 숨기기
++        } else if (event.target == editTaskModal) {
++            editTaskModal.style.display = "none";  // 수정 모달 숨기기
++        }
++    };
++
++    //// GET
++    // 테이블에서 클릭 이벤트 리스너 등록
++    taskTable.addEventListener('click', function(e) {
++        if (e.target.tagName === 'TD') {
++            const row = e.target.closest('tr');  // 클릭한 셀이 속한 행
++            const taskId = row.dataset.id;  // 데이터 세트에서 작업 ID 가져오기
++            fetchTaskDetails(taskId);  // 작업 상세 정보를 가져오는 함수 호출
++        }
++    });
++
++    // 작업 상세 정보 가져오기 함수
++    function fetchTaskDetails(taskId) {
++        fetch(`/api/tasks/${taskId}`)  // 해당 ID의 작업 정보 가져오기
++            .then(response => response.json())
++            .then(data => {
++                // 모달에 작업 정보 출력
++                document.getElementById('taskDetailContent').textContent = data.content;  // 내용
++                document.getElementById('taskDetailAuthor').textContent = `작성자: ${data.employee.empName}`;  // 작성자
++                taskDetailModal.style.display = "block";  // 상세 모달 열기
++            })
++            .catch(error => console.error('Error:', error));  // 에러 처리
++    }
++
++
++    //// POST
++    // 작업 작성 버튼 클릭 시 모달 열기 함수 불러오기
++    document.querySelector('#createTaskBtn').addEventListener('click', function(e) {
++        e.preventDefault(); // 링크 기본 동작 방지
++        openCreateTaskModal(); // 모달 열기 함수 호출
++    });
++
++    // 모달열기
++    function openCreateTaskModal() {
++        createTaskModal.style.display = "block";
++    }
++
++    // 작업 작성 폼 제출 처리
++    document.getElementById('createTaskForm').addEventListener('submit', function(e) {
++        e.preventDefault(); // 폼 기본 동작 방지
++
++        const content = document.getElementById('createTaskContent').value;
++        const emp_num = 1;  ////////// 1번 사원 가데이터 입력
++
++        fetch('/api/tasks', {
++            method: 'POST',
++            headers: {
++                'Content-Type': 'application/json'
++            },
++            body: JSON.stringify({
++                content: content,
++                emp_num: emp_num
++            })
++        })
++            .then(data => {
++                alert('작업이 작성되었습니다.');
++                console.log('Response Data:', data); // 응답 데이터를 콘솔에 출력
++                location.reload(); // 페이지 새로고침
++            })
++    });
++
++    //// PUT
++    // 수정 버튼 클릭 시 작업 정보 불러오기
++    document.querySelector('#task table').addEventListener('click', function(e) {
++        if (e.target.classList.contains('btn-edit')) {
++            // 수정 버튼 클릭 시
++            const taskId = e.target.dataset.id;  // 데이터 세트에서 작업 ID 가져오기
++            console.log(taskId)
++            fetchTaskEdit(taskId);  // 작업 상세 정보를 가져오는 함수 호출
++        }
++    });
++
++    // 수정을 위한 작업 정보 가져오기 함수
++    function fetchTaskEdit(taskId) {
++        fetch(`/api/tasks/${taskId}`)  // 해당 ID의 작업 정보 가져오기
++            .then(response => response.json())
++            .then(data => {
++                document.getElementById('editTaskId').value = taskId;  // ID (hidden)
++                document.getElementById('editTaskContent').value = data.content;  // 내용
++                editTaskModal.style.display = "block";  // 수정 모달 열기
++            })
++            .catch(error => console.error('Error:', error));  // 에러 처리
++    }
++
++    // 수정 폼 제출 처리
++    document.getElementById('editTaskForm').addEventListener('submit', function(e) {
++        e.preventDefault(); // 폼 기본 동작 방지
++
++        const taskId = document.getElementById('editTaskId').value;
++        const content = document.getElementById('editTaskContent').value;
++        const emp_num = 1;  ////////// 1번 사원 가데이터 입력
++
++        fetch(`/api/tasks/${taskId}`, {
++            method: 'PUT',  // 수정 요청을 위한 PUT 메서드 사용
++            headers: {
++                'Content-Type': 'application/json'
++            },
++            body: JSON.stringify({
++                content: content,
++                emp_num: emp_num
++            })
++        })
++            .then(response => {
++                if (!response.ok) {
++                    throw new Error('Network response was not ok');
++                }
++                alert('작업이 수정되었습니다.');
++                location.reload(); // 페이지 새로고침
++            })
++            .catch(error => console.error('Error:', error));
++    });
++
++    //// DELETE
++    // 삭제 버튼 클릭 시 작업 정보 불러오기
++    document.querySelector('#task table').addEventListener('click', function(e) {
++        if (e.target.classList.contains('btn-delete')) {
++            // 삭제 버튼 클릭 시
++            const taskId = e.target.dataset.id;  // 데이터 세트에서 작업 ID 가져오기
++            const userConfirmed = confirm('정말로 삭제하시겠습니까?');  // 사용자 확인
++
++            if (userConfirmed) {
++                fetchTaskDelete(taskId);  // 작업 삭제 함수 호출
++            }
++        }
++    });
++
++    // 삭제를 위한 함수
++    function fetchTaskDelete(taskId) {
++        fetch(`/api/tasks/${taskId}`, {
++            method: 'DELETE',  // 삭제 요청을 위한 DELETE 메서드 사용
++            headers: {
++                'Content-Type': 'application/json'
++            }
++        })
++            .then(response => {
++                if (!response.ok) {
++                    throw new Error('Network response was not ok');
++                }
++                alert('작업이 삭제되었습니다.');
++                location.reload(); // 페이지 새로고침
++            })
++            .catch(error => console.error('Error:', error));
++    }
++});
++
++
++
++
++
++
++
++    ///////////////////////// timer
++// 타이머 변수 선언
++let timerInterval;
++const workTimerDisplay = document.querySelector('.work-timer h1'); // 타이머를 표시할 요소
++const startButton = document.getElementById('startButton'); // 출근 버튼
++const endButton = document.getElementById('endButton'); // 퇴근 버튼
++
++// 현재 시간을 기준으로 타이머 시작
++function startTimer() {
++    const startTime = new Date(); // 현재 시간 저장
++    const endTime = localStorage.getItem('endTime'); // 마지막 종료 시간을 가져옴
++
++    // 종료 시간이 설정되어 있으면
++    if (endTime) {
++        const endDate = new Date(endTime);
++        if (endDate > startTime) {
++            // 종료 시간이 아직 미래면 타이머를 다시 설정
++            startTime.setTime(endDate.getTime() - (endDate.getTime() - startTime.getTime()));
++        }
++    }
++
++    function updateTimer() {
++        const now = new Date();
++        const elapsedTime = now - startTime;
++
++        const hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
++        const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
++        const seconds = Math.floor((elapsedTime / 1000) % 60);
++
++        workTimerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
++    }
++
++    // 매초 타이머 업데이트
++    timerInterval = setInterval(updateTimer, 1000);
++    updateTimer(); // 즉시 업데이트
++}
++
++// 타이머 정지
++function stopTimer() {
++    clearInterval(timerInterval);
++    localStorage.setItem('endTime', new Date()); // 종료 시간 저장
++}
++
++// 출근 버튼 클릭 이벤트
++startButton.addEventListener('click', function() {
++    if (!timerInterval) { // 타이머가 작동 중이 아니면
++        startTimer();
++        startButton.textContent = '퇴근하기'; // 버튼 텍스트 변경
++    }
++});
++
++// 퇴근 버튼 클릭 이벤트
++endButton.addEventListener('click', function() {
++    if (timerInterval) { // 타이머가 작동 중이면
++        stopTimer();
++        endButton.textContent = '출근하기'; // 버튼 텍스트 변경
++    }
++});
+Index: build/resources/main/templates/Hr.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build/resources/main/templates/Hr.html b/build/resources/main/templates/Hr.html
+new file mode 100644
+--- /dev/null	(date 1721535228232)
++++ b/build/resources/main/templates/Hr.html	(date 1721535228232)
+@@ -0,0 +1,89 @@
++<!DOCTYPE html>
++<html lang="en" xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Organization Members</title>
++    <link rel="stylesheet" href="/static/css/Hr.css">
++    <link rel="stylesheet" th:href="@{/css/Hr.css}">
++<!--    <link rel="stylesheet" href="../components/Topbar.css">-->
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
++</head>
++<body>
++<div id="topbar-placeholder"></div>
++
++<div class="content-container">
++    <h2>인사페이지다.</h2>
++
++    <div class="tab-menu">
++        <button class="tab-button active" data-tab="members">구성원</button>
++        <button class="tab-button" data-tab="hr">인사・계약</button>
++    </div>
++    <div class="main-content">
++        <div class="tab-content active" data-tab="members">
++            <div class="left-panel">
++                <ul class="team-list">
++                    <li><i class="fas fa-user-tie"></i> 대표</li>
++                    <li><i class="fas fa-users"></i> 인사팀</li>
++                    <li><i class="fas fa-calculator"></i> 회계팀</li>
++                    <li><i class="fas fa-code"></i> 개발팀</li>
++                    <li><i class="fas fa-bullhorn"></i> 마케팅팀</li>
++                    <li><i class="fas fa-paint-brush"></i> 디자인팀</li>
++                </ul>
++            </div>
++            <div class="right-panel">
++<!--                <div class="search-bar">-->
++<!--                    <form action="/employees/search" method="get">-->
++<!--                        <input type="text" name="empName" placeholder="이름을 검색하세요.">-->
++<!--                        <button type="submit">검색</button>-->
++<!--                    </form>-->
++<!--                </div>-->
++                <div class="members-list">
++                    <ul>
++                        <li th:each="employee : ${employees}">
++<!--                            <img src="profile.png" alt="profile" class="profile-img">-->
++                            <span th:text="${employee.empNum}">사번</span>
++                            <span th:text="${employee.empName}">이름</span>
++                            <span class="department" th:text="${employee.department.deptName}">부서</span>
++<!--                            <span th:text="${employee.empPos}">직급</span>-->
++                        </li>
++                    </ul>
++                </div>
++            </div>
++        </div>
++        <div class="tab-content" data-tab="hr">
++            <h3>어떤 정보를 변경하고 싶으세요?</h3>
++            <div class="hr-actions">
++                <div class="action-card" onclick="location.href='/Hr'">
++                    <i class="fas fa-user-plus"></i>
++                    <p>인사정보 입력</p>
++                </div>
++                <div class="action-card" onclick="location.href='UpdateEmployForm.html'"></div>>
++                <i class="fas fa-user-edit"></i>
++                <p>인사정보 변경</p>
++            </div>
++            <div class="action-card">
++                <i class="fas fa-file-contract"></i>
++                <p>계약정보 변경</p>
++            </div>
++            <div class="action-card">
++                <i class="fas fa-business-time"></i>
++                <p>근무유형 변경</p>
++            </div>
++        </div>
++        <h3>변경・계약 진행현황은?</h3>
++        <div class="change-status">
++            <div class="change-item">
++                <i class="fas fa-check-circle"></i>
++                <p>작성자</p>
++                <span>2021. 00. 00 오후 00:00</span>
++                <p class="description">변경한 내용 입력</p>
++            </div>
++        </div>
++    </div>
++</div>
++
++
++<script src="/js/Hr.js"></script>
++</body>
++</html>
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1721474139519)
++++ b/.idea/.gitignore	(date 1721474139519)
+@@ -0,0 +1,8 @@
++# 디폴트 무시된 파일
++/shelf/
++/workspace.xml
++# 에디터 기반 HTTP 클라이언트 요청
++/httpRequests/
++# Datasource local storage ignored files
++/dataSources/
++/dataSources.local.xml
+Index: build/resources/main/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/build/resources/main/application.properties b/build/resources/main/application.properties
+new file mode 100644
+--- /dev/null	(date 1721535228200)
++++ b/build/resources/main/application.properties	(date 1721535228200)
+@@ -0,0 +1,29 @@
++spring.application.name=ErpProject
++
++spring.datasource.url=jdbc:mysql://localhost:3306/erp?useSSL=false&allowPublicKeyRetrieval=true
++spring.datasource.username=root
++spring.datasource.password=1111
++spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
++
++spring.jpa.hibernate.ddl-auto=update
++spring.jpa.show-sql=true
++spring.jpa.properties.hibernate.format_sql=true
++spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
++
++spring.devtools.livereload.enabled=true
++
++spring.thymeleaf.prefix=classpath:/templates/
++spring.thymeleaf.suffix=.html
++spring.thymeleaf.mode=HTML5
++spring.thymeleaf.encoding=UTF-8
++spring.thymeleaf.content-type=text/html
++spring.thymeleaf.cache=false
++
++logging.level.org.springframework=DEBUG
++
++# Spring Session JDBC ??
++spring.session.store-type=jdbc
++spring.session.jdbc.initialize-schema=always
++
++#jwt.issuer=asdfg6548
++#jwt.secretKey=ff54dd1sdfsdf25sdfsdf3fd1df43d1b9dsdf9120kfsfdf9isdkf03fksqb9df5444befdfsfssdf
+diff --git a/.gradle/vcs-1/gc.properties b/.gradle/vcs-1/gc.properties
+new file mode 100644
+diff --git a/.gradle/8.8/dependencies-accessors/gc.properties b/.gradle/8.8/dependencies-accessors/gc.properties
+new file mode 100644
+diff --git a/.gradle/8.8/gc.properties b/.gradle/8.8/gc.properties
+new file mode 100644

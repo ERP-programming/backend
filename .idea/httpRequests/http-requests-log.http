@@ -1,0 +1,266 @@
+POST http://localhost:8080/employees/login
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=MWUwNjkxYTMtOGNiZC00ZGQyLTg1MDgtYzUxNWJhNjU2NmY1
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T133847.403.json
+
+###
+
+POST http://localhost:8080/employees/login
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=MWU2YzhkMjEtMDQzYy00NmNlLThmNTEtOGViOWRlZTliZDU1
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T133741.403.json
+
+###
+
+GET http://localhost:8080/api/v2/equipment-requests
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=MWU2YzhkMjEtMDQzYy00NmNlLThmNTEtOGViOWRlZTliZDU1
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T125558.200.json
+
+###
+
+GET http://localhost:8080/workflow
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=MWU2YzhkMjEtMDQzYy00NmNlLThmNTEtOGViOWRlZTliZDU1
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T125351.200.html
+
+###
+
+PUT http://localhost:8080/employees/updateProfile
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=NmY4MjdiOWMtNDYxOS00MWI3LWJjNzgtOTkyYmNmNjNiYzYw
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T124621.403.json
+
+###
+
+GET http://localhost:8080/workflow
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=NmY4MjdiOWMtNDYxOS00MWI3LWJjNzgtOTkyYmNmNjNiYzYw
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T104352.200.html
+
+###
+
+PUT http://localhost:8080/employees/updateProfile
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=NmY4MjdiOWMtNDYxOS00MWI3LWJjNzgtOTkyYmNmNjNiYzYw
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T104040.403.json
+
+###
+
+PUT http://localhost:8080/employees/updateProfile
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=ZDBlMzVhNGMtYmYxOC00ZDNlLWE3NjUtZmEzNmMyZWY1YTcz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-21T103957.403.json
+
+###
+
+POST http://localhost:8080/api/equipment-requests
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=ZDBlMzVhNGMtYmYxOC00ZDNlLWE3NjUtZmEzNmMyZWY1YTcz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-20T235058.415.json
+
+###
+
+GET http://localhost:8080/workflow
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-20T235041.200.html
+
+###
+
+GET http://localhost:8080/api/equipment-requests
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-20T235032.200.json
+
+###
+
+GET http://localhost:8080/api/equipment-requests
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-20T235010.200.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/json
+Content-Length: 89
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "title": "공지사항 제목",
+  "contents": "공지사항 내용",
+  "emp_num": 1
+}
+
+<> 2024-07-20T223214.403.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/json
+Content-Length: 89
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "title": "공지사항 제목",
+  "contents": "공지사항 내용",
+  "emp_num": 1
+}
+
+<> 2024-07-20T221945.403.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/json
+Content-Length: 89
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "title": "공지사항 제목",
+  "contents": "공지사항 내용",
+  "emp_num": 1
+}
+
+<> 2024-07-20T221615.403.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/json
+Content-Length: 89
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "title": "공지사항 제목",
+  "contents": "공지사항 내용",
+  "emp_num": 1
+}
+
+<> 2024-07-20T221339.403.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/json
+Content-Length: 89
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "title": "공지사항 제목",
+  "contents": "공지사항 내용",
+  "emp_num": 1
+}
+
+<> 2024-07-20T220851.403.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 56
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=N2Y2NmFkY2ItMjY4MS00MGEyLTkxOTUtODVhZWE0ZjcwNzUz
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+%7B%0A%22title%22+%3A+%EC%A0%9C%EB%B0%9C%2C%0A%0A%0A%7D=
+
+<> 2024-07-20T220817.403.json
+
+###
+
+POST http://localhost:8080/api/notices
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 56
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=MmUxOWEyNzUtYzllMS00ZjZkLTgzYjAtNzNiZjI4MDcyNzhm
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+%7B%0A%22title%22+%3A+%EC%A0%9C%EB%B0%9C%2C%0A%0A%0A%7D=
+
+<> 2024-07-20T220807.403.json
+
+###
+
+GET http://localhost:8080/employees/Hr
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Cookie: SESSION=MmUxOWEyNzUtYzllMS00ZjZkLTgzYjAtNzNiZjI4MDcyNzhm
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-20T210508.500.json
+
+###
+
+GET http://localhost:8080/employees/login
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.9)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-20T204805.200.html
+
+###
+
