@@ -143,9 +143,16 @@ h2 {
 }
 /**/
 
-.work-status, .work-timer {
+.work-status {
   text-align: center;
   margin-top: 20px;
+}
+
+.work-timer {
+  text-align: center;
+  margin-top: 20px;
+  position: relative; /* 부모 요소를 상대적으로 위치 설정 */
+  padding: 20px;
 }
 
 .work-status p {
@@ -161,25 +168,41 @@ h2 {
   margin-top: 20px;
 }
 
-.logout-button {
-  background-color: #ff4b5c;
+.button-container {
+  position: absolute;
+  left: 50%;
+  top: 50%; /* 버튼이 컨테이너의 세로 중앙에 오도록 설정 */
+  transform: translate(-50%, -50%); /* 버튼을 정확히 중앙에 위치시킴 */
+  text-align: center;
+}
+
+.work-timer button {
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 10px;
+}
+
+.logout-button {
+  background-color: #ff4b5c;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .logout-button:hover {
   background-color: #ff2a3b;
 }
 
+.login-button {
+  background-color: #4caf50;
+}
 
-
-/*
-
- */
+.login-button:hover {
+  background-color: #45a049;
+}
 
 tr.clickable-row {
   cursor: pointer;  /* 행 클릭가능 */
