@@ -38,6 +38,7 @@ import static ac.su.erp.constant.EmploymentStatus.RESIGNED;
 @RequiredArgsConstructor
 public class EmployeeService implements UserDetailsService {
 
+    // 의존성 주입
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final EmployeeRepository employeeRepository;
@@ -48,6 +49,7 @@ public class EmployeeService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 사용자 이름(사원 번호)로 사원 정보를 로드
         Optional<Employee> registeredEmployee = employeeRepository.findByEmpNum(Long.parseLong(username));
         if (registeredEmployee.isEmpty()) {
             throw new UsernameNotFoundException(username);
@@ -56,13 +58,13 @@ public class EmployeeService implements UserDetailsService {
         return SpringUser.getSpringUserDetails(employee);
     }
 
-    // 은행 찾기
+    // 은행 코드로 은행 찾기
     private Bank getBankByCode(String bankCode) {
         return bankRepository.findByBankCode(bankCode)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 은행 코드입니다."));
     }
 
-    // 부서 찾기
+    // 부서 번호로 부서 찾기
     private Department getDepartmentByNo(Long deptNo) {
         return departmentRepository.findById(deptNo)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 부서 번호입니다."));
@@ -95,7 +97,7 @@ public class EmployeeService implements UserDetailsService {
         employee.setEmpPnum(form.getEmpPnum());
         employee.setEmpAddr(form.getEmpAddr());
         employee.setEmpPos(EmployeePosition.STAFF);
-        employee.setEmpPw(passwordEncoder.encode("1234"));
+        employee.setEmpPw(passwordEncoder.encode("1234")); // 초기 비밀번호 설정
         employee.setEmpEmail(form.getEmpEmail());
         employee.setStartDay(LocalDate.now());
         employee.setEmpBanknum(form.getEmpBanknum());
@@ -157,10 +159,12 @@ public class EmployeeService implements UserDetailsService {
         }
     }
 
+    // 랜덤 비밀번호 생성
     private String generateRandomPassword() {
         return UUID.randomUUID().toString();
     }
 
+    // 사원 세션 삭제
     private void deleteEmployeeSessions(String username) {
         sessionRepository.findByPrincipalName(username).forEach((sessionId, session) -> {
             sessionRepository.deleteById(sessionId);

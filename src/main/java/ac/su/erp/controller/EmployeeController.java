@@ -26,6 +26,7 @@ public class EmployeeController {
     private final DepartmentRepository departmentRepository;
     private final BankRepository bankRepository;
 
+    // 로그인 폼 보여주기
     @GetMapping("/login")
     public ModelAndView showLoginForm() {
         ModelAndView modelAndView = new ModelAndView("login");
@@ -33,14 +34,13 @@ public class EmployeeController {
         return modelAndView;
     }
 
-    //인사 정보 페이지
+    // 인사 정보 페이지
     @GetMapping("/Hr")
     public String listEmployees(Model model) {
         List<Employee> employees = employeeService.findEmployedEmployees();
         model.addAttribute("employees", employees);
         return "Hr";
     }
-
 
     // 인사 정보 변경 시 직원 목록을 보는 페이지
     @GetMapping("/HrList")
@@ -50,7 +50,7 @@ public class EmployeeController {
         return "EmployeeListHr";
     }
 
-    //계약 정보 변경시 직원 목록을 보는 페이지
+    // 계약 정보 변경 시 직원 목록을 보는 페이지
     @GetMapping("/ContractList")
     public String ContractListEmployees(Model model) {
         List<Employee> employees = employeeService.findEmployedEmployees();
@@ -58,6 +58,7 @@ public class EmployeeController {
         return "EmployeeListContract";
     }
 
+    // 직원 생성 폼 보여주기
     @GetMapping("/create")
     public String showCreateEmployeeForm(Model model) {
         model.addAttribute("employeeCreateForm", new EmployeeCreateForm());
@@ -66,13 +67,14 @@ public class EmployeeController {
         return "NewEmployForm";
     }
 
+    // 직원 생성
     @PostMapping("/create")
     public String createEmployee(@ModelAttribute EmployeeCreateForm form) {
         employeeService.createEmployee(form);
-        return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
+        return "redirect:/employees/Hr"; // 성공 시 HR 페이지로 리다이렉트
     }
 
-    //인사 정보 변경
+    // 인사 정보 변경 폼 보여주기
     @GetMapping("/update/{empNum}")
     public String showUpdateEmployeeForm(@PathVariable Long empNum, Model model) {
         Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
@@ -94,13 +96,14 @@ public class EmployeeController {
         }
     }
 
+    // 인사 정보 변경
     @PostMapping("/update")
     public String updateEmployee(@ModelAttribute("employeeUpdateForm") EmployeeUpdateForm form) {
         employeeService.updateEmployee(form);
-        return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
+        return "redirect:/employees/Hr"; // 성공 시 HR 페이지로 리다이렉트
     }
 
-    // 계약 정보 변경
+    // 계약 정보 변경 폼 보여주기
     @GetMapping("/updateContract/{empNum}")
     public String showUpdateContractForm(@PathVariable Long empNum, Model model) {
         Optional<Employee> employeeOptional = employeeService.findByEmployeeNum(empNum);
@@ -124,10 +127,11 @@ public class EmployeeController {
         }
     }
 
+    // 계약 정보 변경
     @PostMapping("/updateContract")
     public String updateContract(@ModelAttribute("ContractUpdateForm") ContractUpdateForm form) {
         employeeService.updateContract(form);
-        return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
+        return "redirect:/employees/Hr"; // 성공 시 HR 페이지로 리다이렉트
     }
 
     // 사원 퇴사 처리
@@ -151,6 +155,7 @@ public class EmployeeController {
         }
     }
 
+    // 특정 사원 정보 조회
     @GetMapping("/{empNum}")
     public ModelAndView getEmployee(@PathVariable Long empNum) {
         ModelAndView modelAndView = new ModelAndView("employeeDetail");
@@ -166,6 +171,7 @@ public class EmployeeController {
         return modelAndView;
     }
 
+    // 프로필 모달 내용 가져오기
     @GetMapping("/profileModalContent")
     public String getProfileModalContent(@RequestParam("id") Long employeeId, Model model) {
         ProfileDTO employee = employeeService.getProfileDtoById(employeeId);
@@ -173,6 +179,7 @@ public class EmployeeController {
         return "modals/ProfileModalContent";
     }
 
+    // 프로필 업데이트
     @PutMapping("/updateProfile")
     @ResponseBody
     public ResponseEntity<String> updateProfile(@RequestParam("id") Long employeeId, @RequestBody ProfileDTO profileDTO) {
@@ -180,7 +187,7 @@ public class EmployeeController {
         return ResponseEntity.ok("success");
     }
 
-    //부서가 HR인지 확인하는 API
+    // 부서가 HR인지 확인하는 API
     @GetMapping("/hr-check")
     @ResponseBody
     public ResponseEntity<String> checkHrAccess() {
@@ -192,6 +199,4 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("access-denied");
         }
     }
-
-
 }
