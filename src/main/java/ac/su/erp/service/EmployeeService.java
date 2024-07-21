@@ -14,6 +14,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,7 +52,8 @@ public class EmployeeService implements UserDetailsService {
         if (registeredEmployee.isEmpty()) {
             throw new UsernameNotFoundException(username);
         }
-        return SpringUser.getSpringUserDetails(registeredEmployee.get());
+        Employee employee = registeredEmployee.get();
+        return SpringUser.getSpringUserDetails(employee);
     }
 
     // 은행 찾기
@@ -61,6 +66,19 @@ public class EmployeeService implements UserDetailsService {
     private Department getDepartmentByNo(Long deptNo) {
         return departmentRepository.findById(deptNo)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 부서 번호입니다."));
+    }
+
+    // 현재 사용자의 부서 이름 가져오기
+    public String getCurrentUserDepartment() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            if (!authorities.isEmpty()) {
+                // 첫 번째 권한(role)을 부서로 간주합니다.
+                return authorities.iterator().next().getAuthority().replace("ROLE_", "");
+            }
+        }
+        return null; // 인증된 사용자가 없거나 권한이 없는 경우
     }
 
     // 사원 등록

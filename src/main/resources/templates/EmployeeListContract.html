@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List Contract</title>
+    <link rel="stylesheet" href="/static/css/EmployeeList.css">
+    <link rel="stylesheet" th:href="@{/css/EmployeeList.css}">
+</head>
+<body>
+<div class="container">
+    <table class="employee-table">
+        <thead>
+        <tr>
+            <th>사원 번호</th>
+            <th>이름</th>
+            <th>부서명</th>
+            <th>변경</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}">
+            <td th:text="${employee.empNum}">사원 번호</td>
+            <td th:text="${employee.empName}">이름</td>
+            <td th:text="${employee.department.deptName}">부서명</td>
+            <td>
+                <a th:href="@{/employees/updateContract/{empNum}(empNum=${employee.empNum})}">변경</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
