@@ -33,6 +33,12 @@ public class EmployeeController {
         return modelAndView;
     }
 
+    // 로그아웃
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/employees/login";
+    }
+
     //인사 정보 페이지
     @GetMapping("/Hr")
     public String listEmployees(Model model) {
@@ -99,6 +105,7 @@ public class EmployeeController {
         employeeService.updateEmployee(form);
         return "redirect:/employees/Hr"; // 성공 시 hr 페이지로 리다이렉트
     }
+
 
     // 계약 정보 변경
     @GetMapping("/updateContract/{empNum}")

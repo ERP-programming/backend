@@ -65,6 +65,8 @@
         <div class="profile-pic-container">
             <img th:src="@{/images/profile-img.png}" alt="Profile Picture" class="profile-pic">
             <i class="fas fa-edit edit-icon" id="editProfileIcon"></i>
+            <a th:href="@{/employees/logout}">로그아웃</a>
+            <p></p>
         </div>
         <div class="info">
             <!-- 각 프로필 정보 항목을 표시 (Thymeleaf를 사용하여 동적으로 데이터 바인딩) -->
