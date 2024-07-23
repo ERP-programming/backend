@@ -13,12 +13,13 @@
 <body>
 <div id="topbar" th:replace="components/Topbar :: topbar"></div>
 
+<h2>근무·휴가</h2>
+
 <main>
     <div class="tabs">
         <button class="active">내 스케줄</button>
     </div>
     <section class="work-hours">
-        <h2>근무 시간 및 휴가</h2>
         <div class="stats">
             <div class="stat">
                 <span class="number" th:text="${workTimeSummary.totalWorkHours}">16</span>

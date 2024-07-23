@@ -15,7 +15,7 @@
 <div id="topbar" th:replace="components/Topbar :: topbar"></div>
 
   <div class="content-container">
-    <h2>닏동고님 환영합니다. 😊</h2>
+    <h2>환영합니다. 😊</h2>
 
     <!-- 메인 콘텐츠 start -->
     <div class="main-content">
@@ -204,7 +204,7 @@
           <p>근무일정 : 09:00 - 18:00</p><br><br><br><br>
           <div class="schedule">
             <label for="schedule">예정 스케줄</label>
-            <p id="schedule" th:text="${tasks.size()}">1</p>
+            <p id="schedule" th:text="${tasks.size()}" style="color: red;">1</p>
           </div>
           <div class="button-container">
             <button class="onWork-button" id="onWork-button" onclick="toggleButtons('onWork')">출근하기</button>

@@ -5,6 +5,12 @@ body {
     background-color: #f0f0f0;
 }
 
+body h2 {
+    text-align: center;
+    margin-top: 20px;
+
+}
+
 header {
     background: linear-gradient(to right, #3498db, #2ecc71);
     color: white;

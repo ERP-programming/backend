@@ -5,6 +5,12 @@ body {
     padding: 0;
 }
 
+body h2 {
+    text-align: center;
+    margin-top: 20px;
+
+}
+
 .container {
     padding: 20px;
 }
