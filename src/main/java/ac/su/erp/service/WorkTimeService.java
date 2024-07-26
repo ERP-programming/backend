@@ -44,7 +44,7 @@ public class WorkTimeService {
         WorkTime workTime = new WorkTime();
         workTime.setEmployee(employee);
         workTime.setTodayDate(LocalDate.now());
-        workTime.setOnWork(LocalTime.now());
+        workTime.setOnWork(LocalTime.now().withNano(0)); // 밀리초 제거
 //        workTime.setTodayDate(LocalDate.of(2024, 7, 22));
 //        workTime.setOnWork(LocalTime.of(9, 0, 0));
         workTimeRepository.save(workTime);
@@ -60,7 +60,7 @@ public class WorkTimeService {
             throw new IllegalArgumentException("오늘의 출근 기록을 찾을 수 없습니다.");
         }
         WorkTime workTime = workTimes.get(0);
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now().withNano(0); // 밀리초 제거ㅈ
         workTime.setOffWork(now);
 
         // 총 근무 시간 계산

@@ -1,3 +1,4 @@
+/* default tag */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -6,15 +7,16 @@ body {
     color: #333;
 }
 
+h2 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* default layout */
 .content-container {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-h2 {
-    text-align: center;
-    margin-top: 20px;
 }
 
 .main-content {
@@ -38,6 +40,7 @@ h2 {
     width: 40%;
 }
 
+/* left panel tab */
 .tab-menu {
     display: flex;
     border-bottom: 1px solid #ddd;
@@ -61,8 +64,6 @@ h2 {
 .tab-button.active {
     border-bottom: 3px solid #007bff;
 }
-
-
 /**/
 .tab-content {
     display: none;
@@ -99,6 +100,7 @@ h2 {
 }
 
 /*task container*/
+/**/
 /*task head*/
 .task-container i {
     font-size: 50px; /* 아이콘 크기 */
@@ -113,7 +115,7 @@ h2 {
 .task-container p, .notice-container p {
     color: #666; /* 본문 텍스트 색상 */
 }
-/**/
+
 /*task body*/
 .task-container {
     margin-top: 50px; /* 공지사항 섹션 여백 */
@@ -141,13 +143,20 @@ h2 {
     background-color: #f2f2f2; /* 헤더 배경색 */
     color: #007bff; /* 헤더 텍스트 색 */
 }
-/**/
 
+/*work-panel*/
+/**/
+/*work-status*/
 .work-status {
     text-align: center;
     margin-top: 20px;
 }
 
+.work-status p {
+    margin: 5px 0;
+}
+
+/*work-timer*/
 .work-timer {
     text-align: center;
     margin-top: 20px;
@@ -155,25 +164,9 @@ h2 {
     padding: 20px;
 }
 
-.work-status p {
-    margin: 5px 0;
-}
-
 .work-timer h1 {
     font-size: 48px;
     margin: 10px 0;
-}
-
-.schedule {
-    margin-top: 20px;
-}
-
-.button-container {
-    position: absolute;
-    left: 50%;
-    top: 50%; /* 버튼이 컨테이너의 세로 중앙에 오도록 설정 */
-    transform: translate(-50%, -50%); /* 버튼을 정확히 중앙에 위치시킴 */
-    text-align: center;
 }
 
 .work-timer button {
@@ -186,6 +179,23 @@ h2 {
     margin-top: 10px;
 }
 
+/*button-container*/
+.button-container {
+    position: absolute;
+    left: 50%;
+    top: 50%; /* 버튼이 컨테이너의 세로 중앙에 오도록 설정 */
+    transform: translate(-50%, -50%); /* 버튼을 정확히 중앙에 위치시킴 */
+    text-align: center;
+}
+
+.onWork-button {
+    background-color: #4caf50;
+}
+
+.onWork-button:hover {
+    background-color: #45a049;
+}
+
 .offWork-button {
     background-color: #ff4b5c;
     visibility: hidden;
@@ -196,13 +206,7 @@ h2 {
     background-color: #ff2a3b;
 }
 
-.onWork-button {
-    background-color: #4caf50;
-}
 
-.onWork-button:hover {
-    background-color: #45a049;
-}
 
 tr.clickable-row {
     cursor: pointer;  /* 행 클릭가능 */
@@ -233,27 +237,33 @@ tr.clickable-row {
     max-width: 600px; /* 최대 너비 설정 */
 }
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+.modal-title {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding-right: 30px; /* 닫기 버튼과 겹치지 않도록 */
 }
 
-.close:hover,
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #6c757d;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #343a40;
+}
+
 .close:focus {
     color: #ff0000; /* 마우스 오버 시 빨간색 */
     text-decoration: none;
     cursor: pointer;
 }
 
-.modal-title {
-    margin: 0; /* 제목 상단 여백 제거 */
-    color: #333; /* 제목 색상 */
-    font-size: 24px; /* 제목 크기 */
-    border-bottom: 1px solid #ddd; /* 제목 아래 경계선 추가 */
-    padding-bottom: 10px; /* 제목 아래 패딩 */
-}
 
 .modal-body {
     margin: 20px 0; /* 본문 상하 여백 */
@@ -295,4 +305,83 @@ td #taskContentEditBtn {
     position: absolute;
     bottom: 5px;
     right: 5px;
+}
+
+
+
+/**/
+/* 버튼 스타일 */
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* 폼 요소 스타일 */
+input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+
+/* 스케줄 스타일 추가 */
+.schedule {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.schedule label {
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 10px;
+    display: block;
+}
+
+#schedule {
+    font-size: 24px;
+    color: #dc3545;
+    margin: 0;
+}
+
+#createNoticeBtn, #createTaskBtn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+#createNoticeBtn:hover, #createTaskBtn:hover {
+    background-color: #45a049;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
