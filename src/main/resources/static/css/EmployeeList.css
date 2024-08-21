@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.container {
+    margin: 50px auto;
+    width: 80%;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.employee-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.employee-table th, .employee-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.employee-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.employee-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.employee-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.employee-table a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.employee-table a:hover {
+    text-decoration: underline;
+}

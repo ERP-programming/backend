@@ -22,11 +22,11 @@ public class WorkTime {
     @Column(name = "TODAY_DATE", nullable = false)  // 오늘 날짜
     private LocalDate todayDate = LocalDate.now();  // 기본값은 현재 날짜
 
-    @Column(name = "ON_WORK", nullable = false)    // 출근시간
-    private LocalTime onWork = LocalTime.now();  // 기본값은 현재 시간
+    @Column(name = "ON_WORK")    // 출근시간
+    private LocalTime onWork;  // 기본값은 현재 시간
 
-    @Column(name = "OFF_WORK", nullable = false)    // 퇴근시간
-    private LocalTime offWork = LocalTime.now();  // 기본값은 현재 시간
+    @Column(name = "OFF_WORK")    // 퇴근시간
+    private LocalTime offWork;  // 기본값은 현재 시간
 
     @Column(name = "TOTAL_WORKING", nullable = false)   // 총 근무시간
     private LocalTime totalWorking = LocalTime.of(0, 0);    // 기본값은 0시간 0분

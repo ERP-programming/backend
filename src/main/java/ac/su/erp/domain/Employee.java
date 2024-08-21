@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 // 사원정보 엔티티
@@ -76,6 +77,15 @@ public class Employee {
 
     @Column(name = "EMP_BANKNUM", nullable = false)   // 계좌번호
     private String empBanknum;
+
+    @Column(name = "CON_INCOME", nullable = false)  // 계약금액(연봉)
+    private Long conIncome;
+
+    @Column(name = "CON_STARTDAY", nullable = false)    // 계약 시작일
+    private LocalDate conStartday;
+
+    @Column(name = "CON_ENDDAY", nullable = false)  // 계약 종료일
+    private LocalDate conEndday;
 
     // N:1 매핑
     @ManyToOne

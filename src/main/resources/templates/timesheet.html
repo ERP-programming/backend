@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/Topbar.css}">
+    <link rel="stylesheet" th:href="@{/css/timesheet.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>INTRANET</title>
+</head>
+
+<body>
+<div id="topbar" th:replace="components/Topbar :: topbar"></div>
+
+<h2>근무·휴가</h2>
+
+<main>
+    <div class="tabs">
+        <button class="active">내 스케줄</button>
+    </div>
+    <section class="work-hours">
+        <div class="stats">
+            <div class="stat">
+                <span class="number" th:text="${workTimeSummary.totalWorkHours}">16</span>
+                <span class="label">총 근무 시간</span>
+            </div>
+            <div class="stat">
+                <span class="number" th:text="${workTimeSummary.totalWorkHours}">16</span>
+                <span class="label">근무 상세</span>
+            </div>
+            <div class="stat">
+                <span class="number" th:text="${workTimeSummary.excessHours}">16</span>
+                <span class="label">초과시간</span>
+            </div>
+            <div class="stat">
+                <span class="label">없음</span>
+            </div>
+        </div>
+    </section>
+    <section class="schedule">
+    <h2>이번 주 근무</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>날짜</th>
+            <th>상태</th>
+            <th>출근 시각</th>
+            <th>퇴근 시각</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="workTime : ${workTimes}" th:data-id="${workTime.workTimeId}">
+            <td th:text="${workTime.todayDate}">날짜</td>
+            <td><i class="icon-user"></i></td>
+            <td th:text="${workTime.onWork}">시작시간</td>
+            <td th:text="${workTime.offWork}">끝난시간</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</main>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- 동적 내용이 로드 -->
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    // 프로필 모달창
+    function openProfileModal(employeeId) {
+        $('#profileModal .modal-content').load('/employees/profileModalContent?id=' + employeeId, function() {
+            $('#profileModal').modal('show');
+        });
+    }
+
+</script>
+</body>
+</html>

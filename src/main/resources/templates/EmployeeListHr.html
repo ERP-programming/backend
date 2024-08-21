@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/Topbar.css}">
+    <link rel="stylesheet" th:href="@{/css/EmployeeList.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>INTRANET</title>
+</head>
+<body>
+
+<div id="topbar" th:replace="components/Topbar :: topbar"></div>
+
+<div class="container">
+    <table class="employee-table">
+        <thead>
+        <tr>
+            <th>사원 번호</th>
+            <th>이름</th>
+            <th>부서명</th>
+            <th>변경</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}">
+            <td th:text="${employee.empNum}">사원 번호</td>
+            <td th:text="${employee.empName}">이름</td>
+            <td th:text="${employee.department.deptName}">부서명</td>
+            <td>
+                <a th:href="@{/employees/update/{empNum}(empNum=${employee.empNum})}">변경</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- 동적 내용이 로드 -->
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // 프로필 모달창
+    function openProfileModal(employeeId) {
+        $('#profileModal .modal-content').load('/employees/profileModalContent?id=' + employeeId, function() {
+            $('#profileModal').modal('show');
+        });
+    }
+
+</script>
+
+</body>
+</html>
